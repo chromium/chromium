@@ -1,0 +1,61 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+interface NeuralNetwork {
+    // Operand types.
+    const unsigned long FLOAT32 = 0;
+    const unsigned long INT32 = 1;
+    const unsigned long UINT32 = 2;
+    const unsigned long TENSOR_FLOAT32 = 3;
+    const unsigned long TENSOR_INT32 = 4;
+    const unsigned long TENSOR_QUANT8_ASYMM = 5;
+
+    // Operation types.
+    const unsigned long ADD = 0;
+    const unsigned long AVERAGE_POOL_2D = 1;
+    const unsigned long CONCATENATION = 2;
+    const unsigned long CONV_2D = 3;
+    const unsigned long DEPTHWISE_CONV_2D = 4;
+    const unsigned long DEPTH_TO_SPACE = 5;
+    const unsigned long DEQUANTIZE = 6;
+    const unsigned long EMBEDDING_LOOKUP = 7;
+    const unsigned long FLOOR = 8;
+    const unsigned long FULLY_CONNECTED = 9;
+    const unsigned long HASHTABLE_LOOKUP = 10;
+    const unsigned long L2_NORMALIZATION = 11;
+    const unsigned long L2_POOL_2D = 12;
+    const unsigned long LOCAL_RESPONSE_NORMALIZATION = 13;
+    const unsigned long LOGISTIC = 14;
+    const unsigned long LSH_PROJECTION = 15;
+    const unsigned long LSTM = 16;
+    const unsigned long MAX_POOL_2D = 17;
+    const unsigned long MUL = 18;
+    const unsigned long RELU = 19;
+    const unsigned long RELU1 = 20;
+    const unsigned long RELU6 = 21;
+    const unsigned long RESHAPE = 22;
+    const unsigned long RESIZE_BILINEAR = 23;
+    const unsigned long RNN = 24;
+    const unsigned long SOFTMAX = 25;
+    const unsigned long SPACE_TO_DEPTH = 26;
+    const unsigned long SVDF = 27;
+    const unsigned long TANH = 28;
+
+    // Fused activation function types.
+    const unsigned long FUSED_NONE = 0;
+    const unsigned long FUSED_RELU = 1;
+    const unsigned long FUSED_RELU1 = 2;
+    const unsigned long FUSED_RELU6 = 3;
+
+    // Implicit padding algorithms.
+    const unsigned long PADDING_SAME = 1;
+    const unsigned long PADDING_VALID = 2;
+
+    // Execution preferences.
+    const unsigned long PREFER_LOW_POWER = 0;
+    const unsigned long PREFER_FAST_SINGLE_ANSWER = 1;
+    const unsigned long PREFER_SUSTAINED_SPEED = 2;
+
+    [RaisesException] Model createModel();
+};
