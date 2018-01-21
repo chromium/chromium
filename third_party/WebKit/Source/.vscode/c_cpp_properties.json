@@ -1,0 +1,80 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "/usr/include",
+                "/usr/local/include",
+                "${workspaceRoot}"
+            ],
+            "defines": [],
+            "intelliSenseMode": "clang-x64",
+            "browse": {
+                "path": [
+                    "/usr/include",
+                    "/usr/local/include",
+                    "${workspaceRoot}"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            },
+            "macFrameworkPath": [
+                "/System/Library/Frameworks",
+                "/Library/Frameworks"
+            ]
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "/usr/include/c++/5",
+                "/usr/include/x86_64-linux-gnu/c++/5",
+                "/usr/include/c++/5/backward",
+                "/usr/lib/gcc/x86_64-linux-gnu/5/include",
+                "/usr/local/include",
+                "/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed",
+                "/usr/include/x86_64-linux-gnu",
+                "/usr/include",
+                "${workspaceRoot}",
+                "${workspaceRoot}/../../../"
+            ],
+            "defines": [],
+            "intelliSenseMode": "clang-x64",
+            "browse": {
+                "path": [
+                    "/usr/include/c++/5",
+                    "/usr/include/x86_64-linux-gnu/c++/5",
+                    "/usr/include/c++/5/backward",
+                    "/usr/lib/gcc/x86_64-linux-gnu/5/include",
+                    "/usr/local/include",
+                    "/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed",
+                    "/usr/include/x86_64-linux-gnu",
+                    "/usr/include",
+                    "${workspaceRoot}"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
+        },
+        {
+            "name": "Win32",
+            "includePath": [
+                "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include",
+                "${workspaceRoot}"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE"
+            ],
+            "intelliSenseMode": "msvc-x64",
+            "browse": {
+                "path": [
+                    "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include/*",
+                    "${workspaceRoot}"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
+        }
+    ],
+    "version": 3
+}

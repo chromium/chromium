@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NeuralNetwork_h
-#define NeuralNetwork_h
+#ifndef NeuralNetworkContext_h
+#define NeuralNetworkContext_h
 
 #include "bindings/core/v8/ScriptPromise.h"
 #include "platform/bindings/ScriptWrappable.h"
@@ -12,14 +12,17 @@
 namespace blink {
 
 class Model;
+class Compilation;
+class Execution;
+
 class NavigatorML;
 
-class NeuralNetwork final
+class NeuralNetworkContext final
     : public ScriptWrappable,
       public ContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(NeuralNetwork);
-  USING_PRE_FINALIZER(NeuralNetwork, Dispose);
+  USING_GARBAGE_COLLECTED_MIXIN(NeuralNetworkContext);
+  USING_PRE_FINALIZER(NeuralNetworkContext, Dispose);
 
  public:
   // Operand types.
@@ -77,10 +80,12 @@ class NeuralNetwork final
   static const unsigned long kPreferSustainedSpeed = 2;
 
  public:
-  NeuralNetwork(NavigatorML*);
-  ~NeuralNetwork() override;
+  NeuralNetworkContext(NavigatorML*);
+  ~NeuralNetworkContext() override;
 
   Model* createModel(ExceptionState&);
+  Compilation* createCompilation(Model*, ExceptionState&);
+  Execution* createExecution(Compilation*, ExceptionState&);
 
   // ContextLifecycleObserver overrides.
   void ContextDestroyed(ExecutionContext*) override;

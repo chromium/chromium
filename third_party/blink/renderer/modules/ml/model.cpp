@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "modules/ml/Model.h"
-#include "modules/ml/Compilation.h"
+#include "bindings/modules/v8/array_buffer_view_or_double.h"
 
 namespace blink {
 
@@ -15,7 +15,7 @@ uint32_t Model::addOperand(const OperandOptions& options, ExceptionState& state)
   return 0;
 }
 
-void Model::setOperandValue(uint32_t index, MaybeShared<DOMArrayBufferView> data, ExceptionState& state) {
+void Model::setOperandValue(uint32_t index, const ArrayBufferViewOrDouble& data, ExceptionState& state) {
 
 }
 
@@ -29,10 +29,6 @@ void Model::identifyInputsAndOutputs(Vector<uint32_t>& inputs, Vector<uint32_t>&
 
 void Model::finish(ExceptionState& state) {
 
-}
-
-Compilation* Model::createCompilation() {
-  return new Compilation;
 }
 
 void Model::Trace(blink::Visitor* visitor) {

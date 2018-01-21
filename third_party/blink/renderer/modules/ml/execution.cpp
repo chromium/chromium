@@ -6,10 +6,11 @@
 
 #include "bindings/core/v8/ScriptPromiseResolver.h"
 #include "core/dom/DOMException.h"
+#include "modules/ml/Compilation.h"
 
 namespace blink {
 
-Execution::Execution() {}
+Execution::Execution(Compilation* compilation) {}
 
 Execution::~Execution() {}
 

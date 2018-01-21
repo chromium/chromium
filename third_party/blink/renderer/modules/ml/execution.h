@@ -12,12 +12,13 @@
 
 namespace blink {
 
+class Compilation;
 class ExceptionState;
 
 class Execution final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
  public:
-  Execution();
+  Execution(Compilation*);
   ~Execution() override;
 
   void setInput(uint32_t index, MaybeShared<DOMArrayBufferView> data, ExceptionState& state);

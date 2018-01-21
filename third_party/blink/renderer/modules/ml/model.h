@@ -13,7 +13,7 @@ namespace blink {
 
 class OperandOptions;
 class ExceptionState;
-class Compilation;
+class ArrayBufferViewOrDouble;
 
 class Model final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -22,11 +22,10 @@ class Model final : public ScriptWrappable {
   ~Model() override;
 
   uint32_t addOperand(const OperandOptions& options, ExceptionState& state);
-  void setOperandValue(uint32_t index, MaybeShared<DOMArrayBufferView> data, ExceptionState& state);
+  void setOperandValue(uint32_t index, const ArrayBufferViewOrDouble& data, ExceptionState& state);
   void addOperation(uint32_t type, Vector<uint32_t>& inputs, Vector<uint32_t>& outputs, ExceptionState& state);
   void identifyInputsAndOutputs(Vector<uint32_t>& inputs, Vector<uint32_t>& outputs, ExceptionState& state);
   void finish(ExceptionState& state);
-  Compilation* createCompilation();
 
   void Trace(blink::Visitor*);
 };

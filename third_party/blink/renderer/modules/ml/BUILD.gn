@@ -6,8 +6,8 @@ import("//third_party/WebKit/Source/modules/modules.gni")
 
 blink_modules_sources("ml") {
   sources = [
-    "NeuralNetwork.cpp",
-    "NeuralNetwork.h",
+    "NeuralNetworkContext.cpp",
+    "NeuralNetworkContext.h",
     "NavigatorML.cpp",
     "NavigatorML.h",
     "ML.cpp",

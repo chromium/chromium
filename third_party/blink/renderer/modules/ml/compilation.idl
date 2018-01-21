@@ -5,5 +5,4 @@
 interface Compilation {
   [RaisesException] void setPreference(unsigned long preference);
   [CallWith=ScriptState] Promise<void> finish();
-  Execution createExecution();
 };

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-interface NeuralNetwork {
+interface NeuralNetworkContext {
     // Operand types.
     const unsigned long FLOAT32 = 0;
     const unsigned long INT32 = 1;
@@ -58,4 +58,6 @@ interface NeuralNetwork {
     const unsigned long PREFER_SUSTAINED_SPEED = 2;
 
     [RaisesException] Model createModel();
+    [RaisesException] Compilation createCompilation(Model model);
+    [RaisesException] Execution createExecution(Compilation compilation);
 };

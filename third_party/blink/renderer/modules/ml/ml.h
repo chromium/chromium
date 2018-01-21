@@ -12,7 +12,7 @@
 namespace blink {
 
 class NavigatorML;
-class NeuralNetwork;
+class NeuralNetworkContext;
 
 class ML final : public ScriptWrappable,
                  public ContextLifecycleObserver {
@@ -24,7 +24,7 @@ class ML final : public ScriptWrappable,
   ML(NavigatorML*);
   ~ML() override;
 
-  NeuralNetwork* nn();
+  NeuralNetworkContext* getNeuralNetworkContext();
 
   // ContextLifecycleObserver overrides.
   void ContextDestroyed(ExecutionContext*) override;
@@ -36,7 +36,7 @@ class ML final : public ScriptWrappable,
 
  private:
   TraceWrapperMember<NavigatorML> navigator_ml_;
-  TraceWrapperMember<NeuralNetwork> nn_;
+  TraceWrapperMember<NeuralNetworkContext> nn_;
 };
 
 }  // namespace blink

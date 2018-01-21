@@ -13,15 +13,16 @@ namespace blink {
 class ExceptionState;
 class Execution;
 
+class Model;
+
 class Compilation final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
  public:
-  Compilation();
+  Compilation(Model*);
   ~Compilation() override;
 
   void setPreference(uint32_t preference, ExceptionState& state);
   ScriptPromise finish(ScriptState*);
-  Execution* createExecution();
 
   void Trace(blink::Visitor*);
 };

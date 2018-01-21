@@ -12,7 +12,7 @@
 #include "core/frame/LocalDOMWindow.h"
 #include "core/frame/LocalFrame.h"
 
-#include "modules/ml/NeuralNetwork.h"
+#include "modules/ml/NeuralNetworkContext.h"
 #include "modules/ml/NavigatorML.h"
 
 namespace blink {
@@ -29,9 +29,9 @@ void ML::ContextDestroyed(ExecutionContext*) {
   Dispose();
 }
 
-NeuralNetwork* ML::nn() {
+NeuralNetworkContext* ML::getNeuralNetworkContext() {
   if (!nn_) {
-    nn_ = new NeuralNetwork(navigator_ml_.Get());
+    nn_ = new NeuralNetworkContext(navigator_ml_.Get());
   }
   return nn_.Get();
 }
