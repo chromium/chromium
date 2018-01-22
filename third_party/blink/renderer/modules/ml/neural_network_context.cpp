@@ -35,11 +35,15 @@ Model* NeuralNetworkContext::createModel(ExceptionState& exception_state) {
 }
 
 Compilation* NeuralNetworkContext::createCompilation(Model* model, ExceptionState& exception_state) {
-  return new Compilation(model);
+  Compilation* compilation = new Compilation(navigator_ml_.Get());
+  compilation->setModel(model, exception_state);
+  return compilation;
 }
 
 Execution* NeuralNetworkContext::createExecution(Compilation* compilation, ExceptionState& exception_state) {
-  return new Execution(compilation);
+  Execution* execution = new Execution(navigator_ml_.Get());
+  execution->setCompilation(compilation, exception_state);
+  return execution;
 }
 
 void NeuralNetworkContext::Trace(blink::Visitor* visitor) {

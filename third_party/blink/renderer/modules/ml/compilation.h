@@ -6,25 +6,41 @@
 #define Compilation_h
 
 #include "bindings/core/v8/ScriptPromise.h"
+#include "bindings/core/v8/ScriptPromiseResolver.h"
 #include "platform/bindings/ScriptWrappable.h"
+#include "services/ml/public/interfaces/neuralnetwork.mojom-blink.h"
 
 namespace blink {
 
 class ExceptionState;
 class Execution;
+class NavigatorML;
 
 class Model;
 
 class Compilation final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
  public:
-  Compilation(Model*);
+  Compilation(NavigatorML*);
   ~Compilation() override;
 
-  void setPreference(uint32_t preference, ExceptionState& state);
+  void setModel(Model*, ExceptionState&);
+  void setPreference(int32_t, ExceptionState&);
   ScriptPromise finish(ScriptState*);
 
+  int32_t GetID() {return id_;}
+
   void Trace(blink::Visitor*);
+ private:
+  void OnCompileDone(ScriptPromiseResolver*, int32_t);
+  void OnConnectionError();
+
+  int32_t id_;
+  int32_t preference_;
+
+  ml::mojom::blink::NeuralNetworkPtr service_;
+  HeapHashSet<Member<ScriptPromiseResolver>> requests_;
+  Member<Model> model_;
 };
 
 }  // namespace blink

@@ -1,2 +1,7 @@
 include_rules = [
+    "-modules",
+    "+modules/ModulesExport.h",
+    "+modules/ml",
+    "+services/ml/public/interfaces",
+    "+services/service_manager/public/cpp",
 ]

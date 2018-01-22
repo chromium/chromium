@@ -1,0 +1,14 @@
+{
+  "name": "ml",
+  "display_name": "Machine Learning Service",
+  "interface_provider_specs": {
+    "service_manager:connector": {
+      "provides": {
+        "neuralnetwork": [ "ml::mojom::NeuralNetwork" ]
+      },
+      "requires": {
+        "service_manager": [ "service_manager:all_users" ]
+      }
+    }
+  }
+}

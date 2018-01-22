@@ -3,6 +3,6 @@
 // found in the LICENSE file.
 
 interface Compilation {
-  [RaisesException] void setPreference(unsigned long preference);
+  [RaisesException] void setPreference(long preference);
   [CallWith=ScriptState] Promise<void> finish();
 };

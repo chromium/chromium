@@ -8,6 +8,7 @@
 #include "platform/bindings/ScriptWrappable.h"
 #include "core/typed_arrays/ArrayBufferViewHelpers.h"
 #include "core/typed_arrays/DOMTypedArray.h"
+#include "services/ml/public/interfaces/neuralnetwork.mojom-blink.h"
 
 namespace blink {
 
@@ -20,6 +21,8 @@ class Model final : public ScriptWrappable {
  public:
   Model();
   ~Model() override;
+
+  ml::mojom::blink::ModelPtr GetModelStruct();
 
   uint32_t addOperand(const OperandOptions& options, ExceptionState& state);
   void setOperandValue(uint32_t index, const ArrayBufferViewOrDouble& data, ExceptionState& state);

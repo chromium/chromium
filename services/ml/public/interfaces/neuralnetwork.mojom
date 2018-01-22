@@ -1,0 +1,39 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ml.mojom;
+
+struct BufferInfo {
+  uint32 offset;
+  uint32 length;
+};
+
+struct Operand {
+  int32 type;
+  array<uint32> dimensions;
+  float scale;
+  int32 zeroPoint;
+  BufferInfo bufferInfo;
+};
+
+struct Model {
+  array<Operand> operands;
+  array<int32> operations;
+  array<uint32> inputs;
+  array<uint32> outputs;
+  handle<shared_buffer> buffer;
+};
+
+struct ComputeRequest {
+  array<BufferInfo> inputs;
+  array<BufferInfo> outputs;
+  handle<shared_buffer> buffer;
+};
+
+interface NeuralNetwork {
+  compile(Model model, int32 preference)
+    => (int32 id);
+  compute(int32 id, ComputeRequest request)
+    => (int32 result);
+};

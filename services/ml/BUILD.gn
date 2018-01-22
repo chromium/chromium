@@ -1,0 +1,31 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//services/service_manager/public/cpp/service.gni")
+import("//services/service_manager/public/service_manifest.gni")
+import("//testing/test.gni")
+
+source_set("lib") {
+  sources = [
+    "ml_service.cc",
+    "ml_service.h",
+    "neural_network_impl.cc",
+    "neural_network_impl.h",
+  ]
+
+  deps = [
+    "//mojo/public/cpp/bindings",
+  ]
+
+  public_deps = [
+    "//base",
+    "//services/service_manager/public/cpp",
+    "//services/ml/public/interfaces",
+  ]
+}
+
+service_manifest("manifest") {
+  name = "ml"
+  source = "manifest.json"
+}

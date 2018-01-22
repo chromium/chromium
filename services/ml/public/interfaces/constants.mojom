@@ -1,0 +1,61 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ml.mojom;
+
+const string kServiceName = "ml";
+
+// Operand types.
+const int32 FLOAT32 = 0;
+const int32 INT32 = 1;
+const int32 UINT32 = 2;
+const int32 TENSOR_FLOAT32 = 3;
+const int32 TENSOR_INT32 = 4;
+const int32 TENSOR_QUANT8_ASYMM = 5;
+
+// Operation types.
+const int32 ADD = 0;
+const int32 AVERAGE_POOL_2D = 1;
+const int32 CONCATENATION = 2;
+const int32 CONV_2D = 3;
+const int32 DEPTHWISE_CONV_2D = 4;
+const int32 DEPTH_TO_SPACE = 5;
+const int32 DEQUANTIZE = 6;
+const int32 EMBEDDING_LOOKUP = 7;
+const int32 FLOOR = 8;
+const int32 FULLY_CONNECTED = 9;
+const int32 HASHTABLE_LOOKUP = 10;
+const int32 L2_NORMALIZATION = 11;
+const int32 L2_POOL_2D = 12;
+const int32 LOCAL_RESPONSE_NORMALIZATION = 13;
+const int32 LOGISTIC = 14;
+const int32 LSH_PROJECTION = 15;
+const int32 LSTM = 16;
+const int32 MAX_POOL_2D = 17;
+const int32 MUL = 18;
+const int32 RELU = 19;
+const int32 RELU1 = 20;
+const int32 RELU6 = 21;
+const int32 RESHAPE = 22;
+const int32 RESIZE_BILINEAR = 23;
+const int32 RNN = 24;
+const int32 SOFTMAX = 25;
+const int32 SPACE_TO_DEPTH = 26;
+const int32 SVDF = 27;
+const int32 TANH = 28;
+
+// Fused activation function types.
+const int32 FUSED_NONE = 0;
+const int32 FUSED_RELU = 1;
+const int32 FUSED_RELU1 = 2;
+const int32 FUSED_RELU6 = 3;
+
+// Implicit padding algorithms.
+const int32 PADDING_SAME = 1;
+const int32 PADDING_VALID = 2;
+
+// Execution preferences.
+const int32 PREFER_LOW_POWER = 0;
+const int32 PREFER_FAST_SINGLE_ANSWER = 1;
+const int32 PREFER_SUSTAINED_SPEED = 2;

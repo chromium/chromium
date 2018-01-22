@@ -7,25 +7,36 @@
 
 #include "bindings/core/v8/ScriptPromise.h"
 #include "platform/bindings/ScriptWrappable.h"
+#include "bindings/core/v8/ScriptPromiseResolver.h"
 #include "core/typed_arrays/ArrayBufferViewHelpers.h"
 #include "core/typed_arrays/DOMTypedArray.h"
+#include "services/ml/public/interfaces/neuralnetwork.mojom-blink.h"
 
 namespace blink {
 
 class Compilation;
 class ExceptionState;
+class NavigatorML;
 
 class Execution final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
  public:
-  Execution(Compilation*);
+  Execution(NavigatorML*);
   ~Execution() override;
 
-  void setInput(uint32_t index, MaybeShared<DOMArrayBufferView> data, ExceptionState& state);
-  void setOutput(uint32_t index, MaybeShared<DOMArrayBufferView> data, ExceptionState& state);
+  void setCompilation(Compilation*, ExceptionState&);
+  void setInput(uint32_t, MaybeShared<DOMArrayBufferView>, ExceptionState&);
+  void setOutput(uint32_t, MaybeShared<DOMArrayBufferView>, ExceptionState&);
   ScriptPromise startCompute(ScriptState*);
 
   void Trace(blink::Visitor*);
+ private:
+  void OnComputeDone(ScriptPromiseResolver*, int32_t);
+  void OnConnectionError();
+
+  int32_t compilation_id_;
+  ml::mojom::blink::NeuralNetworkPtr service_;
+  HeapHashSet<Member<ScriptPromiseResolver>> requests_;
 };
 
 }  // namespace blink

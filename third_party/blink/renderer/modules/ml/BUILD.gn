@@ -19,4 +19,9 @@ blink_modules_sources("ml") {
     "Execution.cpp",
     "Execution.h"
   ]
+
+  public_deps = [
+    "//services/ml/public/interfaces:interfaces_blink",
+    "//skia/public/interfaces:interfaces_blink",
+  ]
 }
