@@ -10,9 +10,19 @@ source_set("lib") {
   sources = [
     "ml_service.cc",
     "ml_service.h",
-    "neural_network_impl.cc",
-    "neural_network_impl.h",
   ]
+
+  if (is_linux) {
+    sources += [
+      "neural_network_impl_linux.cc",
+      "neural_network_impl_linux.h",
+    ]
+  } else {
+    sources += [
+      "neural_network_impl.cc",
+      "neural_network_impl.h",
+    ]
+  }
 
   deps = [
     "//mojo/public/cpp/bindings",

@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-typedef (ArrayBufferView or double) OperandData;
-
 interface Model {
   [RaisesException] unsigned long addOperand(OperandOptions options);
-  [RaisesException] void setOperandValue(unsigned long index, OperandData data);
-  [RaisesException] void addOperation(unsigned long type, sequence<unsigned long> inputs, sequence<unsigned long> outputs);
+  [RaisesException] void setOperandValue(unsigned long index, [AllowShared] ArrayBufferView data);
+  [RaisesException] void addOperation(long type, sequence<unsigned long> inputs, sequence<unsigned long> outputs);
   [RaisesException] void identifyInputsAndOutputs(sequence<unsigned long> inputs, sequence<unsigned long> outputs);
   [RaisesException] void finish();
 };

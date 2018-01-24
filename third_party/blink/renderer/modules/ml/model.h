@@ -8,13 +8,14 @@
 #include "platform/bindings/ScriptWrappable.h"
 #include "core/typed_arrays/ArrayBufferViewHelpers.h"
 #include "core/typed_arrays/DOMTypedArray.h"
+#include "platform/wtf/Vector.h"
+#include "modules/ml/OperandOptions.h"
 #include "services/ml/public/interfaces/neuralnetwork.mojom-blink.h"
 
 namespace blink {
 
-class OperandOptions;
 class ExceptionState;
-class ArrayBufferViewOrDouble;
+class Compilation;
 
 class Model final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -22,15 +23,24 @@ class Model final : public ScriptWrappable {
   Model();
   ~Model() override;
 
-  ml::mojom::blink::ModelPtr GetModelStruct();
+  bool IsFinished() { return is_finished_; }
 
-  uint32_t addOperand(const OperandOptions& options, ExceptionState& state);
-  void setOperandValue(uint32_t index, const ArrayBufferViewOrDouble& data, ExceptionState& state);
-  void addOperation(uint32_t type, Vector<uint32_t>& inputs, Vector<uint32_t>& outputs, ExceptionState& state);
-  void identifyInputsAndOutputs(Vector<uint32_t>& inputs, Vector<uint32_t>& outputs, ExceptionState& state);
-  void finish(ExceptionState& state);
+  uint32_t addOperand(const OperandOptions&, ExceptionState&);
+  void setOperandValue(uint32_t, MaybeShared<DOMArrayBufferView>, ExceptionState&);
+  void addOperation(int32_t, Vector<uint32_t>&, Vector<uint32_t>&, ExceptionState&);
+  void identifyInputsAndOutputs(Vector<uint32_t>&, Vector<uint32_t>&, ExceptionState&);
+  void finish(ExceptionState&);
 
   void Trace(blink::Visitor*);
+
+ private:
+  friend Compilation;
+  bool is_finished_;
+
+  ml::mojom::blink::ModelPtr mojo_model_;
+
+  Vector<uint32_t> buffer_view_indexes_;
+  HeapVector<Member<DOMArrayBufferView>> buffer_views_;
 };
 
 }  // namespace blink

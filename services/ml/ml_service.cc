@@ -7,7 +7,11 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "services/service_manager/public/cpp/service_context.h"
+#if defined(OS_LINUX)
+#include "services/ml/neural_network_impl_linux.h"
+#else
 #include "services/ml/neural_network_impl.h"
+#endif
 
 namespace ml {
 
@@ -24,7 +28,11 @@ void MLService::OnStart() {
       base::Bind(&service_manager::ServiceContext::RequestQuit,
                  base::Unretained(context()))));
 
+#if defined(OS_LINUX)
+  registry_.AddInterface(base::Bind(&NeuralNetworkImplLinux::Create));
+#else
   registry_.AddInterface(base::Bind(&NeuralNetworkImpl::Create));
+#endif
 }
 
 void MLService::OnBindInterface(

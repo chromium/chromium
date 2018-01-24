@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 dictionary OperandOptions {
-  unsigned long type;
+  long type;
   sequence<unsigned long> dimensions;
   float scale;
   long zeroPoint;

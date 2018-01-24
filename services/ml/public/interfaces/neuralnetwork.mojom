@@ -17,9 +17,15 @@ struct Operand {
   BufferInfo bufferInfo;
 };
 
+struct Operation {
+  int32 type;
+  array<uint32> inputs;
+  array<uint32> outputs;
+};
+
 struct Model {
   array<Operand> operands;
-  array<int32> operations;
+  array<Operation> operations;
   array<uint32> inputs;
   array<uint32> outputs;
   handle<shared_buffer> buffer;

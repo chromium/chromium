@@ -25,6 +25,10 @@ Compilation::Compilation(NavigatorML* navigator_ml) {
 Compilation::~Compilation() {}
 
 void Compilation::setModel(Model* model, ExceptionState& exception_state) {
+  if (!model->IsFinished()) {
+    exception_state.ThrowDOMException(kInvalidStateError,
+                                      "Model has not been finished.");
+  }
   model_ = model;
 }
 
@@ -42,7 +46,7 @@ ScriptPromise Compilation::finish(ScriptState* script_state) {
   }
   requests_.insert(resolver);
   service_->compile(
-      model_->GetModelStruct(),
+      std::move(model_->mojo_model_),
       preference_,
       WTF::Bind(&Compilation::OnCompileDone, WrapPersistent(this),
                 WrapPersistent(resolver)));
