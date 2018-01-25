@@ -28,13 +28,16 @@ class Compilation final : public ScriptWrappable {
   void setPreference(int32_t, ExceptionState&);
   ScriptPromise finish(ScriptState*);
 
+  bool IsFinished() {return is_finished_;}
   int32_t GetID() {return id_;}
+  Model* GetModel() {return model_;}
 
   void Trace(blink::Visitor*);
  private:
   void OnCompileDone(ScriptPromiseResolver*, int32_t);
   void OnConnectionError();
 
+  bool is_finished_;
   int32_t id_;
   int32_t preference_;
 

@@ -9,9 +9,7 @@
 
 namespace blink {
 
-Model::Model() : is_finished_(false) {
-  mojo_model_ = ml::mojom::blink::Model::New();
-}
+Model::Model() : is_finished_(false) {}
 
 Model::~Model() {}
 
@@ -24,26 +22,19 @@ uint32_t Model::addOperand(const OperandOptions& options,
 
   // TODO: validate the options
 
-  ml::mojom::blink::OperandPtr operand =
-      ml::mojom::blink::Operand::New();
-  
-  operand->type = options.type();
+  Operand operand;
+  operand.type = options.type();
   if (options.hasDimensions()) {
-    operand->dimensions = options.dimensions();
+    operand.dimensions = options.dimensions();
   }
   if (options.hasScale()) {
-    operand->scale = options.scale();
+    operand.scale = options.scale();
   }
   if (options.hasZeroPoint()) {
-    operand->zeroPoint = options.zeroPoint();
+    operand.zeroPoint = options.zeroPoint();
   }
-
-  operand->bufferInfo =
-      ml::mojom::blink::BufferInfo::New(0, 0);
-
-  uint32_t index = mojo_model_->operands.size();
-  mojo_model_->operands.push_back(std::move(operand));
-
+  uint32_t index = operands_.size();
+  operands_.push_back(operand);
   return index;
 }
 
@@ -55,37 +46,36 @@ void Model::setOperandValue(uint32_t index,
                                       "Model has been finished.");
   }
 
-  if (index > mojo_model_->operands.size()) {
+  if (index > operands_.size()) {
     exception_state.ThrowDOMException(kInvalidStateError,
                                       "Index is invalid.");
   }
 
-  const ml::mojom::blink::OperandPtr& operand =
-      mojo_model_->operands[index];
+  const Operand& operand = operands_[index];
 
   WTF::ArrayBufferView::ViewType view_type = data.View()->GetType();
   if (view_type == WTF::ArrayBufferView::kTypeFloat32 &&
-      !(operand->type == NeuralNetworkContext::kFloat32 ||
-        operand->type == NeuralNetworkContext::kTensorFloat32)) {
+      !(operand.type == NeuralNetworkContext::kFloat32 ||
+        operand.type == NeuralNetworkContext::kTensorFloat32)) {
     exception_state.ThrowDOMException(kInvalidStateError,
                                       "Data type is invalid.");
   }
 
   if (view_type == WTF::ArrayBufferView::kTypeInt32 &&
-      !(operand->type == NeuralNetworkContext::kInt32 ||
-        operand->type == NeuralNetworkContext::kTensorInt32)) {
+      !(operand.type == NeuralNetworkContext::kInt32 ||
+        operand.type == NeuralNetworkContext::kTensorInt32)) {
     exception_state.ThrowDOMException(kInvalidStateError,
                                       "Data type is invalid.");
   }
 
   if (view_type == WTF::ArrayBufferView::kTypeUint32 &&
-      (operand->type != NeuralNetworkContext::kUint32)) {
+      (operand.type != NeuralNetworkContext::kUint32)) {
     exception_state.ThrowDOMException(kInvalidStateError,
                                       "Data type is invalid.");
   }
 
   if (view_type == WTF::ArrayBufferView::kTypeUint8 &&
-      (operand->type != NeuralNetworkContext::kTensorQuant8Asymm)) {
+      (operand.type != NeuralNetworkContext::kTensorQuant8Asymm)) {
     exception_state.ThrowDOMException(kInvalidStateError,
                                       "Data type is invalid.");
   }
@@ -103,20 +93,23 @@ void Model::addOperation(int32_t type,
                                       "Model has been finished.");
   }
   for (size_t i = 0; i < inputs.size(); ++i) {
-    if (inputs[i] > mojo_model_->operands.size()) {
+    if (inputs[i] > operands_.size()) {
       exception_state.ThrowDOMException(kInvalidStateError,
                                         "Inputs is invalid.");
     }
   }
   for (size_t i = 0; i < outputs.size(); ++i) {
-    if (outputs[i] > mojo_model_->operands.size()) {
+    if (outputs[i] > operands_.size()) {
       exception_state.ThrowDOMException(kInvalidStateError,
                                         "Outputs is invalid.");
     }
   }
-  ml::mojom::blink::OperationPtr operation =
-      ml::mojom::blink::Operation::New(type, inputs, outputs);
-  mojo_model_->operations.push_back(std::move(operation));
+  Operation operation;
+  operation.type = type;
+  operation.inputs = inputs;
+  operation.outputs = outputs;
+
+  operations_.push_back(operation);
 }
 
 void Model::identifyInputsAndOutputs(Vector<uint32_t>& inputs,
@@ -127,48 +120,25 @@ void Model::identifyInputsAndOutputs(Vector<uint32_t>& inputs,
                                       "Model has been finished.");
   }
   for (size_t i = 0; i < inputs.size(); ++i) {
-    if (inputs[i] > mojo_model_->operands.size()) {
+    if (inputs[i] > operands_.size()) {
       exception_state.ThrowDOMException(kInvalidStateError,
                                         "Inputs is invalid.");
     }
   }
   for (size_t i = 0; i < outputs.size(); ++i) {
-    if (outputs[i] > mojo_model_->operands.size()) {
+    if (outputs[i] > operands_.size()) {
       exception_state.ThrowDOMException(kInvalidStateError,
                                         "Outputs is invalid.");
     }
   }
-  mojo_model_->inputs = inputs;
-  mojo_model_->outputs = outputs;
+  inputs_ = inputs;
+  outputs_ = outputs;
 }
 
 void Model::finish(ExceptionState& exception_state) {
   if (is_finished_) {
     exception_state.ThrowDOMException(kInvalidStateError,
                                       "Model has been finished.");
-  }
-
-  uint32_t total_byte_length = 0;
-  for (size_t i = 0; i < buffer_view_indexes_.size(); ++i) {
-    DOMArrayBufferView* view = buffer_views_[i];
-    total_byte_length += view->byteLength();
-  }
-
-  mojo_model_->buffer = mojo::SharedBufferHandle::Create(total_byte_length);
-  mojo::ScopedSharedBufferMapping mapping = mojo_model_->buffer->Map(total_byte_length);
-
-  uint32_t offset = 0;
-  for (size_t i = 0; i < buffer_view_indexes_.size(); ++i) {
-    uint32_t index = buffer_view_indexes_[i];
-    DOMArrayBufferView* view = buffer_views_[i];
-    uint32_t length = view->byteLength();
-    const ml::mojom::blink::OperandPtr& operand =
-        mojo_model_->operands[index];
-    operand->bufferInfo->offset = offset;
-    operand->bufferInfo->length = length;
-    uint8_t* base = static_cast<uint8_t*>(mapping.get()) + offset;
-    memcpy(static_cast<void*>(base), view->BaseAddress(), length);
-    offset += length;
   }
 
   is_finished_ = true;

@@ -15,7 +15,7 @@
 
 namespace blink {
 
-Compilation::Compilation(NavigatorML* navigator_ml) {
+Compilation::Compilation(NavigatorML* navigator_ml) : is_finished_(false) {
   navigator_ml->GetDocument()->GetFrame()->GetInterfaceProvider().GetInterface(
       mojo::MakeRequest(&service_));
   service_.set_connection_error_handler(
@@ -45,8 +45,62 @@ ScriptPromise Compilation::finish(ScriptState* script_state) {
     return promise;
   }
   requests_.insert(resolver);
+
+  ml::mojom::blink::ModelPtr mojo_model =
+      ml::mojom::blink::Model::New();
+
+  mojo_model->inputs = model_->inputs_;
+  mojo_model->outputs = model_->outputs_;
+  
+  for (size_t i = 0; i < model_->operands_.size(); ++i) {
+    Operand operand = model_->operands_[i];
+    ml::mojom::blink::BufferInfoPtr mojo_buffer_info =
+        ml::mojom::blink::BufferInfo::New(0, 0);
+    ml::mojom::blink::OperandPtr mojo_operand =
+        ml::mojom::blink::Operand::New(
+            operand.type,
+            operand.dimensions,
+            operand.scale,
+            operand.zeroPoint,
+            std::move(mojo_buffer_info));
+    mojo_model->operands.push_back(std::move(mojo_operand));
+  }
+
+  for (size_t i = 0; i < model_->operations_.size(); ++i) {
+    Operation operation = model_->operations_[i];
+    ml::mojom::blink::OperationPtr mojo_operation =
+        ml::mojom::blink::Operation::New(
+            operation.type,
+            operation.inputs,
+            operation.outputs);
+    mojo_model->operations.push_back(std::move(mojo_operation));
+  }
+
+  uint32_t total_byte_length = 0;
+  for (size_t i = 0; i < model_->buffer_view_indexes_.size(); ++i) {
+    DOMArrayBufferView* view = model_->buffer_views_[i];
+    total_byte_length += view->byteLength();
+  }
+
+  mojo_model->buffer = mojo::SharedBufferHandle::Create(total_byte_length);
+  mojo::ScopedSharedBufferMapping mapping = mojo_model->buffer->Map(total_byte_length);
+
+  uint32_t offset = 0;
+  for (size_t i = 0; i < model_->buffer_view_indexes_.size(); ++i) {
+    uint32_t index = model_->buffer_view_indexes_[i];
+    DOMArrayBufferView* view = model_->buffer_views_[i];
+    uint32_t length = view->byteLength();
+    const ml::mojom::blink::OperandPtr& operand =
+        mojo_model->operands[index];
+    operand->bufferInfo->offset = offset;
+    operand->bufferInfo->length = length;
+    uint8_t* base = static_cast<uint8_t*>(mapping.get()) + offset;
+    memcpy(static_cast<void*>(base), view->BaseAddress(), length);
+    offset += length;
+  }
+
   service_->compile(
-      std::move(model_->mojo_model_),
+      std::move(mojo_model),
       preference_,
       WTF::Bind(&Compilation::OnCompileDone, WrapPersistent(this),
                 WrapPersistent(resolver)));

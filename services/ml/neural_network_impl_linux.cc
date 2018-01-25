@@ -48,7 +48,7 @@ static void PrintOperand(const mojom::OperandPtr& operand, const mojo::ScopedSha
   if (operand->type == 3 && operand->bufferInfo->length > 0) {
     float* value = static_cast<float*>(mapped.get());
     for (size_t i = 0; i < size; ++i) {
-      LOG(INFO) << "      " << "value[" << i << "]" << value[i];
+      LOG(INFO) << "      " << "value[" << i << "]: " << value[i];
     }
   }
 }

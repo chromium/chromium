@@ -16,6 +16,22 @@ namespace blink {
 
 class ExceptionState;
 class Compilation;
+class Execution;
+
+struct Operand {
+  Operand() : type(-1), scale(0.0), zeroPoint(0) {}
+  int32_t type;
+  Vector<uint32_t> dimensions;
+  float scale;
+  int32_t zeroPoint;
+};
+
+struct Operation {
+  Operation() : type(-1) {}
+  int32_t type;
+  Vector<uint32_t> inputs;
+  Vector<uint32_t> outputs;
+};
 
 class Model final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -35,9 +51,14 @@ class Model final : public ScriptWrappable {
 
  private:
   friend Compilation;
+  friend Execution;
+
   bool is_finished_;
 
-  ml::mojom::blink::ModelPtr mojo_model_;
+  Vector<Operand> operands_;
+  Vector<Operation> operations_;
+  Vector<uint32_t> inputs_;
+  Vector<uint32_t> outputs_;
 
   Vector<uint32_t> buffer_view_indexes_;
   HeapVector<Member<DOMArrayBufferView>> buffer_views_;

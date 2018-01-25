@@ -34,9 +34,12 @@ class Execution final : public ScriptWrappable {
   void OnComputeDone(ScriptPromiseResolver*, int32_t);
   void OnConnectionError();
 
-  int32_t compilation_id_;
   ml::mojom::blink::NeuralNetworkPtr service_;
   HeapHashSet<Member<ScriptPromiseResolver>> requests_;
+
+  Member<Compilation> compilation_;
+  HeapVector<Member<DOMArrayBufferView>> input_views_;
+  HeapVector<Member<DOMArrayBufferView>> output_views_;
 };
 
 }  // namespace blink
