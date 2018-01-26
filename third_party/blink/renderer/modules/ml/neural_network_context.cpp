@@ -10,17 +10,20 @@
 #include "core/dom/ExceptionCode.h"
 #include "core/dom/ExecutionContext.h"
 #include "core/frame/LocalDOMWindow.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
 
 #include "modules/ml/NavigatorML.h"
 #include "modules/ml/Model.h"
-#include "modules/ml/Compilation.h"
-#include "modules/ml/Execution.h"
 
 namespace blink {
 
 NeuralNetworkContext::NeuralNetworkContext(NavigatorML* navigator_ml)
-    : ContextLifecycleObserver(navigator_ml->GetDocument()),
-      navigator_ml_(navigator_ml) {}
+    : ContextLifecycleObserver(navigator_ml->GetDocument()) {
+  navigator_ml->GetDocument()->GetFrame()->GetInterfaceProvider().GetInterface(
+      mojo::MakeRequest(&neural_network_));
+  neural_network_.set_connection_error_handler(
+      WTF::Bind(&NeuralNetworkContext::OnConnectionError, WrapWeakPersistent(this)));
+}
 
 NeuralNetworkContext::~NeuralNetworkContext() {}
 
@@ -30,30 +33,54 @@ void NeuralNetworkContext::ContextDestroyed(ExecutionContext*) {
   Dispose();
 }
 
-Model* NeuralNetworkContext::createModel(ExceptionState& exception_state) {
-  return new Model();
+ScriptPromise NeuralNetworkContext::createModel(ScriptState* script_state) {
+  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  ScriptPromise promise = resolver->Promise();
+  if (!neural_network_) {
+    resolver->Reject(DOMException::Create(
+        kNotSupportedError, "Neural Network service unavailable."));
+    return promise;
+  }
+  requests_.insert(resolver);
+
+  neural_network_->createModel(
+      WTF::Bind(&NeuralNetworkContext::OnCreateModel,
+                WrapPersistent(this),
+                WrapPersistent(resolver)));
+  return promise;
 }
 
-Compilation* NeuralNetworkContext::createCompilation(Model* model, ExceptionState& exception_state) {
-  Compilation* compilation = new Compilation(navigator_ml_.Get());
-  compilation->setModel(model, exception_state);
-  return compilation;
-}
+void NeuralNetworkContext::OnCreateModel(
+    ScriptPromiseResolver* resolver, int32_t result_code, ml::mojom::blink::ModelInitParamsPtr init_params) {
+  DCHECK(requests_.Contains(resolver));
+  requests_.erase(resolver);
 
-Execution* NeuralNetworkContext::createExecution(Compilation* compilation, ExceptionState& exception_state) {
-  Execution* execution = new Execution(navigator_ml_.Get());
-  execution->setCompilation(compilation, exception_state);
-  return execution;
+  if (result_code == ml::mojom::blink::NO_ERROR) {
+    resolver->Resolve(new Model(std::move(init_params->model)));
+  } else {
+    String msg("createModel fails: ");
+    msg.append(String::Number(result_code));
+    resolver->Reject(DOMException::Create(
+                     kInvalidStateError, msg));
+  }
 }
 
 void NeuralNetworkContext::Trace(blink::Visitor* visitor) {
-  visitor->Trace(navigator_ml_);
+  visitor->Trace(requests_);
   ScriptWrappable::Trace(visitor);
   ContextLifecycleObserver::Trace(visitor);
 }
 
 void NeuralNetworkContext::TraceWrappers(const ScriptWrappableVisitor* visitor) const {
-  visitor->TraceWrappers(navigator_ml_);
+}
+
+void NeuralNetworkContext::OnConnectionError() {
+  for (const auto& request : requests_) {
+    request->Reject(DOMException::Create(kNotSupportedError,
+                                         "Neural Network is not implemented."));
+  }
+  requests_.clear();
+  neural_network_.reset();
 }
 
 

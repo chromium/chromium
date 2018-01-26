@@ -4,7 +4,10 @@
   "interface_provider_specs": {
     "service_manager:connector": {
       "provides": {
-        "neuralnetwork": [ "ml::mojom::NeuralNetwork" ]
+        "neuralnetwork": [ "ml::mojom::NeuralNetwork" ],
+        "model": [ "ml::mojom::Model" ],
+        "compilation": [ "ml::mojom::Compilation" ],
+        "execution": [ "ml::mojom::Execution" ]
       },
       "requires": {
         "service_manager": [ "service_manager:all_users" ]

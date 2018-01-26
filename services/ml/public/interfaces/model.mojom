@@ -1,0 +1,26 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ml.mojom;
+
+import "compilation.mojom";
+
+struct CompilationInitParams {
+  Compilation compilation;
+};
+
+interface Model {
+  addOperand(int32 type, array<uint32> dimensions, float scale, int32 zeroPoint)
+    => (int32 resultCode);
+  setOperandValue(uint32 index, handle<shared_buffer> buffer, uint32 length)
+    => (int32 resultCode);
+  addOperation(int32 type, array<uint32> inputs, array<uint32> outputs)
+    => (int32 resultCode);
+  identifyInputsAndOutputs(array<uint32> inputs, array<uint32> outputs)
+    => (int32 resultCode);
+  finish()
+    => (int32 resultCode);
+  createCompilation()
+    => (int32 resultCode, CompilationInitParams init_params);
+};

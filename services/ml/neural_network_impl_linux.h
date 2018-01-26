@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/ml/public/interfaces/neuralnetwork.mojom.h"
+#include "services/ml/public/interfaces/constants.mojom.h"
 
 namespace ml {
 
@@ -17,10 +18,9 @@ class NeuralNetworkImplLinux
   NeuralNetworkImplLinux();
   ~NeuralNetworkImplLinux() override;
 
-  void compile(mojom::ModelPtr, int32_t, compileCallback) override;
-  void compute(int32_t, mojom::ComputeRequestPtr, computeCallback) override;
+  void createModel(createModelCallback callback) override;
 
-  static void Create(ml::mojom::NeuralNetworkRequest request);
+  static void Create(mojom::NeuralNetworkRequest request);
  private:
   mojo::StrongBindingPtr<mojom::NeuralNetwork> binding_;
   DISALLOW_COPY_AND_ASSIGN(NeuralNetworkImplLinux);

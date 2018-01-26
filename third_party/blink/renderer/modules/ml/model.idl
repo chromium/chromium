@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 interface Model {
-  [RaisesException] unsigned long addOperand(OperandOptions options);
-  [RaisesException] void setOperandValue(unsigned long index, [AllowShared] ArrayBufferView data);
-  [RaisesException] void addOperation(long type, sequence<unsigned long> inputs, sequence<unsigned long> outputs);
-  [RaisesException] void identifyInputsAndOutputs(sequence<unsigned long> inputs, sequence<unsigned long> outputs);
-  [RaisesException] void finish();
+  [CallWith=ScriptState] Promise<long> addOperand(OperandOptions options);
+  [CallWith=ScriptState] Promise<long> setOperandValue(unsigned long index, [AllowShared] ArrayBufferView data);
+  [CallWith=ScriptState] Promise<long> addOperation(long type, sequence<unsigned long> inputs, sequence<unsigned long> outputs);
+  [CallWith=ScriptState] Promise<long> identifyInputsAndOutputs(sequence<unsigned long> inputs, sequence<unsigned long> outputs);
+  [CallWith=ScriptState] Promise<long> finish();
+  [CallWith=ScriptState] Promise<Compilation> createCompilation();
 };

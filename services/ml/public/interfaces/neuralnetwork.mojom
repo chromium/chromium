@@ -4,42 +4,13 @@
 
 module ml.mojom;
 
-struct BufferInfo {
-  uint32 offset;
-  uint32 length;
-};
+import "model.mojom";
 
-struct Operand {
-  int32 type;
-  array<uint32> dimensions;
-  float scale;
-  int32 zeroPoint;
-  BufferInfo bufferInfo;
-};
-
-struct Operation {
-  int32 type;
-  array<uint32> inputs;
-  array<uint32> outputs;
-};
-
-struct Model {
-  array<Operand> operands;
-  array<Operation> operations;
-  array<uint32> inputs;
-  array<uint32> outputs;
-  handle<shared_buffer> buffer;
-};
-
-struct ComputeRequest {
-  array<BufferInfo> inputs;
-  array<BufferInfo> outputs;
-  handle<shared_buffer> buffer;
+struct ModelInitParams {
+  Model model;
 };
 
 interface NeuralNetwork {
-  compile(Model model, int32 preference)
-    => (int32 id);
-  compute(int32 id, ComputeRequest request)
-    => (int32 result);
+  createModel()
+    => (int32 result_code, ModelInitParams init_params);
 };

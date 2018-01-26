@@ -8,42 +8,31 @@
 #include "bindings/core/v8/ScriptPromise.h"
 #include "bindings/core/v8/ScriptPromiseResolver.h"
 #include "platform/bindings/ScriptWrappable.h"
-#include "services/ml/public/interfaces/neuralnetwork.mojom-blink.h"
+#include "services/ml/public/interfaces/compilation.mojom-blink.h"
+#include "services/ml/public/interfaces/constants.mojom-blink.h"
 
 namespace blink {
-
-class ExceptionState;
-class Execution;
-class NavigatorML;
-
-class Model;
 
 class Compilation final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
  public:
-  Compilation(NavigatorML*);
+  Compilation(ml::mojom::blink::CompilationPtrInfo);
   ~Compilation() override;
 
-  void setModel(Model*, ExceptionState&);
-  void setPreference(int32_t, ExceptionState&);
+  ScriptPromise setPreference(ScriptState*, int32_t);
   ScriptPromise finish(ScriptState*);
-
-  bool IsFinished() {return is_finished_;}
-  int32_t GetID() {return id_;}
-  Model* GetModel() {return model_;}
+  ScriptPromise createExecution(ScriptState*);
 
   void Trace(blink::Visitor*);
+
  private:
-  void OnCompileDone(ScriptPromiseResolver*, int32_t);
+  void OnResultCode(ScriptPromiseResolver*, const String&, int32_t);
+  void OnCreateExecution(ScriptPromiseResolver*, int32_t, ml::mojom::blink::ExecutionInitParamsPtr);
   void OnConnectionError();
 
-  bool is_finished_;
-  int32_t id_;
-  int32_t preference_;
-
-  ml::mojom::blink::NeuralNetworkPtr service_;
+ private:
+  ml::mojom::blink::CompilationPtr compilation_;
   HeapHashSet<Member<ScriptPromiseResolver>> requests_;
-  Member<Model> model_;
 };
 
 }  // namespace blink

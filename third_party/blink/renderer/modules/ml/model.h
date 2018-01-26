@@ -5,63 +5,41 @@
 #ifndef Model_h
 #define Model_h
 
+#include "bindings/core/v8/ScriptPromise.h"
 #include "platform/bindings/ScriptWrappable.h"
+#include "bindings/core/v8/ScriptPromiseResolver.h"
 #include "core/typed_arrays/ArrayBufferViewHelpers.h"
 #include "core/typed_arrays/DOMTypedArray.h"
 #include "platform/wtf/Vector.h"
 #include "modules/ml/OperandOptions.h"
-#include "services/ml/public/interfaces/neuralnetwork.mojom-blink.h"
+
+#include "services/ml/public/interfaces/model.mojom-blink.h"
 
 namespace blink {
-
-class ExceptionState;
-class Compilation;
-class Execution;
-
-struct Operand {
-  Operand() : type(-1), scale(0.0), zeroPoint(0) {}
-  int32_t type;
-  Vector<uint32_t> dimensions;
-  float scale;
-  int32_t zeroPoint;
-};
-
-struct Operation {
-  Operation() : type(-1) {}
-  int32_t type;
-  Vector<uint32_t> inputs;
-  Vector<uint32_t> outputs;
-};
 
 class Model final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
  public:
-  Model();
+  Model(ml::mojom::blink::ModelPtrInfo);
   ~Model() override;
 
-  bool IsFinished() { return is_finished_; }
-
-  uint32_t addOperand(const OperandOptions&, ExceptionState&);
-  void setOperandValue(uint32_t, MaybeShared<DOMArrayBufferView>, ExceptionState&);
-  void addOperation(int32_t, Vector<uint32_t>&, Vector<uint32_t>&, ExceptionState&);
-  void identifyInputsAndOutputs(Vector<uint32_t>&, Vector<uint32_t>&, ExceptionState&);
-  void finish(ExceptionState&);
+  ScriptPromise addOperand(ScriptState*, const OperandOptions&);
+  ScriptPromise setOperandValue(ScriptState*, uint32_t, MaybeShared<DOMArrayBufferView>);
+  ScriptPromise addOperation(ScriptState*, int32_t, Vector<uint32_t>&, Vector<uint32_t>&);
+  ScriptPromise identifyInputsAndOutputs(ScriptState*, Vector<uint32_t>&, Vector<uint32_t>&);
+  ScriptPromise finish(ScriptState*);
+  ScriptPromise createCompilation(ScriptState*);
 
   void Trace(blink::Visitor*);
 
  private:
-  friend Compilation;
-  friend Execution;
+  void OnResultCode(ScriptPromiseResolver*, const String&, int32_t);
+  void OnCreateCompilation(ScriptPromiseResolver*, int32_t, ml::mojom::blink::CompilationInitParamsPtr);
+  void OnConnectionError();
 
-  bool is_finished_;
-
-  Vector<Operand> operands_;
-  Vector<Operation> operations_;
-  Vector<uint32_t> inputs_;
-  Vector<uint32_t> outputs_;
-
-  Vector<uint32_t> buffer_view_indexes_;
-  HeapVector<Member<DOMArrayBufferView>> buffer_views_;
+ private:
+  ml::mojom::blink::ModelPtr model_;
+  HeapHashSet<Member<ScriptPromiseResolver>> requests_;
 };
 
 }  // namespace blink

@@ -59,3 +59,13 @@ const int32 PADDING_VALID = 2;
 const int32 PREFER_LOW_POWER = 0;
 const int32 PREFER_FAST_SINGLE_ANSWER = 1;
 const int32 PREFER_SUSTAINED_SPEED = 2;
+
+// Result code.
+const int32 NO_ERROR = 0;
+const int32 OUT_OF_MEMORY = 1;
+const int32 INCOMPLETE = 2;
+const int32 UNEXPECTED_NULL = 3;
+const int32 BAD_DATA = 4;
+const int32 OP_FAILED = 5;
+const int32 UNMAPPABLE = 5;
+const int32 BAD_STATE = 6;

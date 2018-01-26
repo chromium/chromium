@@ -10,36 +10,30 @@
 #include "bindings/core/v8/ScriptPromiseResolver.h"
 #include "core/typed_arrays/ArrayBufferViewHelpers.h"
 #include "core/typed_arrays/DOMTypedArray.h"
-#include "services/ml/public/interfaces/neuralnetwork.mojom-blink.h"
+#include "services/ml/public/interfaces/execution.mojom-blink.h"
+#include "services/ml/public/interfaces/constants.mojom-blink.h"
 
 namespace blink {
-
-class Compilation;
-class ExceptionState;
-class NavigatorML;
 
 class Execution final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
  public:
-  Execution(NavigatorML*);
+  Execution(ml::mojom::blink::ExecutionPtrInfo);
   ~Execution() override;
 
-  void setCompilation(Compilation*, ExceptionState&);
-  void setInput(uint32_t, MaybeShared<DOMArrayBufferView>, ExceptionState&);
-  void setOutput(uint32_t, MaybeShared<DOMArrayBufferView>, ExceptionState&);
+  ScriptPromise setInput(ScriptState*, uint32_t, MaybeShared<DOMArrayBufferView>);
+  ScriptPromise setOutput(ScriptState*, uint32_t, MaybeShared<DOMArrayBufferView>);
   ScriptPromise startCompute(ScriptState*);
 
   void Trace(blink::Visitor*);
+
  private:
-  void OnComputeDone(ScriptPromiseResolver*, int32_t);
+  void OnResultCode(ScriptPromiseResolver*, const String&, int32_t);
   void OnConnectionError();
 
-  ml::mojom::blink::NeuralNetworkPtr service_;
+ private:
+  ml::mojom::blink::ExecutionPtr execution_;
   HeapHashSet<Member<ScriptPromiseResolver>> requests_;
-
-  Member<Compilation> compilation_;
-  HeapVector<Member<DOMArrayBufferView>> input_views_;
-  HeapVector<Member<DOMArrayBufferView>> output_views_;
 };
 
 }  // namespace blink

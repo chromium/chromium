@@ -7,6 +7,9 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("interfaces") {
   sources = [
     "constants.mojom",
+    "execution.mojom",
+    "compilation.mojom",
+    "model.mojom",
     "neuralnetwork.mojom",
   ]
 }

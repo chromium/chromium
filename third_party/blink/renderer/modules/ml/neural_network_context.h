@@ -7,13 +7,15 @@
 
 #include "bindings/core/v8/ScriptPromise.h"
 #include "platform/bindings/ScriptWrappable.h"
+#include "bindings/core/v8/ScriptPromiseResolver.h"
 #include "core/dom/ContextLifecycleObserver.h"
+
+#include "services/ml/public/interfaces/neuralnetwork.mojom-blink.h"
+#include "services/ml/public/interfaces/constants.mojom-blink.h"
 
 namespace blink {
 
 class Model;
-class Compilation;
-class Execution;
 
 class NavigatorML;
 
@@ -83,9 +85,7 @@ class NeuralNetworkContext final
   NeuralNetworkContext(NavigatorML*);
   ~NeuralNetworkContext() override;
 
-  Model* createModel(ExceptionState&);
-  Compilation* createCompilation(Model*, ExceptionState&);
-  Execution* createExecution(Compilation*, ExceptionState&);
+  ScriptPromise createModel(ScriptState*);
 
   // ContextLifecycleObserver overrides.
   void ContextDestroyed(ExecutionContext*) override;
@@ -96,7 +96,12 @@ class NeuralNetworkContext final
   void TraceWrappers(const ScriptWrappableVisitor*) const override;
 
  private:
-  TraceWrapperMember<NavigatorML> navigator_ml_;
+  void OnCreateModel(ScriptPromiseResolver*, int32_t, ml::mojom::blink::ModelInitParamsPtr);
+  void OnConnectionError();
+
+ private:
+  ml::mojom::blink::NeuralNetworkPtr neural_network_;
+  HeapHashSet<Member<ScriptPromiseResolver>> requests_;
 };
 
 }  // namespace blink

@@ -1,152 +1,211 @@
 // Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "bindings/core/v8/ExceptionMessages.h"
-#include "bindings/core/v8/ExceptionState.h"
 #include "modules/ml/Model.h"
-#include "modules/ml/NeuralNetworkContext.h"
+
+#include "bindings/core/v8/ScriptPromiseResolver.h"
+#include "core/dom/DOMException.h"
+#include "core/dom/Document.h"
+#include "core/dom/ExceptionCode.h"
+#include "core/dom/ExecutionContext.h"
+#include "core/frame/LocalDOMWindow.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
+
+#include "modules/ml/Compilation.h"
 
 namespace blink {
 
-Model::Model() : is_finished_(false) {}
+Model::Model(ml::mojom::blink::ModelPtrInfo info) {
+  model_.Bind(std::move(info));
+  model_.set_connection_error_handler(
+      WTF::Bind(&Model::OnConnectionError, WrapWeakPersistent(this)));
+}
 
 Model::~Model() {}
 
-uint32_t Model::addOperand(const OperandOptions& options,
-                           ExceptionState& exception_state) {
-  if (is_finished_) {
-    exception_state.ThrowDOMException(kInvalidStateError,
-                                      "Model has been finished.");
+ScriptPromise Model::addOperand(ScriptState* script_state,
+                                const OperandOptions& options) {
+  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  ScriptPromise promise = resolver->Promise();
+  if (!model_) {
+    resolver->Reject(DOMException::Create(
+        kNotSupportedError, "Model service unavailable."));
+    return promise;
   }
+  requests_.insert(resolver);
 
-  // TODO: validate the options
+  if (!options.hasType()) {
+    resolver->Reject(DOMException::Create(
+        kInvalidStateError, "Operand type is missing."));
+    return promise;
+  }
+  int32_t type = options.type();
 
-  Operand operand;
-  operand.type = options.type();
+  WTF::Vector<uint32_t> dimensions;
+  float scale = 0;
+  int32_t zeroPoint = 0;
+
   if (options.hasDimensions()) {
-    operand.dimensions = options.dimensions();
+    dimensions = options.dimensions();
   }
+
   if (options.hasScale()) {
-    operand.scale = options.scale();
+    scale = options.scale();
   }
+
   if (options.hasZeroPoint()) {
-    operand.zeroPoint = options.zeroPoint();
+    zeroPoint = options.zeroPoint();
   }
-  uint32_t index = operands_.size();
-  operands_.push_back(operand);
-  return index;
+
+  model_->addOperand(
+      type, dimensions, scale, zeroPoint,
+      WTF::Bind(&Model::OnResultCode, WrapPersistent(this),
+                WrapPersistent(resolver), String("addOperand")));
+  return promise;
 }
 
-void Model::setOperandValue(uint32_t index,
-                            MaybeShared<DOMArrayBufferView> data,
-                            ExceptionState& exception_state) {
-  if (is_finished_) {
-    exception_state.ThrowDOMException(kInvalidStateError,
-                                      "Model has been finished.");
+ScriptPromise Model::setOperandValue(ScriptState* script_state,
+                                     uint32_t index,
+                                     MaybeShared<DOMArrayBufferView> data) {
+  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  ScriptPromise promise = resolver->Promise();
+  if (!model_) {
+    resolver->Reject(DOMException::Create(
+        kNotSupportedError, "Model service unavailable."));
+    return promise;
   }
+  requests_.insert(resolver);
 
-  if (index > operands_.size()) {
-    exception_state.ThrowDOMException(kInvalidStateError,
-                                      "Index is invalid.");
-  }
+  uint32_t length = data.View()->byteLength();
+  mojo::ScopedSharedBufferHandle buffer = mojo::SharedBufferHandle::Create(length);
+  mojo::ScopedSharedBufferMapping mapping = buffer->Map(length);
+  memcpy(static_cast<void*>(mapping.get()), data.View()->BaseAddress(), length);
+  model_->setOperandValue(
+      index, std::move(buffer), length,
+      WTF::Bind(&Model::OnResultCode, WrapPersistent(this),
+                WrapPersistent(resolver), String("setOperandValue")));
 
-  const Operand& operand = operands_[index];
-
-  WTF::ArrayBufferView::ViewType view_type = data.View()->GetType();
-  if (view_type == WTF::ArrayBufferView::kTypeFloat32 &&
-      !(operand.type == NeuralNetworkContext::kFloat32 ||
-        operand.type == NeuralNetworkContext::kTensorFloat32)) {
-    exception_state.ThrowDOMException(kInvalidStateError,
-                                      "Data type is invalid.");
-  }
-
-  if (view_type == WTF::ArrayBufferView::kTypeInt32 &&
-      !(operand.type == NeuralNetworkContext::kInt32 ||
-        operand.type == NeuralNetworkContext::kTensorInt32)) {
-    exception_state.ThrowDOMException(kInvalidStateError,
-                                      "Data type is invalid.");
-  }
-
-  if (view_type == WTF::ArrayBufferView::kTypeUint32 &&
-      (operand.type != NeuralNetworkContext::kUint32)) {
-    exception_state.ThrowDOMException(kInvalidStateError,
-                                      "Data type is invalid.");
-  }
-
-  if (view_type == WTF::ArrayBufferView::kTypeUint8 &&
-      (operand.type != NeuralNetworkContext::kTensorQuant8Asymm)) {
-    exception_state.ThrowDOMException(kInvalidStateError,
-                                      "Data type is invalid.");
-  }
-
-  buffer_view_indexes_.push_back(index);
-  buffer_views_.push_back(data.View());
+  return promise;
 }
 
-void Model::addOperation(int32_t type,
-                         Vector<uint32_t>& inputs,
-                         Vector<uint32_t>& outputs,
-                         ExceptionState& exception_state) {
-  if (is_finished_) {
-    exception_state.ThrowDOMException(kInvalidStateError,
-                                      "Model has been finished.");
+ScriptPromise Model::addOperation(ScriptState* script_state,
+                                  int32_t type,
+                                  Vector<uint32_t>& inputs,
+                                  Vector<uint32_t>& outputs) {
+  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  ScriptPromise promise = resolver->Promise();
+  if (!model_) {
+    resolver->Reject(DOMException::Create(
+        kNotSupportedError, "Model service unavailable."));
+    return promise;
   }
-  for (size_t i = 0; i < inputs.size(); ++i) {
-    if (inputs[i] > operands_.size()) {
-      exception_state.ThrowDOMException(kInvalidStateError,
-                                        "Inputs is invalid.");
-    }
-  }
-  for (size_t i = 0; i < outputs.size(); ++i) {
-    if (outputs[i] > operands_.size()) {
-      exception_state.ThrowDOMException(kInvalidStateError,
-                                        "Outputs is invalid.");
-    }
-  }
-  Operation operation;
-  operation.type = type;
-  operation.inputs = inputs;
-  operation.outputs = outputs;
+  requests_.insert(resolver);
 
-  operations_.push_back(operation);
+  model_->addOperation(
+      type, inputs, outputs,
+      WTF::Bind(&Model::OnResultCode, WrapPersistent(this),
+                WrapPersistent(resolver), String("addOperation")));
+
+  return promise;
 }
 
-void Model::identifyInputsAndOutputs(Vector<uint32_t>& inputs,
-                                     Vector<uint32_t>& outputs,
-                                     ExceptionState& exception_state) {
-  if (is_finished_) {
-    exception_state.ThrowDOMException(kInvalidStateError,
-                                      "Model has been finished.");
+ScriptPromise Model::identifyInputsAndOutputs(ScriptState* script_state,
+                                              Vector<uint32_t>& inputs,
+                                              Vector<uint32_t>& outputs) {
+  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  ScriptPromise promise = resolver->Promise();
+  if (!model_) {
+    resolver->Reject(DOMException::Create(
+        kNotSupportedError, "Model service unavailable."));
+    return promise;
   }
-  for (size_t i = 0; i < inputs.size(); ++i) {
-    if (inputs[i] > operands_.size()) {
-      exception_state.ThrowDOMException(kInvalidStateError,
-                                        "Inputs is invalid.");
-    }
-  }
-  for (size_t i = 0; i < outputs.size(); ++i) {
-    if (outputs[i] > operands_.size()) {
-      exception_state.ThrowDOMException(kInvalidStateError,
-                                        "Outputs is invalid.");
-    }
-  }
-  inputs_ = inputs;
-  outputs_ = outputs;
+  requests_.insert(resolver);
+
+  model_->identifyInputsAndOutputs(
+      inputs, outputs,
+      WTF::Bind(&Model::OnResultCode, WrapPersistent(this),
+                WrapPersistent(resolver), String("identifyInputsAndOutputs")));
+
+  return promise;
 }
 
-void Model::finish(ExceptionState& exception_state) {
-  if (is_finished_) {
-    exception_state.ThrowDOMException(kInvalidStateError,
-                                      "Model has been finished.");
+ScriptPromise Model::finish(ScriptState* script_state) {
+  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  ScriptPromise promise = resolver->Promise();
+  if (!model_) {
+    resolver->Reject(DOMException::Create(
+        kNotSupportedError, "Model service unavailable."));
+    return promise;
   }
+  requests_.insert(resolver);
 
-  is_finished_ = true;
+  model_->finish(
+      WTF::Bind(&Model::OnResultCode, WrapPersistent(this),
+                WrapPersistent(resolver), String("finish")));
+
+  return promise;
+}
+
+ScriptPromise Model::createCompilation(ScriptState* script_state) {
+  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  ScriptPromise promise = resolver->Promise();
+  if (!model_) {
+    resolver->Reject(DOMException::Create(
+        kNotSupportedError, "Model service unavailable."));
+    return promise;
+  }
+  requests_.insert(resolver);
+
+  model_->createCompilation(
+      WTF::Bind(&Model::OnCreateCompilation,
+                WrapPersistent(this),
+                WrapPersistent(resolver)));
+  return promise;
+}
+
+void Model::OnCreateCompilation(
+    ScriptPromiseResolver* resolver, int32_t result_code,
+    ml::mojom::blink::CompilationInitParamsPtr init_params) {
+  DCHECK(requests_.Contains(resolver));
+  requests_.erase(resolver);
+
+  if (result_code == ml::mojom::blink::NO_ERROR) {
+    resolver->Resolve(new Compilation(std::move(init_params->compilation)));
+  } else {
+    String msg("createCompilation fails: ");
+    msg.append(String::Number(result_code));
+    resolver->Reject(DOMException::Create(
+                     kInvalidStateError, msg));
+  }
+}
+
+void Model::OnResultCode(ScriptPromiseResolver* resolver, const String& operation_name, int32_t result_code) {
+  DCHECK(requests_.Contains(resolver));
+  requests_.erase(resolver);
+
+  if (result_code == ml::mojom::blink::NO_ERROR) {
+    resolver->Resolve(result_code);
+  } else {
+    String msg(operation_name);
+    msg.append("fails: ");
+    msg.append(String::Number(result_code));
+    resolver->Reject(DOMException::Create(
+                     kInvalidStateError, msg));
+  }
 }
 
 void Model::Trace(blink::Visitor* visitor) {
-  visitor->Trace(buffer_views_);
+  visitor->Trace(requests_);
   ScriptWrappable::Trace(visitor);
+}
+
+void Model::OnConnectionError() {
+  for (const auto& request : requests_) {
+    request->Reject(DOMException::Create(kNotSupportedError,
+                                         "Model is not implemented."));
+  }
+  requests_.clear();
+  model_.reset();
 }
 
 }  // namespace blink
