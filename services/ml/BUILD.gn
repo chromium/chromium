@@ -23,6 +23,17 @@ source_set("lib") {
       "neural_network_impl_linux.cc",
       "neural_network_impl_linux.h",
     ]
+  } else if (is_android) {
+    sources += [
+      "compilation_impl_android.cc",
+      "compilation_impl_android.h",
+      "execution_impl_android.cc",
+      "execution_impl_android.h",
+      "model_impl_android.cc",
+      "model_impl_android.h",
+      "neural_network_impl_android.cc",
+      "neural_network_impl_android.h",
+    ]
   } else {
     sources += [
       "neural_network_impl.cc",

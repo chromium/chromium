@@ -9,6 +9,8 @@
 #include "services/service_manager/public/cpp/service_context.h"
 #if defined(OS_LINUX)
 #include "services/ml/neural_network_impl_linux.h"
+#elif defined(OS_ANDROID)
+#include "services/ml/neural_network_impl_android.h"
 #else
 #include "services/ml/neural_network_impl.h"
 #endif
@@ -30,6 +32,8 @@ void MLService::OnStart() {
 
 #if defined(OS_LINUX)
   registry_.AddInterface(base::Bind(&NeuralNetworkImplLinux::Create));
+#elif defined(OS_ANDROID)
+  registry_.AddInterface(base::Bind(&NeuralNetworkImplAndroid::Create));
 #else
   registry_.AddInterface(base::Bind(&NeuralNetworkImpl::Create));
 #endif
