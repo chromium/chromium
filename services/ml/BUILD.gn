@@ -34,6 +34,18 @@ source_set("lib") {
       "neural_network_impl_android.cc",
       "neural_network_impl_android.h",
     ]
+
+    include_dirs = [
+      "${android_ndk_root}/sysroot/usr/include"
+    ]
+
+    lib_dirs = [
+      "${android_ndk_root}/platforms/android-${android_sdk_platform_version}/arch-${target_cpu}/usr/lib"
+    ]
+
+    libs = [
+      "neuralnetworks",
+    ]
   } else {
     sources += [
       "neural_network_impl.cc",

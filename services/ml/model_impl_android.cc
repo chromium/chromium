@@ -16,12 +16,20 @@ Operation::Operation() = default;
 Operation::~Operation() = default;
 Operation::Operation(const Operation&) = default;
 
-ModelImplAndroid::ModelImplAndroid() {}
-ModelImplAndroid::~ModelImplAndroid() {}
+ModelImplAndroid::ModelImplAndroid() {
+  int32_t result = ANeuralNetworksModel_create(&nn_model_);
+  LOG(INFO) << "ANeuralNetworksModel_create: " << result;
+}
+ModelImplAndroid::~ModelImplAndroid() {
+  ANeuralNetworksModel_free(nn_model_);
+  LOG(INFO) << "ANeuralNetworksModel_free";
+}
 
 template<class T>
 std::string VectorToString(const T* vect, size_t length) {
   std::string output("[");
+  if (length > 200)
+    length = 200;
   for (size_t i = 0; i < length; ++i) {
     output.append(base::NumberToString(vect[i]));
     if (i != length - 1) {
@@ -30,10 +38,6 @@ std::string VectorToString(const T* vect, size_t length) {
   }
   output.append("]");
   return output;
-}
-
-void PrintBuffer(const mojo::ScopedSharedBufferHandle& buffer, uint32_t length) {
-  
 }
 
 void ModelImplAndroid::addOperand(int32_t type, const std::vector<uint32_t>& dimensions, float scale, int32_t zeroPoint, addOperandCallback callback) {
@@ -48,7 +52,18 @@ void ModelImplAndroid::addOperand(int32_t type, const std::vector<uint32_t>& dim
   operand.scale = scale;
   operand.zeroPoint = zeroPoint;
   operands_.push_back(operand);
-  std::move(callback).Run(mojom::NO_ERROR);
+
+  ANeuralNetworksOperandType operand_type;
+  // TODO: convert from blink operand type to NN API type.
+  operand_type.type = type;
+  operand_type.dimensionCount = dimensions.size();
+  operand_type.dimensions = dimensions.data();
+  operand_type.scale = scale;
+  operand_type.zeroPoint = zeroPoint;
+  int32_t result = ANeuralNetworksModel_addOperand(nn_model_, &operand_type);
+  LOG(INFO) << "ANeuralNetworksModel_addOperand: " << result;
+
+  std::move(callback).Run(result);
 }
 
 void ModelImplAndroid::setOperandValue(uint32_t index, mojo::ScopedSharedBufferHandle buffer, uint32_t length, setOperandValueCallback callback) {
@@ -78,7 +93,23 @@ void ModelImplAndroid::setOperandValue(uint32_t index, mojo::ScopedSharedBufferH
     uint32_t size = length;
     LOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
   }
-  std::move(callback).Run(mojom::NO_ERROR);
+
+  // TODO: optimize the memory copies.
+  int32_t result = 0;
+  if (length > ANEURALNETWORKS_MAX_SIZE_OF_IMMEDIATELY_COPIED_VALUES) {
+    void* memory = malloc(length);
+    memcpy(memory, static_cast<const void*>(mapped.get()), length);
+    operand_memories_.push_back(memory);
+    result = ANeuralNetworksModel_setOperandValue(
+      nn_model_, index, memory, length);
+  } else {
+    result = ANeuralNetworksModel_setOperandValue(
+      nn_model_, index, static_cast<const void*>(mapped.get()), length);
+  }
+
+  LOG(INFO) << "ANeuralNetworksModel_setOperandValue: " << result;
+
+  std::move(callback).Run(result);
 }
 
 void ModelImplAndroid::addOperation(int32_t type, const std::vector<uint32_t>& inputs, const std::vector<uint32_t>& outputs, addOperationCallback callback) {
@@ -91,7 +122,13 @@ void ModelImplAndroid::addOperation(int32_t type, const std::vector<uint32_t>& i
   operation.inputs = inputs;
   operation.outputs = outputs;
   operations_.push_back(operation);
-  std::move(callback).Run(mojom::NO_ERROR);
+
+  // TODO: convert blink operation type to NN API type.
+  int32_t result = ANeuralNetworksModel_addOperation(
+    nn_model_, type, inputs.size(), inputs.data(), outputs.size(), outputs.data());
+  LOG(INFO) << "ANeuralNetworksModel_addOperation: " << result;
+
+  std::move(callback).Run(result);
 }
 
 void ModelImplAndroid::identifyInputsAndOutputs(const std::vector<uint32_t>& inputs, const std::vector<uint32_t>& outputs, identifyInputsAndOutputsCallback callback) {
@@ -100,12 +137,26 @@ void ModelImplAndroid::identifyInputsAndOutputs(const std::vector<uint32_t>& inp
   LOG(INFO) << "  " << "outputs(" << outputs.size() << "): " << VectorToString(outputs.data(), outputs.size());
   inputs_ = inputs;
   outputs_ = outputs;
-  std::move(callback).Run(mojom::NO_ERROR);
+
+  int32_t result = ANeuralNetworksModel_identifyInputsAndOutputs(
+      nn_model_, inputs.size(), inputs.data(), outputs.size(), outputs.data());
+  LOG(INFO) << "ANeuralNetworksModel_identifyInputsAndOutputs: " << result;
+
+  std::move(callback).Run(result);
 }
 
 void ModelImplAndroid::finish(finishCallback callback) {
   LOG(INFO) << "ModelImplAndroid::finish";
-  std::move(callback).Run(mojom::NO_ERROR);
+
+  int32_t result = ANeuralNetworksModel_finish(nn_model_);
+  LOG(INFO) << "ANeuralNetworksModel_finish: " << result;
+
+  for (size_t i = 0; i < operand_memories_.size(); ++i) {
+    free(operand_memories_[i]);
+  }
+  operand_memories_.resize(0);
+
+  std::move(callback).Run(result);
 }
 
 void ModelImplAndroid::createCompilation(createCompilationCallback callback) {

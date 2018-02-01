@@ -10,6 +10,8 @@
 #include "services/ml/public/interfaces/model.mojom.h"
 #include "services/ml/public/interfaces/constants.mojom.h"
 
+#include "android/NeuralNetworks.h"
+
 namespace ml {
 
 template<class T>
@@ -59,6 +61,11 @@ class ModelImplAndroid : public mojom::Model {
   std::vector<Operation> operations_;
   std::vector<uint32_t> inputs_;
   std::vector<uint32_t> outputs_;
+
+  ANeuralNetworksModel* nn_model_;
+
+  std::vector<void*> operand_memories_;
+
   DISALLOW_COPY_AND_ASSIGN(ModelImplAndroid);
 };
 
