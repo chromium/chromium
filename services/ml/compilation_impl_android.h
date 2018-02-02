@@ -13,6 +13,8 @@
 #include "services/ml/model_impl_android.h"
 #include "services/ml/execution_impl_android.h"
 
+#include "android/NeuralNetworks.h"
+
 namespace ml {
 
 class CompilationImplAndroid : public mojom::Compilation {
@@ -30,6 +32,9 @@ class CompilationImplAndroid : public mojom::Compilation {
   std::vector<Operation> operations_;
   std::vector<uint32_t> inputs_;
   std::vector<uint32_t> outputs_;
+
+  ANeuralNetworksCompilation* nn_compilation_;
+
   DISALLOW_COPY_AND_ASSIGN(CompilationImplAndroid);
 };
 

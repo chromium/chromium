@@ -11,18 +11,36 @@ CompilationImplAndroid::CompilationImplAndroid(ModelImplAndroid* model) {
   operations_ = model->operations_;
   inputs_ = model->inputs_;
   outputs_ = model->outputs_;
+
+  int32_t result = ANeuralNetworksCompilation_create(model->nn_model_, &nn_compilation_);
+
+  LOG(INFO) << "ANeuralNetworksCompilation_create: " << result;
 }
-CompilationImplAndroid::~CompilationImplAndroid() {}
+CompilationImplAndroid::~CompilationImplAndroid() {
+  ANeuralNetworksCompilation_free(nn_compilation_);
+  LOG(INFO) << "ANeuralNetworksCompilation_free";
+}
 
 void CompilationImplAndroid::setPreference(int32_t preference, setPreferenceCallback callback) {
   LOG(INFO) << "CompilationImplAndroid::setPreference";
   LOG(INFO) << "  " << "preference: " << preference;
-  std::move(callback).Run(mojom::NO_ERROR);
+
+  // TODO: convert the blink preference to NN API types.
+  int32_t result = ANeuralNetworksCompilation_setPreference(nn_compilation_, preference);
+
+  LOG(INFO) << "ANeuralNetworksCompilation_setPreference: " << result;
+
+  std::move(callback).Run(result);
 }
 
 void CompilationImplAndroid::finish(finishCallback callback) {
   LOG(INFO) << "CompilationImplAndroid::finish";
-  std::move(callback).Run(mojom::NO_ERROR);
+
+  int32_t result = ANeuralNetworksCompilation_finish(nn_compilation_);
+
+  LOG(INFO) << "ANeuralNetworksCompilation_finish: " << result;
+
+  std::move(callback).Run(result);
 }
 
 void CompilationImplAndroid::createExecution(createExecutionCallback callback) {
