@@ -2936,6 +2936,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMacV2GPUSandboxDescription, kOsMac,
      FEATURE_VALUE_TYPE(features::kMacV2GPUSandbox)},
 #endif  // OS_MACOSX
+    {"webml", flag_descriptions::kWebMlName,
+     flag_descriptions::kWebMlDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kWebMl)},
 #if BUILDFLAG(ENABLE_VR)
     {"webxr-incubations", flag_descriptions::kWebXrIncubationsName,
      flag_descriptions::kWebXrIncubationsDescription, kOsAll,

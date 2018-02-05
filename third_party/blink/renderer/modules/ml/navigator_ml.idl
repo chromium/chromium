@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 [
-    ImplementedAs=NavigatorML
+    ImplementedAs=NavigatorML,
+    RuntimeEnabled=WebML
 ] partial interface Navigator {
     readonly attribute ML ml;
 };

@@ -2051,6 +2051,10 @@
       status: "stable"
     },
     {
+      name: "WebML",
+      status: "experimental",
+    },
+    {
       name: "WebXRARModule",
       depends_on: ["WebXR"],
       status: "stable",

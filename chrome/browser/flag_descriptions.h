@@ -1406,6 +1406,9 @@ extern const char kWebXrIncubationsDescription[];
 extern const char kWebXrMultiGpuName[];
 extern const char kWebXrMultiGpuDescription[];
 
+extern const char kWebMlName[];
+extern const char kWebMlDescription[];
+
 extern const char kZeroCopyName[];
 extern const char kZeroCopyDescription[];
 

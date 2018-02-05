@@ -471,6 +471,10 @@ void WebRuntimeFeatures::EnableWebXRCameraAccess(bool enable) {
   RuntimeEnabledFeatures::SetWebXRCameraAccessEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableWebML(bool enable) {
+  RuntimeEnabledFeatures::SetWebMLEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableWebXRHitTest(bool enable) {
   RuntimeEnabledFeatures::SetWebXRHitTestEnabled(enable);
 }

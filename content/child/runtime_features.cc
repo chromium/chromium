@@ -99,6 +99,8 @@ void SetRuntimeFeatureDefaultsForPlatform(
       command_line.HasSwitch(switches::kEnableWebGLImageChromium);
 #endif
   WebRuntimeFeatures::EnableWebGLImageChromium(enable_web_gl_image_chromium);
+  WebRuntimeFeatures::EnableWebML(
+      base::FeatureList::IsEnabled(features::kWebMl));
 
 #if defined(OS_ANDROID)
   if (command_line.HasSwitch(switches::kDisableMediaSessionAPI))

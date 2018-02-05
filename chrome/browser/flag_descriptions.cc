@@ -2449,6 +2449,10 @@ const char kWebXrMultiGpuName[] = "WebXR Multi GPU Support";
 const char kWebXrMultiGpuDescription[] =
     "Improves WebXR support for computers with more than one GPU.";
 
+const char kWebMlName[] = "WebML";
+const char kWebMlDescription[] =
+    "Allow web applications to access experimental WebML APIs";
+
 const char kZeroCopyName[] = "Zero-copy rasterizer";
 const char kZeroCopyDescription[] =
     "Raster threads write directly to GPU memory associated with tiles.";
