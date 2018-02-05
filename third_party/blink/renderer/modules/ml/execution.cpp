@@ -77,7 +77,7 @@ ScriptPromise Execution::setOutput(ScriptState* script_state,
   }
 
   // TODO: use map
-  output_buffer_views_.push_back(data.View());
+  output_buffer_views_.Set(index, data.View());
 
   mojo::ScopedSharedBufferHandle cloned_handle =
       itr->second->Clone(mojo::SharedBufferHandle::AccessMode::READ_WRITE);
@@ -109,7 +109,7 @@ void Execution::OnStartCompute(ScriptPromiseResolver* resolver, int32_t result_c
 
   if (result_code == ml::mojom::blink::NO_ERROR) {
     auto itr = output_shared_buffers_.find(0);
-    DOMArrayBufferView* view = output_buffer_views_[0];
+    DOMArrayBufferView* view = output_buffer_views_.at(0);
     uint32_t length = view->byteLength();
     mojo::ScopedSharedBufferMapping mapping = itr->second->Map(length);
     memcpy(view->BaseAddress(), static_cast<const void*>(mapping.get()), length);
