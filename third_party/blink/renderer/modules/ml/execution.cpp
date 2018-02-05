@@ -35,11 +35,20 @@ ScriptPromise Execution::setInput(ScriptState* script_state,
   requests_.insert(resolver);
 
   uint32_t length = data.View()->byteLength();
-  mojo::ScopedSharedBufferHandle buffer = mojo::SharedBufferHandle::Create(length);
-  mojo::ScopedSharedBufferMapping mapping = buffer->Map(length);
+  auto itr = input_shared_buffers_.find(index);
+  if (itr == input_shared_buffers_.end()) {
+    mojo::ScopedSharedBufferHandle handle = mojo::SharedBufferHandle::Create(length);
+    std::pair<std::map<uint32_t, mojo::ScopedSharedBufferHandle>::iterator, bool> ret;
+    ret = input_shared_buffers_.insert(
+        std::pair<uint32_t, mojo::ScopedSharedBufferHandle>(index, std::move(handle)));
+    itr = ret.first;
+  }
+  mojo::ScopedSharedBufferMapping mapping = itr->second->Map(length);
   memcpy(static_cast<void*>(mapping.get()), data.View()->BaseAddress(), length);
 
-  execution_->setInput(index, std::move(buffer), length,
+  mojo::ScopedSharedBufferHandle cloned_handle =
+      itr->second->Clone(mojo::SharedBufferHandle::AccessMode::READ_ONLY);
+  execution_->setInput(index, std::move(cloned_handle), length,
                        WTF::Bind(&Execution::OnResultCode, WrapPersistent(this),
                                  WrapPersistent(resolver), String("setInput")));
   return promise;
@@ -58,9 +67,22 @@ ScriptPromise Execution::setOutput(ScriptState* script_state,
   requests_.insert(resolver);
 
   uint32_t length = data.View()->byteLength();
-  mojo::ScopedSharedBufferHandle buffer = mojo::SharedBufferHandle::Create(length);
+  auto itr = output_shared_buffers_.find(index);
+  if (itr == output_shared_buffers_.end()) {
+    mojo::ScopedSharedBufferHandle handle = mojo::SharedBufferHandle::Create(length);
+    std::pair<std::map<uint32_t, mojo::ScopedSharedBufferHandle>::iterator, bool> ret;
+    ret = output_shared_buffers_.insert(
+        std::pair<uint32_t, mojo::ScopedSharedBufferHandle>(index, std::move(handle)));
+    itr = ret.first;
+  }
 
-  execution_->setOutput(index, std::move(buffer), length,
+  // TODO: use map
+  output_buffer_views_.push_back(data.View());
+
+  mojo::ScopedSharedBufferHandle cloned_handle =
+      itr->second->Clone(mojo::SharedBufferHandle::AccessMode::READ_WRITE);
+
+  execution_->setOutput(index, std::move(cloned_handle), length,
                         WTF::Bind(&Execution::OnResultCode, WrapPersistent(this),
                                   WrapPersistent(resolver), String("setOutput")));
   return promise;
@@ -77,9 +99,28 @@ ScriptPromise Execution::startCompute(ScriptState* script_state) {
   requests_.insert(resolver);
 
   execution_->startCompute(
-      WTF::Bind(&Execution::OnResultCode, WrapPersistent(this),
-                WrapPersistent(resolver), String("startCompute")));
+      WTF::Bind(&Execution::OnStartCompute, WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
+}
+
+void Execution::OnStartCompute(ScriptPromiseResolver* resolver, int32_t result_code) {
+  DCHECK(requests_.Contains(resolver));
+  requests_.erase(resolver);
+
+  if (result_code == ml::mojom::blink::NO_ERROR) {
+    auto itr = output_shared_buffers_.find(0);
+    DOMArrayBufferView* view = output_buffer_views_[0];
+    uint32_t length = view->byteLength();
+    mojo::ScopedSharedBufferMapping mapping = itr->second->Map(length);
+    memcpy(view->BaseAddress(), static_cast<const void*>(mapping.get()), length);
+    resolver->Resolve(result_code);
+  } else {
+    String msg("startCompute");
+    msg.append("fails: ");
+    msg.append(String::Number(result_code));
+    resolver->Reject(DOMException::Create(
+                     kInvalidStateError, msg));
+  }
 }
 
 void Execution::OnResultCode(ScriptPromiseResolver* resolver,
@@ -101,6 +142,7 @@ void Execution::OnResultCode(ScriptPromiseResolver* resolver,
 
 void Execution::Trace(blink::Visitor* visitor) {
   visitor->Trace(requests_);
+  visitor->Trace(output_buffer_views_);
   ScriptWrappable::Trace(visitor);
 }
 

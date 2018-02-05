@@ -13,6 +13,8 @@
 #include "services/ml/model_impl_android.h"
 #include "services/ml/compilation_impl_android.h"
 
+#include "android/NeuralNetworks.h"
+
 namespace ml {
 
 class ExecutionImplAndroid : public mojom::Execution {
@@ -29,6 +31,14 @@ class ExecutionImplAndroid : public mojom::Execution {
   std::vector<Operation> operations_;
   std::vector<uint32_t> inputs_;
   std::vector<uint32_t> outputs_;
+
+  ANeuralNetworksExecution* nn_execution_;
+
+  std::map<uint32_t, void*> input_buffers_;
+  void* output_buffer_;
+  mojo::ScopedSharedBufferHandle output_handle_;
+  uint32_t outout_length_;
+
   DISALLOW_COPY_AND_ASSIGN(ExecutionImplAndroid);
 };
 

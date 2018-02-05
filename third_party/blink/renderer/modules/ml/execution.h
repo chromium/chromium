@@ -29,11 +29,15 @@ class Execution final : public ScriptWrappable {
 
  private:
   void OnResultCode(ScriptPromiseResolver*, const String&, int32_t);
+  void OnStartCompute(ScriptPromiseResolver*, int32_t);
   void OnConnectionError();
 
  private:
   ml::mojom::blink::ExecutionPtr execution_;
   HeapHashSet<Member<ScriptPromiseResolver>> requests_;
+  std::map<uint32_t, mojo::ScopedSharedBufferHandle> input_shared_buffers_;
+  std::map<uint32_t, mojo::ScopedSharedBufferHandle> output_shared_buffers_;
+  HeapVector<Member<DOMArrayBufferView>> output_buffer_views_;
 };
 
 }  // namespace blink

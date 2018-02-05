@@ -151,10 +151,10 @@ void ModelImplAndroid::finish(finishCallback callback) {
   int32_t result = ANeuralNetworksModel_finish(nn_model_);
   LOG(INFO) << "ANeuralNetworksModel_finish: " << result;
 
-  for (size_t i = 0; i < operand_memories_.size(); ++i) {
-    free(operand_memories_[i]);
-  }
-  operand_memories_.resize(0);
+  //for (size_t i = 0; i < operand_memories_.size(); ++i) {
+  //  free(operand_memories_[i]);
+  //}
+  //operand_memories_.resize(0);
 
   std::move(callback).Run(result);
 }
