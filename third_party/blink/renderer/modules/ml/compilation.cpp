@@ -81,7 +81,7 @@ void Compilation::OnCreateExecution(
   requests_.erase(resolver);
 
   if (result_code == ml::mojom::blink::NO_ERROR) {
-    resolver->Resolve(new Execution(std::move(init_params->execution)));
+    resolver->Resolve(new Execution(std::move(init_params)));
   } else {
     String msg("createExecution fails: ");
     msg.append(String::Number(result_code));

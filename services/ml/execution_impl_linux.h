@@ -10,6 +10,7 @@
 #include "services/ml/public/interfaces/execution.mojom.h"
 #include "services/ml/public/interfaces/constants.mojom.h"
 
+#include "services/ml/common.h"
 #include "services/ml/model_impl_linux.h"
 #include "services/ml/compilation_impl_linux.h"
 
@@ -17,11 +18,9 @@ namespace ml {
 
 class ExecutionImplLinux : public mojom::Execution {
  public:
-  ExecutionImplLinux(CompilationImplLinux*);
+  ExecutionImplLinux(CompilationImplLinux*, mojo::ScopedSharedBufferHandle);
   ~ExecutionImplLinux() override;
 
-  void setInput(uint32_t index, mojo::ScopedSharedBufferHandle buffer, uint32_t length, setInputCallback callback) override;
-  void setOutput(uint32_t index, mojo::ScopedSharedBufferHandle buffer, uint32_t length, setOutputCallback callback) override;
   void startCompute(startComputeCallback callback) override;
 
  private:
@@ -29,6 +28,11 @@ class ExecutionImplLinux : public mojom::Execution {
   std::vector<Operation> operations_;
   std::vector<uint32_t> inputs_;
   std::vector<uint32_t> outputs_;
+
+  std::vector<std::unique_ptr<OperandInfo>> inputs_info_;
+  std::vector<std::unique_ptr<OperandInfo>> outputs_info_;
+  mojo::ScopedSharedBufferHandle memory_;
+
   DISALLOW_COPY_AND_ASSIGN(ExecutionImplLinux);
 };
 

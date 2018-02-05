@@ -8,44 +8,22 @@
 
 namespace ml {
 
-Operand::Operand() = default;
-Operand::~Operand() = default;
-Operand::Operand(const Operand&) = default;
-
-Operation::Operation() = default;
-Operation::~Operation() = default;
-Operation::Operation(const Operation&) = default;
-
 ModelImplAndroid::ModelImplAndroid() {
   int32_t result = ANeuralNetworksModel_create(&nn_model_);
-  LOG(INFO) << "ANeuralNetworksModel_create: " << result;
-}
-ModelImplAndroid::~ModelImplAndroid() {
-  ANeuralNetworksModel_free(nn_model_);
-  LOG(INFO) << "ANeuralNetworksModel_free";
+  DLOG(INFO) << "ANeuralNetworksModel_create: " << result;
 }
 
-template<class T>
-std::string VectorToString(const T* vect, size_t length) {
-  std::string output("[");
-  if (length > 200)
-    length = 200;
-  for (size_t i = 0; i < length; ++i) {
-    output.append(base::NumberToString(vect[i]));
-    if (i != length - 1) {
-      output.append(", ");
-    }
-  }
-  output.append("]");
-  return output;
+ModelImplAndroid::~ModelImplAndroid() {
+  ANeuralNetworksModel_free(nn_model_);
+  DLOG(INFO) << "ANeuralNetworksModel_free";
 }
 
 void ModelImplAndroid::addOperand(int32_t type, const std::vector<uint32_t>& dimensions, float scale, int32_t zeroPoint, addOperandCallback callback) {
-  LOG(INFO) << "ModelImplAndroid::addOperand";
-  LOG(INFO) << "  " << "type: " << type;
-  LOG(INFO) << "  " << "dimensions(" << dimensions.size() << "): " << VectorToString(dimensions.data(), dimensions.size());
-  LOG(INFO) << "  " << "scale: " << scale;
-  LOG(INFO) << "  " << "zeroPoint: " << zeroPoint;
+  DLOG(INFO) << "ModelImplAndroid::addOperand";
+  DLOG(INFO) << "  " << "type: " << type;
+  DLOG(INFO) << "  " << "dimensions(" << dimensions.size() << "): " << VectorToString(dimensions.data(), dimensions.size());
+  DLOG(INFO) << "  " << "scale: " << scale;
+  DLOG(INFO) << "  " << "zeroPoint: " << zeroPoint;
   Operand operand;
   operand.type = type;
   operand.dimensions = dimensions;
@@ -61,15 +39,15 @@ void ModelImplAndroid::addOperand(int32_t type, const std::vector<uint32_t>& dim
   operand_type.scale = scale;
   operand_type.zeroPoint = zeroPoint;
   int32_t result = ANeuralNetworksModel_addOperand(nn_model_, &operand_type);
-  LOG(INFO) << "ANeuralNetworksModel_addOperand: " << result;
+  DLOG(INFO) << "ANeuralNetworksModel_addOperand: " << result;
 
   std::move(callback).Run(result);
 }
 
 void ModelImplAndroid::setOperandValue(uint32_t index, mojo::ScopedSharedBufferHandle buffer, uint32_t length, setOperandValueCallback callback) {
-  LOG(INFO) << "ModelImplAndroid::setOperandValue";
-  LOG(INFO) << "  " << "index: " << index;
-  LOG(INFO) << "  " << "length: " << length;
+  DLOG(INFO) << "ModelImplAndroid::setOperandValue";
+  DLOG(INFO) << "  " << "index: " << index;
+  DLOG(INFO) << "  " << "length: " << length;
   if (index > operands_.size()) {
     std::move(callback).Run(mojom::BAD_DATA);
     return;
@@ -79,19 +57,19 @@ void ModelImplAndroid::setOperandValue(uint32_t index, mojo::ScopedSharedBufferH
   if (operand.type == mojom::TENSOR_FLOAT32 || operand.type == mojom::FLOAT32) {
     float* value = static_cast<float*>(mapped.get());
     uint32_t size = length / 4;
-    LOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
+    DLOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
   } else if (operand.type == mojom::TENSOR_INT32 || operand.type == mojom::INT32) {
     int32_t* value = static_cast<int32_t*>(mapped.get());
     uint32_t size = length / 4;
-    LOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
+    DLOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
   } else if (operand.type == mojom::TENSOR_QUANT8_ASYMM) {
     int8_t* value = static_cast<int8_t*>(mapped.get());
     uint32_t size = length;
-    LOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
+    DLOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
   } else if (operand.type == mojom::UINT32) {
     uint32_t* value = static_cast<uint32_t*>(mapped.get());
     uint32_t size = length;
-    LOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
+    DLOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
   }
 
   // TODO: optimize the memory copies.
@@ -107,16 +85,16 @@ void ModelImplAndroid::setOperandValue(uint32_t index, mojo::ScopedSharedBufferH
       nn_model_, index, static_cast<const void*>(mapped.get()), length);
   }
 
-  LOG(INFO) << "ANeuralNetworksModel_setOperandValue: " << result;
+  DLOG(INFO) << "ANeuralNetworksModel_setOperandValue: " << result;
 
   std::move(callback).Run(result);
 }
 
 void ModelImplAndroid::addOperation(int32_t type, const std::vector<uint32_t>& inputs, const std::vector<uint32_t>& outputs, addOperationCallback callback) {
-  LOG(INFO) << "ModelImplAndroid::addOperation";
-  LOG(INFO) << "  " << "type: " << type;
-  LOG(INFO) << "  " << "inputs(" << inputs.size() << "): " << VectorToString(inputs.data(), inputs.size());
-  LOG(INFO) << "  " << "outputs(" << outputs.size() << "): " << VectorToString(outputs.data(), outputs.size());
+  DLOG(INFO) << "ModelImplAndroid::addOperation";
+  DLOG(INFO) << "  " << "type: " << type;
+  DLOG(INFO) << "  " << "inputs(" << inputs.size() << "): " << VectorToString(inputs.data(), inputs.size());
+  DLOG(INFO) << "  " << "outputs(" << outputs.size() << "): " << VectorToString(outputs.data(), outputs.size());
   Operation operation;
   operation.type = type;
   operation.inputs = inputs;
@@ -126,30 +104,30 @@ void ModelImplAndroid::addOperation(int32_t type, const std::vector<uint32_t>& i
   // TODO: convert blink operation type to NN API type.
   int32_t result = ANeuralNetworksModel_addOperation(
     nn_model_, type, inputs.size(), inputs.data(), outputs.size(), outputs.data());
-  LOG(INFO) << "ANeuralNetworksModel_addOperation: " << result;
+  DLOG(INFO) << "ANeuralNetworksModel_addOperation: " << result;
 
   std::move(callback).Run(result);
 }
 
 void ModelImplAndroid::identifyInputsAndOutputs(const std::vector<uint32_t>& inputs, const std::vector<uint32_t>& outputs, identifyInputsAndOutputsCallback callback) {
-  LOG(INFO) << "ModelImplAndroid::identifyInputsAndOutputs";
-  LOG(INFO) << "  " << "inputs(" << inputs.size() << "): " << VectorToString(inputs.data(), inputs.size());
-  LOG(INFO) << "  " << "outputs(" << outputs.size() << "): " << VectorToString(outputs.data(), outputs.size());
+  DLOG(INFO) << "ModelImplAndroid::identifyInputsAndOutputs";
+  DLOG(INFO) << "  " << "inputs(" << inputs.size() << "): " << VectorToString(inputs.data(), inputs.size());
+  DLOG(INFO) << "  " << "outputs(" << outputs.size() << "): " << VectorToString(outputs.data(), outputs.size());
   inputs_ = inputs;
   outputs_ = outputs;
 
   int32_t result = ANeuralNetworksModel_identifyInputsAndOutputs(
       nn_model_, inputs.size(), inputs.data(), outputs.size(), outputs.data());
-  LOG(INFO) << "ANeuralNetworksModel_identifyInputsAndOutputs: " << result;
+  DLOG(INFO) << "ANeuralNetworksModel_identifyInputsAndOutputs: " << result;
 
   std::move(callback).Run(result);
 }
 
 void ModelImplAndroid::finish(finishCallback callback) {
-  LOG(INFO) << "ModelImplAndroid::finish";
+  DLOG(INFO) << "ModelImplAndroid::finish";
 
   int32_t result = ANeuralNetworksModel_finish(nn_model_);
-  LOG(INFO) << "ANeuralNetworksModel_finish: " << result;
+  DLOG(INFO) << "ANeuralNetworksModel_finish: " << result;
 
   //for (size_t i = 0; i < operand_memories_.size(); ++i) {
   //  free(operand_memories_[i]);
@@ -160,7 +138,7 @@ void ModelImplAndroid::finish(finishCallback callback) {
 }
 
 void ModelImplAndroid::createCompilation(createCompilationCallback callback) {
-  LOG(INFO) << "ModelImplAndroid::createCompilation";
+  DLOG(INFO) << "ModelImplAndroid::createCompilation";
   auto init_params = mojom::CompilationInitParams::New();
 
   auto impl = std::make_unique<CompilationImplAndroid>(this);

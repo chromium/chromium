@@ -15,22 +15,46 @@ CompilationImplLinux::CompilationImplLinux(ModelImplLinux* model) {
 CompilationImplLinux::~CompilationImplLinux() {}
 
 void CompilationImplLinux::setPreference(int32_t preference, setPreferenceCallback callback) {
-  LOG(INFO) << "CompilationImplLinux::setPreference";
-  LOG(INFO) << "  " << "preference: " << preference;
+  DLOG(INFO) << "CompilationImplLinux::setPreference";
+  DLOG(INFO) << "  " << "preference: " << preference;
   std::move(callback).Run(mojom::NO_ERROR);
 }
 
 void CompilationImplLinux::finish(finishCallback callback) {
-  LOG(INFO) << "CompilationImplLinux::finish";
+  DLOG(INFO) << "CompilationImplLinux::finish";
   std::move(callback).Run(mojom::NO_ERROR);
 }
 
 void CompilationImplLinux::createExecution(createExecutionCallback callback) {
-  LOG(INFO) << "CompilationImplLinux::createExecution";
+  DLOG(INFO) << "CompilationImplLinux::createExecution";
   auto init_params = mojom::ExecutionInitParams::New();
 
-  auto impl = std::make_unique<ExecutionImplLinux>(this);
+  uint32_t input_memory_size = 0;
+  for (size_t i = 0; i < inputs_.size(); ++i) {
+    Operand operand = operands_[inputs_[i]];
+    input_memory_size += operand.requiredSize();
+    init_params->inputs.push_back(
+        mojom::Operand::New(operand.type, operand.dimensions));
+  }
+  DLOG(INFO) << "Required input memory size: " << input_memory_size;
 
+  uint32_t output_memory_size = 0;
+  for (size_t i = 0; i < outputs_.size(); ++i) {
+    Operand operand = operands_[outputs_[i]];
+    output_memory_size += operand.requiredSize();
+    init_params->outputs.push_back(
+        mojom::Operand::New(operand.type, operand.dimensions));
+  }
+  DLOG(INFO) << "Required output memory size: " << output_memory_size;
+
+  uint32_t total_memory_size = input_memory_size + output_memory_size;
+  mojo::ScopedSharedBufferHandle memory_handle =
+      mojo::SharedBufferHandle::Create(total_memory_size);
+  
+  init_params->memory = memory_handle->Clone(
+      mojo::SharedBufferHandle::AccessMode::READ_WRITE);
+
+  auto impl = std::make_unique<ExecutionImplLinux>(this, std::move(memory_handle));
   mojom::ExecutionPtrInfo ptr_info;
   mojo::MakeStrongBinding(std::move(impl),
                           mojo::MakeRequest(&ptr_info));

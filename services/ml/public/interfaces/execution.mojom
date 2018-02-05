@@ -5,10 +5,6 @@
 module ml.mojom;
 
 interface Execution {
-  setInput(uint32 index, handle<shared_buffer> buffer, uint32 length)
-    => (int32 resultCode);
-  setOutput(uint32 index, handle<shared_buffer> buffer, uint32 length)
-    => (int32 resultCode);
   startCompute()
     => (int32 resultCode);
 };

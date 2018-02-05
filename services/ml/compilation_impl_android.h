@@ -10,6 +10,7 @@
 #include "services/ml/public/interfaces/compilation.mojom.h"
 #include "services/ml/public/interfaces/constants.mojom.h"
 
+#include "services/ml/common.h"
 #include "services/ml/model_impl_android.h"
 #include "services/ml/execution_impl_android.h"
 

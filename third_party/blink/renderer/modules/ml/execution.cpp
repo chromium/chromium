@@ -14,78 +14,93 @@
 
 namespace blink {
 
-Execution::Execution(ml::mojom::blink::ExecutionPtrInfo info) {
-  execution_.Bind(std::move(info));
+static uint32_t product(const WTF::Vector<uint32_t>& dims) {
+  uint32_t prod = 1;
+  for (size_t i = 0; i < dims.size(); ++i) prod *= dims[i];
+  return prod;
+}
+
+static uint32_t requiredSize(int32_t type, const WTF::Vector<uint32_t>& dimensions) {
+  if (type == ml::mojom::blink::FLOAT32) {
+    return sizeof(float);
+  } else if (type == ml::mojom::blink::INT32) {
+    return sizeof(int32_t);
+  } else if (type == ml::mojom::blink::UINT32) {
+    return sizeof(uint32_t);
+  } else if (type == ml::mojom::blink::TENSOR_FLOAT32) {
+    return product(dimensions) * sizeof(float);
+  } else if (type == ml::mojom::blink::TENSOR_INT32) {
+    return product(dimensions) * sizeof(int32_t);
+  } else if (type == ml::mojom::blink::TENSOR_QUANT8_ASYMM) {
+    return product(dimensions) * sizeof(int8_t);
+  } else {
+    NOTREACHED();
+  }
+  return 0;
+}
+
+Execution::Execution(ml::mojom::blink::ExecutionInitParamsPtr init_params) {
+  execution_.Bind(std::move(init_params->execution));
   execution_.set_connection_error_handler(
       WTF::Bind(&Execution::OnConnectionError, WrapWeakPersistent(this)));
+  uint32_t total_length = 0;
+  memory_ = std::move(init_params->memory);
+  for (size_t i = 0; i < init_params->inputs.size(); ++i) {
+    uint32_t offset = total_length;
+    uint32_t length = requiredSize(init_params->inputs[i]->type,
+                                       init_params->inputs[i]->dimensions);
+    mojo::ScopedSharedBufferMapping mapping = memory_->MapAtOffset(length, offset);
+    OperandInfo* info = new OperandInfo(offset, length, std::move(mapping));
+    inputs_.push_back(info);
+    total_length += length;
+  }
+  for (size_t i = 0; i < init_params->outputs.size(); ++i) {
+    uint32_t offset = total_length;
+    uint32_t length = requiredSize(init_params->outputs[i]->type,
+                                   init_params->outputs[i]->dimensions);
+    mojo::ScopedSharedBufferMapping mapping = memory_->MapAtOffset(length, offset);
+    OperandInfo* info = new OperandInfo(offset, length, std::move(mapping));
+    outputs_.push_back(info);
+    total_length += length;
+  }
+  output_buffer_views_.resize(init_params->outputs.size());
 }
 
-Execution::~Execution() = default;
+Execution::~Execution() {
 
-ScriptPromise Execution::setInput(ScriptState* script_state,
-                                  uint32_t index,
-                                  MaybeShared<DOMArrayBufferView> data) {
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
-  ScriptPromise promise = resolver->Promise();
-  if (!execution_) {
-    resolver->Reject(DOMException::Create(
-        kNotSupportedError, "Execution service unavailable."));
-    return promise;
-  }
-  requests_.insert(resolver);
-
-  uint32_t length = data.View()->byteLength();
-  auto itr = input_shared_buffers_.find(index);
-  if (itr == input_shared_buffers_.end()) {
-    mojo::ScopedSharedBufferHandle handle = mojo::SharedBufferHandle::Create(length);
-    std::pair<std::map<uint32_t, mojo::ScopedSharedBufferHandle>::iterator, bool> ret;
-    ret = input_shared_buffers_.insert(
-        std::pair<uint32_t, mojo::ScopedSharedBufferHandle>(index, std::move(handle)));
-    itr = ret.first;
-  }
-  mojo::ScopedSharedBufferMapping mapping = itr->second->Map(length);
-  memcpy(static_cast<void*>(mapping.get()), data.View()->BaseAddress(), length);
-
-  mojo::ScopedSharedBufferHandle cloned_handle =
-      itr->second->Clone(mojo::SharedBufferHandle::AccessMode::READ_ONLY);
-  execution_->setInput(index, std::move(cloned_handle), length,
-                       WTF::Bind(&Execution::OnResultCode, WrapPersistent(this),
-                                 WrapPersistent(resolver), String("setInput")));
-  return promise;
 }
 
-ScriptPromise Execution::setOutput(ScriptState* script_state,
-                                   uint32_t index,
-                                   MaybeShared<DOMArrayBufferView> data) {
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
-  ScriptPromise promise = resolver->Promise();
-  if (!execution_) {
-    resolver->Reject(DOMException::Create(
-        kNotSupportedError, "Execution service unavailable."));
-    return promise;
+void Execution::setInput(uint32_t index,
+                         MaybeShared<DOMArrayBufferView> data,
+                         ExceptionState& exception_state) {
+  if (index > inputs_.size()) {
+    exception_state.ThrowDOMException(kInvalidStateError,
+                                      "Invalid index");
   }
-  requests_.insert(resolver);
-
+  std::unique_ptr<OperandInfo>& info = inputs_.at(index);
   uint32_t length = data.View()->byteLength();
-  auto itr = output_shared_buffers_.find(index);
-  if (itr == output_shared_buffers_.end()) {
-    mojo::ScopedSharedBufferHandle handle = mojo::SharedBufferHandle::Create(length);
-    std::pair<std::map<uint32_t, mojo::ScopedSharedBufferHandle>::iterator, bool> ret;
-    ret = output_shared_buffers_.insert(
-        std::pair<uint32_t, mojo::ScopedSharedBufferHandle>(index, std::move(handle)));
-    itr = ret.first;
+  if (info->length != length) {
+    exception_state.ThrowDOMException(kInvalidStateError,
+                                      "Invalid data");
   }
+  memcpy(static_cast<void*>(info->mapping.get()), data.View()->BaseAddress(), length);
+}
 
-  // TODO: use map
-  output_buffer_views_.Set(index, data.View());
+void Execution::setOutput(uint32_t index,
+                          MaybeShared<DOMArrayBufferView> data,
+                          ExceptionState& exception_state) {
+  if (index > output_buffer_views_.size()) {
+    exception_state.ThrowDOMException(kInvalidStateError,
+                                      "Invalid index");
+  }
+  std::unique_ptr<OperandInfo>& info = outputs_.at(index);
+  uint32_t length = data.View()->byteLength();
+  if (info->length != length) {
+    exception_state.ThrowDOMException(kInvalidStateError,
+                                      "Invalid data");
+  }                                   
 
-  mojo::ScopedSharedBufferHandle cloned_handle =
-      itr->second->Clone(mojo::SharedBufferHandle::AccessMode::READ_WRITE);
-
-  execution_->setOutput(index, std::move(cloned_handle), length,
-                        WTF::Bind(&Execution::OnResultCode, WrapPersistent(this),
-                                  WrapPersistent(resolver), String("setOutput")));
-  return promise;
+  output_buffer_views_[index] = data.View();
 }
 
 ScriptPromise Execution::startCompute(ScriptState* script_state) {
@@ -108,11 +123,14 @@ void Execution::OnStartCompute(ScriptPromiseResolver* resolver, int32_t result_c
   requests_.erase(resolver);
 
   if (result_code == ml::mojom::blink::NO_ERROR) {
-    auto itr = output_shared_buffers_.find(0);
-    DOMArrayBufferView* view = output_buffer_views_.at(0);
-    uint32_t length = view->byteLength();
-    mojo::ScopedSharedBufferMapping mapping = itr->second->Map(length);
-    memcpy(view->BaseAddress(), static_cast<const void*>(mapping.get()), length);
+    for (size_t i = 0; i < outputs_.size(); ++i) {
+      DOMArrayBufferView* view = output_buffer_views_.at(i);
+      if (view) {
+        uint32_t length = view->byteLength();
+        std::unique_ptr<OperandInfo>& info = outputs_.at(i);
+        memcpy(view->BaseAddress(), static_cast<const void*>(info->mapping.get()), length);    
+      }
+    } 
     resolver->Resolve(result_code);
   } else {
     String msg("startCompute");

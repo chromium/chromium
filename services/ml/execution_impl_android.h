@@ -10,6 +10,7 @@
 #include "services/ml/public/interfaces/execution.mojom.h"
 #include "services/ml/public/interfaces/constants.mojom.h"
 
+#include "services/ml/common.h"
 #include "services/ml/model_impl_android.h"
 #include "services/ml/compilation_impl_android.h"
 
@@ -19,11 +20,9 @@ namespace ml {
 
 class ExecutionImplAndroid : public mojom::Execution {
  public:
-  ExecutionImplAndroid(CompilationImplAndroid*);
+  ExecutionImplAndroid(CompilationImplAndroid*, mojo::ScopedSharedBufferHandle);
   ~ExecutionImplAndroid() override;
 
-  void setInput(uint32_t index, mojo::ScopedSharedBufferHandle buffer, uint32_t length, setInputCallback callback) override;
-  void setOutput(uint32_t index, mojo::ScopedSharedBufferHandle buffer, uint32_t length, setOutputCallback callback) override;
   void startCompute(startComputeCallback callback) override;
 
  private:
@@ -34,10 +33,9 @@ class ExecutionImplAndroid : public mojom::Execution {
 
   ANeuralNetworksExecution* nn_execution_;
 
-  std::map<uint32_t, void*> input_buffers_;
-  void* output_buffer_;
-  mojo::ScopedSharedBufferHandle output_handle_;
-  uint32_t outout_length_;
+  std::vector<std::unique_ptr<OperandInfo>> inputs_info_;
+  std::vector<std::unique_ptr<OperandInfo>> outputs_info_;
+  mojo::ScopedSharedBufferHandle memory_;
 
   DISALLOW_COPY_AND_ASSIGN(ExecutionImplAndroid);
 };

@@ -8,6 +8,8 @@ import("//testing/test.gni")
 
 source_set("lib") {
   sources = [
+    "common.cc",
+    "common.h",
     "ml_service.cc",
     "ml_service.h",
   ]

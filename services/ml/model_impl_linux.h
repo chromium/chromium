@@ -9,30 +9,9 @@
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/ml/public/interfaces/model.mojom.h"
 #include "services/ml/public/interfaces/constants.mojom.h"
+#include "services/ml/common.h"
 
 namespace ml {
-
-template<class T>
-std::string VectorToString(const T* vect, size_t length);
-
-struct Operand {
-  Operand();
-  ~Operand();
-  Operand(const Operand&);
-  int32_t type;
-  std::vector<uint32_t> dimensions;
-  float scale;
-  int32_t zeroPoint;
-};
-
-struct Operation {
-  Operation();
-  ~Operation();
-  Operation(const Operation&);
-  int32_t type;
-  std::vector<uint32_t> inputs;
-  std::vector<uint32_t> outputs;
-};
 
 class CompilationImplLinux;
 

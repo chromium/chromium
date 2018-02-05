@@ -8,40 +8,15 @@
 
 namespace ml {
 
-Operand::Operand() = default;
-Operand::~Operand() = default;
-Operand::Operand(const Operand&) = default;
-
-Operation::Operation() = default;
-Operation::~Operation() = default;
-Operation::Operation(const Operation&) = default;
-
 ModelImplLinux::ModelImplLinux() {}
 ModelImplLinux::~ModelImplLinux() {}
 
-template<class T>
-std::string VectorToString(const T* vect, size_t length) {
-  std::string output("[");
-  for (size_t i = 0; i < length; ++i) {
-    output.append(base::NumberToString(vect[i]));
-    if (i != length - 1) {
-      output.append(", ");
-    }
-  }
-  output.append("]");
-  return output;
-}
-
-void PrintBuffer(const mojo::ScopedSharedBufferHandle& buffer, uint32_t length) {
-  
-}
-
 void ModelImplLinux::addOperand(int32_t type, const std::vector<uint32_t>& dimensions, float scale, int32_t zeroPoint, addOperandCallback callback) {
-  LOG(INFO) << "ModelImplLinux::addOperand";
-  LOG(INFO) << "  " << "type: " << type;
-  LOG(INFO) << "  " << "dimensions(" << dimensions.size() << "): " << VectorToString(dimensions.data(), dimensions.size());
-  LOG(INFO) << "  " << "scale: " << scale;
-  LOG(INFO) << "  " << "zeroPoint: " << zeroPoint;
+  DLOG(INFO) << "ModelImplLinux::addOperand";
+  DLOG(INFO) << "  " << "type: " << type;
+  DLOG(INFO) << "  " << "dimensions(" << dimensions.size() << "): " << VectorToString(dimensions.data(), dimensions.size());
+  DLOG(INFO) << "  " << "scale: " << scale;
+  DLOG(INFO) << "  " << "zeroPoint: " << zeroPoint;
   Operand operand;
   operand.type = type;
   operand.dimensions = dimensions;
@@ -52,9 +27,9 @@ void ModelImplLinux::addOperand(int32_t type, const std::vector<uint32_t>& dimen
 }
 
 void ModelImplLinux::setOperandValue(uint32_t index, mojo::ScopedSharedBufferHandle buffer, uint32_t length, setOperandValueCallback callback) {
-  LOG(INFO) << "ModelImplLinux::setOperandValue";
-  LOG(INFO) << "  " << "index: " << index;
-  LOG(INFO) << "  " << "length: " << length;
+  DLOG(INFO) << "ModelImplLinux::setOperandValue";
+  DLOG(INFO) << "  " << "index: " << index;
+  DLOG(INFO) << "  " << "length: " << length;
   if (index > operands_.size()) {
     std::move(callback).Run(mojom::BAD_DATA);
     return;
@@ -64,28 +39,28 @@ void ModelImplLinux::setOperandValue(uint32_t index, mojo::ScopedSharedBufferHan
   if (operand.type == mojom::TENSOR_FLOAT32 || operand.type == mojom::FLOAT32) {
     float* value = static_cast<float*>(mapped.get());
     uint32_t size = length / 4;
-    LOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
+    DLOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
   } else if (operand.type == mojom::TENSOR_INT32 || operand.type == mojom::INT32) {
     int32_t* value = static_cast<int32_t*>(mapped.get());
     uint32_t size = length / 4;
-    LOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
+    DLOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
   } else if (operand.type == mojom::TENSOR_QUANT8_ASYMM) {
     int8_t* value = static_cast<int8_t*>(mapped.get());
     uint32_t size = length;
-    LOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
+    DLOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
   } else if (operand.type == mojom::UINT32) {
     uint32_t* value = static_cast<uint32_t*>(mapped.get());
     uint32_t size = length;
-    LOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
+    DLOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
   }
   std::move(callback).Run(mojom::NO_ERROR);
 }
 
 void ModelImplLinux::addOperation(int32_t type, const std::vector<uint32_t>& inputs, const std::vector<uint32_t>& outputs, addOperationCallback callback) {
-  LOG(INFO) << "ModelImplLinux::addOperation";
-  LOG(INFO) << "  " << "type: " << type;
-  LOG(INFO) << "  " << "inputs(" << inputs.size() << "): " << VectorToString(inputs.data(), inputs.size());
-  LOG(INFO) << "  " << "outputs(" << outputs.size() << "): " << VectorToString(outputs.data(), outputs.size());
+  DLOG(INFO) << "ModelImplLinux::addOperation";
+  DLOG(INFO) << "  " << "type: " << type;
+  DLOG(INFO) << "  " << "inputs(" << inputs.size() << "): " << VectorToString(inputs.data(), inputs.size());
+  DLOG(INFO) << "  " << "outputs(" << outputs.size() << "): " << VectorToString(outputs.data(), outputs.size());
   Operation operation;
   operation.type = type;
   operation.inputs = inputs;
@@ -95,21 +70,21 @@ void ModelImplLinux::addOperation(int32_t type, const std::vector<uint32_t>& inp
 }
 
 void ModelImplLinux::identifyInputsAndOutputs(const std::vector<uint32_t>& inputs, const std::vector<uint32_t>& outputs, identifyInputsAndOutputsCallback callback) {
-  LOG(INFO) << "ModelImplLinux::identifyInputsAndOutputs";
-  LOG(INFO) << "  " << "inputs(" << inputs.size() << "): " << VectorToString(inputs.data(), inputs.size());
-  LOG(INFO) << "  " << "outputs(" << outputs.size() << "): " << VectorToString(outputs.data(), outputs.size());
+  DLOG(INFO) << "ModelImplLinux::identifyInputsAndOutputs";
+  DLOG(INFO) << "  " << "inputs(" << inputs.size() << "): " << VectorToString(inputs.data(), inputs.size());
+  DLOG(INFO) << "  " << "outputs(" << outputs.size() << "): " << VectorToString(outputs.data(), outputs.size());
   inputs_ = inputs;
   outputs_ = outputs;
   std::move(callback).Run(mojom::NO_ERROR);
 }
 
 void ModelImplLinux::finish(finishCallback callback) {
-  LOG(INFO) << "ModelImplLinux::finish";
+  DLOG(INFO) << "ModelImplLinux::finish";
   std::move(callback).Run(mojom::NO_ERROR);
 }
 
 void ModelImplLinux::createCompilation(createCompilationCallback callback) {
-  LOG(INFO) << "ModelImplLinux::createCompilation";
+  DLOG(INFO) << "ModelImplLinux::createCompilation";
   auto init_params = mojom::CompilationInitParams::New();
 
   auto impl = std::make_unique<CompilationImplLinux>(this);

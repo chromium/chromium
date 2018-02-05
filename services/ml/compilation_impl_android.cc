@@ -14,40 +14,65 @@ CompilationImplAndroid::CompilationImplAndroid(ModelImplAndroid* model) {
 
   int32_t result = ANeuralNetworksCompilation_create(model->nn_model_, &nn_compilation_);
 
-  LOG(INFO) << "ANeuralNetworksCompilation_create: " << result;
+  DLOG(INFO) << "ANeuralNetworksCompilation_create: " << result;
 }
 CompilationImplAndroid::~CompilationImplAndroid() {
   ANeuralNetworksCompilation_free(nn_compilation_);
-  LOG(INFO) << "ANeuralNetworksCompilation_free";
+  DLOG(INFO) << "ANeuralNetworksCompilation_free";
 }
 
 void CompilationImplAndroid::setPreference(int32_t preference, setPreferenceCallback callback) {
-  LOG(INFO) << "CompilationImplAndroid::setPreference";
-  LOG(INFO) << "  " << "preference: " << preference;
+  DLOG(INFO) << "CompilationImplAndroid::setPreference";
+  DLOG(INFO) << "  " << "preference: " << preference;
 
   // TODO: convert the blink preference to NN API types.
   int32_t result = ANeuralNetworksCompilation_setPreference(nn_compilation_, preference);
 
-  LOG(INFO) << "ANeuralNetworksCompilation_setPreference: " << result;
+  DLOG(INFO) << "ANeuralNetworksCompilation_setPreference: " << result;
 
   std::move(callback).Run(result);
 }
 
 void CompilationImplAndroid::finish(finishCallback callback) {
-  LOG(INFO) << "CompilationImplAndroid::finish";
+  DLOG(INFO) << "CompilationImplAndroid::finish";
 
   int32_t result = ANeuralNetworksCompilation_finish(nn_compilation_);
 
-  LOG(INFO) << "ANeuralNetworksCompilation_finish: " << result;
+  DLOG(INFO) << "ANeuralNetworksCompilation_finish: " << result;
 
   std::move(callback).Run(result);
 }
 
 void CompilationImplAndroid::createExecution(createExecutionCallback callback) {
-  LOG(INFO) << "CompilationImplAndroid::createExecution";
+  DLOG(INFO) << "CompilationImplAndroid::createExecution";
   auto init_params = mojom::ExecutionInitParams::New();
 
-  auto impl = std::make_unique<ExecutionImplAndroid>(this);
+  uint32_t input_memory_size = 0;
+  for (size_t i = 0; i < inputs_.size(); ++i) {
+    Operand operand = operands_[inputs_[i]];
+    input_memory_size += operand.requiredSize();
+    init_params->inputs.push_back(
+        mojom::Operand::New(operand.type, operand.dimensions));
+  }
+  DLOG(INFO) << "Required input memory size: " << input_memory_size;
+
+  uint32_t output_memory_size = 0;
+  for (size_t i = 0; i < outputs_.size(); ++i) {
+    Operand operand = operands_[outputs_[i]];
+    output_memory_size += operand.requiredSize();
+    init_params->outputs.push_back(
+        mojom::Operand::New(operand.type, operand.dimensions));
+  }
+  DLOG(INFO) << "Required output memory size: " << output_memory_size;
+
+  uint32_t total_memory_size = input_memory_size + output_memory_size;
+  mojo::ScopedSharedBufferHandle memory_handle =
+      mojo::SharedBufferHandle::Create(total_memory_size);
+  
+  init_params->memory = memory_handle->Clone(
+      mojo::SharedBufferHandle::AccessMode::READ_WRITE);
+
+  auto impl = std::make_unique<ExecutionImplAndroid>(this, std::move(memory_handle));
 
   mojom::ExecutionPtrInfo ptr_info;
   mojo::MakeStrongBinding(std::move(impl),
