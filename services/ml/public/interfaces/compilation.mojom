@@ -19,9 +19,7 @@ struct ExecutionInitParams {
 };
 
 interface Compilation {
-  setPreference(int32 preference)
-    => (int32 resultCode);
-  finish()
+  finish(int32 preference)
     => (int32 resultCode);
   createExecution()
     => (int32 resultCode, ExecutionInitParams init_params);

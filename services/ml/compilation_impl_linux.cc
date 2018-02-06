@@ -14,14 +14,9 @@ CompilationImplLinux::CompilationImplLinux(ModelImplLinux* model) {
 }
 CompilationImplLinux::~CompilationImplLinux() {}
 
-void CompilationImplLinux::setPreference(int32_t preference, setPreferenceCallback callback) {
-  DLOG(INFO) << "CompilationImplLinux::setPreference";
-  DLOG(INFO) << "  " << "preference: " << preference;
-  std::move(callback).Run(mojom::NO_ERROR);
-}
-
-void CompilationImplLinux::finish(finishCallback callback) {
+void CompilationImplLinux::finish(int32_t preference, finishCallback callback) {
   DLOG(INFO) << "CompilationImplLinux::finish";
+  DLOG(INFO) << "  " << "preference: " << preference;
   std::move(callback).Run(mojom::NO_ERROR);
 }
 

@@ -16,7 +16,7 @@
 
 namespace blink {
 
-Compilation::Compilation(ml::mojom::blink::CompilationPtrInfo info) {
+Compilation::Compilation(ml::mojom::blink::CompilationPtrInfo info) : is_finished_(false) {
   compilation_.Bind(std::move(info));
   compilation_.set_connection_error_handler(
       WTF::Bind(&Compilation::OnConnectionError, WrapWeakPersistent(this)));
@@ -24,26 +24,22 @@ Compilation::Compilation(ml::mojom::blink::CompilationPtrInfo info) {
 
 Compilation::~Compilation() = default;
 
-ScriptPromise Compilation::setPreference(ScriptState* script_state, int32_t preference) {
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
-  ScriptPromise promise = resolver->Promise();
-  if (!compilation_) {
-    resolver->Reject(DOMException::Create(
-        kNotSupportedError, "Compilation service unavailable."));
-    return promise;
+void Compilation::setPreference(int32_t preference, ExceptionState& exception_state) {
+  if (is_finished_) {
+    exception_state.ThrowDOMException(kInvalidStateError,
+                                      "Compilation is finished.");
   }
-  requests_.insert(resolver);
-
-  compilation_->setPreference(
-      preference,
-      WTF::Bind(&Compilation::OnResultCode, WrapPersistent(this),
-                WrapPersistent(resolver), String("finish")));
-  return promise;
+  preference_ = preference;
 }
 
 ScriptPromise Compilation::finish(ScriptState* script_state) {
   ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
   ScriptPromise promise = resolver->Promise();
+  if (is_finished_) {
+    resolver->Reject(DOMException::Create(
+        kNotSupportedError, "Compilation is finished."));
+    return promise;
+  }
   if (!compilation_) {
     resolver->Reject(DOMException::Create(
         kNotSupportedError, "Compilation service unavailable."));
@@ -52,14 +48,21 @@ ScriptPromise Compilation::finish(ScriptState* script_state) {
   requests_.insert(resolver);
 
   compilation_->finish(
+      preference_,
       WTF::Bind(&Compilation::OnResultCode, WrapPersistent(this),
                 WrapPersistent(resolver), String("finish")));
+  is_finished_ = true;
   return promise;
 }
 
 ScriptPromise Compilation::createExecution(ScriptState* script_state) {
   ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
   ScriptPromise promise = resolver->Promise();
+  if (!is_finished_) {
+    resolver->Reject(DOMException::Create(
+        kNotSupportedError, "Compilation is not finished."));
+    return promise;
+  }
   if (!compilation_) {
     resolver->Reject(DOMException::Create(
         kNotSupportedError, "Compilation service unavailable."));

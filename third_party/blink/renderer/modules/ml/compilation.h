@@ -19,7 +19,7 @@ class Compilation final : public ScriptWrappable {
   Compilation(ml::mojom::blink::CompilationPtrInfo);
   ~Compilation() override;
 
-  ScriptPromise setPreference(ScriptState*, int32_t);
+  void setPreference(int32_t, ExceptionState&);
   ScriptPromise finish(ScriptState*);
   ScriptPromise createExecution(ScriptState*);
 
@@ -31,6 +31,8 @@ class Compilation final : public ScriptWrappable {
   void OnConnectionError();
 
  private:
+  bool is_finished_;
+  int32_t preference_;
   ml::mojom::blink::CompilationPtr compilation_;
   HeapHashSet<Member<ScriptPromiseResolver>> requests_;
 };

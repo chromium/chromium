@@ -21,23 +21,19 @@ CompilationImplAndroid::~CompilationImplAndroid() {
   DLOG(INFO) << "ANeuralNetworksCompilation_free";
 }
 
-void CompilationImplAndroid::setPreference(int32_t preference, setPreferenceCallback callback) {
-  DLOG(INFO) << "CompilationImplAndroid::setPreference";
+void CompilationImplAndroid::finish(int32_t preference, finishCallback callback) {
+  DLOG(INFO) << "CompilationImplAndroid::finish";
   DLOG(INFO) << "  " << "preference: " << preference;
 
-  // TODO: convert the blink preference to NN API types.
-  int32_t result = ANeuralNetworksCompilation_setPreference(nn_compilation_, preference);
-
+  int32_t result;
+  result = ANeuralNetworksCompilation_setPreference(nn_compilation_, preference);
   DLOG(INFO) << "ANeuralNetworksCompilation_setPreference: " << result;
+  if (result != ANEURALNETWORKS_NO_ERROR) {
+    std::move(callback).Run(result);
+    return;
+  }
 
-  std::move(callback).Run(result);
-}
-
-void CompilationImplAndroid::finish(finishCallback callback) {
-  DLOG(INFO) << "CompilationImplAndroid::finish";
-
-  int32_t result = ANeuralNetworksCompilation_finish(nn_compilation_);
-
+  result = ANeuralNetworksCompilation_finish(nn_compilation_);
   DLOG(INFO) << "ANeuralNetworksCompilation_finish: " << result;
 
   std::move(callback).Run(result);
