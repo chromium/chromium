@@ -10,16 +10,37 @@ struct CompilationInitParams {
   Compilation compilation;
 };
 
+struct Operand {
+  int32 type;
+  array<uint32> dimensions;
+  float scale;
+  int32 zeroPoint;
+};
+
+struct Operation {
+  int32 type;
+  array<uint32> inputs;
+  array<uint32> outputs;
+};
+
+struct OperandValueInfo {
+  uint32 index;
+  uint32 offset;
+  uint32 length;
+};
+
+struct ModelInfo {
+  array<Operand> operands;
+  array<Operation> operations;
+  array<uint32> inputs;
+  array<uint32> outputs;
+  array<OperandValueInfo> values;
+  handle<shared_buffer> memory;
+  uint32 memory_size;
+};
+
 interface Model {
-  addOperand(int32 type, array<uint32> dimensions, float scale, int32 zeroPoint)
-    => (int32 resultCode);
-  setOperandValue(uint32 index, handle<shared_buffer> buffer, uint32 length)
-    => (int32 resultCode);
-  addOperation(int32 type, array<uint32> inputs, array<uint32> outputs)
-    => (int32 resultCode);
-  identifyInputsAndOutputs(array<uint32> inputs, array<uint32> outputs)
-    => (int32 resultCode);
-  finish()
+  finish(ModelInfo model)
     => (int32 resultCode);
   createCompilation()
     => (int32 resultCode, CompilationInitParams init_params);

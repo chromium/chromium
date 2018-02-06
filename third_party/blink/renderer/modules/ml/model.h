@@ -23,10 +23,10 @@ class Model final : public ScriptWrappable {
   Model(ml::mojom::blink::ModelPtrInfo);
   ~Model() override;
 
-  ScriptPromise addOperand(ScriptState*, const OperandOptions&);
-  ScriptPromise setOperandValue(ScriptState*, uint32_t, MaybeShared<DOMArrayBufferView>);
-  ScriptPromise addOperation(ScriptState*, int32_t, Vector<uint32_t>&, Vector<uint32_t>&);
-  ScriptPromise identifyInputsAndOutputs(ScriptState*, Vector<uint32_t>&, Vector<uint32_t>&);
+  void addOperand(const OperandOptions&, ExceptionState&);
+  void setOperandValue(uint32_t, MaybeShared<DOMArrayBufferView>, ExceptionState&);
+  void addOperation(int32_t, Vector<uint32_t>&, Vector<uint32_t>&, ExceptionState&);
+  void identifyInputsAndOutputs(Vector<uint32_t>&, Vector<uint32_t>&, ExceptionState&);
   ScriptPromise finish(ScriptState*);
   ScriptPromise createCompilation(ScriptState*);
 
@@ -38,8 +38,11 @@ class Model final : public ScriptWrappable {
   void OnConnectionError();
 
  private:
+  bool is_finished_;
   ml::mojom::blink::ModelPtr model_;
+  ml::mojom::blink::ModelInfoPtr model_info_;
   HeapHashSet<Member<ScriptPromiseResolver>> requests_;
+  HeapVector<Member<DOMArrayBufferView>> buffer_views_;
 };
 
 }  // namespace blink

@@ -48,7 +48,7 @@ Execution::Execution(ml::mojom::blink::ExecutionInitParamsPtr init_params) {
   for (size_t i = 0; i < init_params->inputs.size(); ++i) {
     uint32_t offset = total_length;
     uint32_t length = requiredSize(init_params->inputs[i]->type,
-                                       init_params->inputs[i]->dimensions);
+                                   init_params->inputs[i]->dimensions);
     mojo::ScopedSharedBufferMapping mapping = memory_->MapAtOffset(length, offset);
     OperandInfo* info = new OperandInfo(offset, length, std::move(mapping));
     inputs_.push_back(info);

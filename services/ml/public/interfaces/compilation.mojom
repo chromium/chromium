@@ -6,15 +6,15 @@ module ml.mojom;
 
 import "execution.mojom";
 
-struct Operand {
+struct OperandInfo {
   int32 type;
   array<uint32> dimensions;
 };
 
 struct ExecutionInitParams {
   Execution execution;
-  array<Operand> inputs;
-  array<Operand> outputs;
+  array<OperandInfo> inputs;
+  array<OperandInfo> outputs;
   handle<shared_buffer> memory;
 };
 
