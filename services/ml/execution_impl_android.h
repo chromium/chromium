@@ -14,7 +14,12 @@
 #include "services/ml/model_impl_android.h"
 #include "services/ml/compilation_impl_android.h"
 
+#ifdef __ANDROID_API__
+#undef __ANDROID_API__
+#define __ANDROID_API__ 27
 #include "android/NeuralNetworks.h"
+#undef __ANDROID_API__
+#endif
 
 namespace ml {
 

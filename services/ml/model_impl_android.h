@@ -11,7 +11,12 @@
 #include "services/ml/public/interfaces/constants.mojom.h"
 #include "services/ml/common.h"
 
+#ifdef __ANDROID_API__
+#undef __ANDROID_API__
+#define __ANDROID_API__ 27
 #include "android/NeuralNetworks.h"
+#undef __ANDROID_API__
+#endif
 
 namespace ml {
 

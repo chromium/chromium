@@ -48,6 +48,7 @@ source_set("lib") {
     libs = [
       "neuralnetworks",
     ]
+
   } else {
     sources += [
       "neural_network_impl.cc",
