@@ -31,6 +31,8 @@ bindings_modules_generated_union_type_files = [
   "$bindings_modules_v8_output_dir/array_buffer_view_or_blob_or_string_or_form_data_or_readable_stream.h",
   "$bindings_modules_v8_output_dir/array_buffer_view_or_double.cc",
   "$bindings_modules_v8_output_dir/array_buffer_view_or_double.h",
+  "$bindings_modules_v8_output_dir/array_buffer_view_or_blob_or_string_or_form_data.cc",
+  "$bindings_modules_v8_output_dir/array_buffer_view_or_blob_or_string_or_form_data.h",
   "$bindings_modules_v8_output_dir/audio_context_latency_category_or_double.cc",
   "$bindings_modules_v8_output_dir/audio_context_latency_category_or_double.h",
   "$bindings_modules_v8_output_dir/boolean_or_constrain_boolean_parameters.cc",
