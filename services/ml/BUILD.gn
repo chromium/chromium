@@ -49,6 +49,17 @@ source_set("lib") {
       "neuralnetworks",
     ]
 
+  } else if (is_mac) {
+    sources += [
+      "compilation_impl_mac.mm",
+      "compilation_impl_mac.h",
+      "execution_impl_mac.mm",
+      "execution_impl_mac.h",
+      "model_impl_mac.mm",
+      "model_impl_mac.h",
+      "neural_network_impl_mac.mm",
+      "neural_network_impl_mac.h",
+    ]
   } else {
     sources += [
       "neural_network_impl.cc",
