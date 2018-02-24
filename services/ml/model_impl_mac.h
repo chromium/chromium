@@ -34,8 +34,11 @@ class ModelImplMac : public mojom::Model {
   friend class CompilationImplMac;
   std::vector<Operand> operands_;
   std::vector<Operation> operations_;
+  std::map<uint32_t, ValueInfo> values_;
   std::vector<uint32_t> inputs_;
   std::vector<uint32_t> outputs_;
+  std::unique_ptr<int8_t []> memory_;
+  uint32_t memory_size_;
   DISALLOW_COPY_AND_ASSIGN(ModelImplMac);
 };
 

@@ -32,6 +32,15 @@ struct OperandInfo {
   mojo::ScopedSharedBufferMapping mapping;
 };
 
+struct ValueInfo {
+  ValueInfo();
+  ~ValueInfo();
+  ValueInfo(const ValueInfo&);
+  uint32_t index;
+  uint32_t offset;
+  uint32_t length;
+};
+
 struct Operation {
   Operation();
   ~Operation();
@@ -57,6 +66,9 @@ std::string VectorToString(const T* vect, size_t length) {
 }
 
 void PrintOperand(Operand& operand, std::unique_ptr<OperandInfo>& info);
+
+int32_t getScalarInt32(const ValueInfo&, int8_t*);
+float getScalarFloat(const ValueInfo&, int8_t*);
 
 }
 

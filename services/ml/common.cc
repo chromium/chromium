@@ -43,6 +43,10 @@ OperandInfo::OperandInfo(uint32_t offset, uint32_t length, mojo::ScopedSharedBuf
 
 OperandInfo::~OperandInfo() {}
 
+ValueInfo::ValueInfo() = default;
+ValueInfo::~ValueInfo() = default;
+ValueInfo::ValueInfo(const ValueInfo&) = default;
+
 void PrintOperand(Operand& operand, std::unique_ptr<OperandInfo>& info) {
   uint32_t length = info->length;
   if (operand.type == mojom::TENSOR_FLOAT32 || operand.type == mojom::FLOAT32) {
@@ -62,6 +66,16 @@ void PrintOperand(Operand& operand, std::unique_ptr<OperandInfo>& info) {
     uint32_t size = length;
     DLOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
   }
+}
+
+int32_t getScalarInt32(const ValueInfo& info, int8_t* memory) {
+  int32_t* ptr = reinterpret_cast<int32_t*>(memory + info.offset);
+  return ptr[0];
+}
+
+float getScalarFloat(const ValueInfo& info, int8_t* memory) {
+  float* ptr = reinterpret_cast<float*>(memory + info.offset);
+  return ptr[0];
 }
 
 }

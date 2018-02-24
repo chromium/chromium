@@ -59,6 +59,12 @@ source_set("lib") {
       "model_impl_mac.h",
       "neural_network_impl_mac.mm",
       "neural_network_impl_mac.h",
+      "mpscnn_context.mm",
+      "mpscnn_context.h", 
+    ]
+
+    libs = [
+      "Metal.framework"
     ]
   } else {
     sources += [

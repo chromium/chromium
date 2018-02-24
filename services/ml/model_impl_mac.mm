@@ -91,14 +91,22 @@ void ModelImplMac::finish(mojom::ModelInfoPtr model_info, finishCallback callbac
     AddOperation(operation->type, operation->inputs, operation->outputs);
   }
   DLOG(INFO) << "values(" << model_info->values.size() << ")";
-  auto mapping = model_info->memory->Map(model_info->memory_size);
+  memory_size_ = model_info->memory_size;
+  auto mapping = model_info->memory->Map(memory_size_);
   const int8_t* base = static_cast<const int8_t*>(mapping.get());
+  memory_.reset(new int8_t[memory_size_]);
+  memcpy(memory_.get(), base, memory_size_);
   for (size_t i = 0; i < model_info->values.size(); ++i ) {
     DLOG(INFO) << "  values[" << i << "]";
     const mojom::OperandValueInfoPtr& value_info = model_info->values[i];
     SetOperandValue(value_info->index,
-                    static_cast<const void*>(base + value_info->offset),
+                    static_cast<const void*>(memory_.get() + value_info->offset),
                     value_info->length);
+    ValueInfo value;
+    value.index = value_info->index;
+    value.offset = value_info->offset;
+    value.length = value_info->length;
+    values_[value_info->index] = value;
   }
   DLOG(INFO) << "inputs(" << model_info->inputs.size() << ")";
   DLOG(INFO) << "outputs(" << model_info->outputs.size() << ")";

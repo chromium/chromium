@@ -25,12 +25,21 @@ class CompilationImplMac : public mojom::Compilation {
   void createExecution(createExecutionCallback callback) override;
 
  private:
+  bool CompileConv2D(const Operation&);
+  bool CompileDepthwiseConv2D(const Operation&);
+  bool CompileAveragePool2D(const Operation&);
+  bool CompileSoftmax(const Operation&);
+  bool CompileReshape(const Operation&);
+
+ private:
   friend class ExecutionImplMac;
   std::vector<Operand> operands_;
   std::vector<Operation> operations_;
+  std::map<uint32_t, ValueInfo> values_;
   std::vector<uint32_t> inputs_;
   std::vector<uint32_t> outputs_;
-
+  std::unique_ptr<int8_t []> memory_;
+  uint32_t memory_size_;
   DISALLOW_COPY_AND_ASSIGN(CompilationImplMac);
 };
 
