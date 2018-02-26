@@ -24,6 +24,15 @@ void CompilationImplMac::finish(int32_t preference, finishCallback callback) {
   DLOG(INFO) << "CompilationImplMac::finish";
   DLOG(INFO) << "  " << "preference: " << preference;
 
+  if (@available(macOS 10.11, *)) {
+    id<MTLDevice> device = GetMPSCNNContext().device;
+    if (device == nil) {
+      DLOG(ERROR) << "Cannot create MTLDevice";
+      std::move(callback).Run(mojom::BAD_STATE);
+      return;
+    }
+  }
+
   DLOG(INFO) << "operations(" << operations_.size() << ")";
   bool success = true;
   for (size_t i = 0; i < operations_.size(); ++i ) {
@@ -109,10 +118,6 @@ bool CompilationImplMac::CompileConv2D(const Operation& operation) {
   DLOG(INFO) << "  stride_width: " << stride_width;
   DLOG(INFO) << "  stride_height: " << stride_height;
   DLOG(INFO) << "  fuse_code: " << fuse_code;
-
-  if (@available(macOS 10.11, *)) {
-    DLOG(INFO) << "  device: " << GetMPSCNNContext().device;
-  }
 
   /*
   MPSCNNConvolutionDescriptor* desc = [MPSCNNConvolutionDescriptor
