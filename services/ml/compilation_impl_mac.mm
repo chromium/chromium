@@ -392,6 +392,12 @@ bool CompilationImplMac::CompileSoftmax(const Operation& operation) {
 bool CompilationImplMac::CompileReshape(const Operation& operation) {
   DLOG(INFO) << "CompilationImplMac::CompileReshape";
   DLOG_IF(FATAL, operation.type != mojom::RESHAPE);
+
+  DLOG(INFO) << "  Reshape is compiled to no-op";
+  if (@available(macOS 10.13, *)) {
+    base::scoped_nsobject<MPSCNNKernel> kernel(nullptr);
+    mpscnn_kernels_.push_back(kernel);
+  }
   return true;
 }
 
