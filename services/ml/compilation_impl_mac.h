@@ -14,6 +14,10 @@
 #include "services/ml/model_impl_mac.h"
 #include "services/ml/execution_impl_mac.h"
 
+#include "base/mac/scoped_nsobject.h"
+
+@class MPSCNNKernel;
+
 namespace ml {
 
 class CompilationImplMac : public mojom::Compilation {
@@ -25,8 +29,7 @@ class CompilationImplMac : public mojom::Compilation {
   void createExecution(createExecutionCallback callback) override;
 
  private:
-  bool CompileConv2D(const Operation&);
-  bool CompileDepthwiseConv2D(const Operation&);
+  bool CompileConv2DOrDepthwiseConv2D(const Operation&);
   bool CompileAveragePool2D(const Operation&);
   bool CompileSoftmax(const Operation&);
   bool CompileReshape(const Operation&);
@@ -40,6 +43,7 @@ class CompilationImplMac : public mojom::Compilation {
   std::vector<uint32_t> outputs_;
   std::unique_ptr<int8_t []> memory_;
   uint32_t memory_size_;
+  std::vector<base::scoped_nsobject<MPSCNNKernel> > mpscnn_kernels_;
   DISALLOW_COPY_AND_ASSIGN(CompilationImplMac);
 };
 
