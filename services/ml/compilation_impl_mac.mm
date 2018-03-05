@@ -266,6 +266,104 @@ bool CompilationImplMac::CompileConv2DOrDepthwiseConv2D(const Operation& operati
 bool CompilationImplMac::CompileAveragePool2D(const Operation& operation) {
   DLOG(INFO) << "CompilationImplMac::CompileAveragePool2D";
   DLOG_IF(FATAL, operation.type != mojom::AVERAGE_POOL_2D);
+  int32_t input_width, input_height, output_width, output_height;
+  bool implicit_padding;
+  int32_t padding_left, padding_right, padding_top, padding_bottom;
+  int32_t stride_width, stride_height;
+  int32_t padding_code, fuse_code;
+  int32_t filter_height, filter_width;
+
+  std::vector<uint32_t> inputs = operation.inputs;
+  std::vector<uint32_t> outputs = operation.outputs;
+  Operand output = operands_[outputs[0]];
+  output_height = output.dimensions[1];
+  output_width = output.dimensions[2];
+  int32_t i = 0;
+  Operand input = operands_[inputs[i++]];
+  input_height = input.dimensions[1];
+  input_width = input.dimensions[2];
+
+  DLOG(INFO) << "  input_height: " << input_height << " input_width: " << input_width;
+  DLOG(INFO) << "  output_height: " << output_height << " output_width: " << output_width;
+
+  if (inputs.size() == 10) {
+    implicit_padding = false;
+    padding_left = getScalarInt32(values_[inputs[i++]], memory_.get());
+    padding_right = getScalarInt32(values_[inputs[i++]], memory_.get());
+    padding_top = getScalarInt32(values_[inputs[i++]], memory_.get());
+    padding_bottom = getScalarInt32(values_[inputs[i++]], memory_.get());
+  } else if (inputs.size() == 7) {
+    implicit_padding = true;
+    padding_code = getScalarInt32(values_[inputs[i++]], memory_.get());
+  } else {
+    DLOG(ERROR) << "  inputs size is incorrect";
+    return false;
+  }
+  stride_width = getScalarInt32(values_[inputs[i++]], memory_.get());
+  stride_height = getScalarInt32(values_[inputs[i++]], memory_.get());
+  filter_width = getScalarInt32(values_[inputs[i++]], memory_.get());
+  filter_height = getScalarInt32(values_[inputs[i++]], memory_.get());
+  fuse_code = getScalarInt32(values_[inputs[i++]], memory_.get());
+
+  DLOG(INFO) << "  implicit_padding: " << implicit_padding;
+  if (implicit_padding) {
+    DLOG(INFO) << "  padding_code: " << padding_code;
+  } else {
+    DLOG(INFO) << "  padding_left: " << padding_left;
+    DLOG(INFO) << "  padding_right: " << padding_right;
+    DLOG(INFO) << "  padding_top: " << padding_top;
+    DLOG(INFO) << "  padding_bottom: " << padding_bottom;
+  }
+  DLOG(INFO) << "  stride_width: " << stride_width;
+  DLOG(INFO) << "  stride_height: " << stride_height;
+  DLOG(INFO) << "  filter_height: " << filter_height;
+  DLOG(INFO) << "  filter_width: " << filter_width;
+  DLOG(INFO) << "  fuse_code: " << fuse_code;
+
+  if (fuse_code != mojom::FUSED_NONE) {
+    DLOG(ERROR) << "  fuse_code " << fuse_code << " is not supproted.";
+    return false;
+  }
+
+  if (@available(macOS 10.13, *)) {
+    MPSCNNPoolingAverage* pool =
+        [[MPSCNNPoolingAverage alloc]
+            initWithDevice:GetMPSCNNContext().device
+            kernelWidth:filter_width
+            kernelHeight:filter_height
+            strideInPixelsX:stride_width
+            strideInPixelsY:stride_height];
+    if (implicit_padding) {
+      if (padding_code == mojom::PADDING_SAME) {
+        MPSOffset offset;
+        ComputeMPSOffsetForImplictPadding(
+            offset, input_height, input_width, output_height, output_width,
+            filter_height, filter_width, stride_height, stride_width);
+        DLOG(INFO) << "  MPSOffset x: " << offset.x << " y: " << offset.y;
+        [pool setOffset:offset];
+      }
+    } else {
+      if (padding_left != padding_right || padding_top != padding_bottom) {
+        DLOG(ERROR) << "padding_left != padding_right || padding_top != padding_bottom";
+        return false;
+      } else {
+        MPSOffset offset;
+        offset.x = padding_left;
+        offset.y = padding_top;
+        offset.z = 0;
+        DLOG(INFO) << "  MPSOffset x: " << offset.x << " y: " << offset.y;
+        [pool setOffset:offset];
+      }
+    }
+
+    [pool setEdgeMode:MPSImageEdgeModeClamp];
+
+    DLOG(INFO) << "  Create MPSCNNPoolingAverage: " << pool;
+
+    base::scoped_nsobject<MPSCNNKernel> kernel;
+    kernel.reset(pool);
+    mpscnn_kernels_.push_back(kernel);
+  }
   return true;
 }
 
