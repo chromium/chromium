@@ -370,6 +370,22 @@ bool CompilationImplMac::CompileAveragePool2D(const Operation& operation) {
 bool CompilationImplMac::CompileSoftmax(const Operation& operation) {
   DLOG(INFO) << "CompilationImplMac::CompileSoftmax";
   DLOG_IF(FATAL, operation.type != mojom::SOFTMAX);
+  float beta = getScalarFloat(values_[operation.inputs[1]], memory_.get());
+  DLOG(INFO) << "  beta: " << beta;
+  if (beta != 1.0) {
+    DLOG(ERROR) << "  beta " << beta << " is not supported.";
+    return false;
+  }
+  if (@available(macOS 10.13, *)) {
+    MPSCNNSoftMax* softmax =
+        [[MPSCNNSoftMax alloc] initWithDevice:GetMPSCNNContext().device];
+    
+    DLOG(INFO) << "  Create MPSCNNSoftMax: " << softmax;
+
+    base::scoped_nsobject<MPSCNNKernel> kernel;
+    kernel.reset(softmax);
+    mpscnn_kernels_.push_back(kernel);
+  }
   return true;
 }
 
