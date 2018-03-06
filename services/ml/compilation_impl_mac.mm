@@ -14,46 +14,6 @@ OperationMac::OperationMac(const OperationMac& operation) = default;
 OperationMac::OperationMac(const Operation& operation) : Operation(operation) {}
 OperationMac::~OperationMac() = default;
 
-MPSImageDescriptor* API_AVAILABLE(macosx(10.13)) CreateMPSImageDescriptor(const Operand& operand) {
-  int32_t type = operand.type;
-  const std::vector<uint32_t>& dimensions = operand.dimensions;
-  MPSImageDescriptor* mpsimage_desc = nullptr;
-  if (type != mojom::TENSOR_FLOAT32) {
-    DLOG(ERROR) << "type " << type << " is not supported";
-    return mpsimage_desc;
-  }
-  uint32_t n, width, height, channels;
-  if (dimensions.size() == 4) {
-    n = dimensions[0];
-    height = dimensions[1];
-    width = dimensions[2];
-    channels = dimensions[3];
-  } else if (dimensions.size() == 2) {
-    n = dimensions[0];
-    channels = dimensions[1];
-    height = 1;
-    width = 1;
-  } else {
-    DLOG(ERROR) << "dimension " << dimensions.size() << " is not supported";
-    return mpsimage_desc;
-  }
-  if (n != 1) {
-    DLOG(ERROR) << "number of images " << n << " is not supported";
-    return mpsimage_desc;
-  }
-  DLOG(INFO) << "Create MPSImageDescriptor " << mpsimage_desc
-      << " [" << width << ", " << height << ", " << channels << "]";
-  mpsimage_desc = [MPSImageDescriptor
-      imageDescriptorWithChannelFormat:MPSImageFeatureChannelFormatFloat16
-      width:width
-      height:height
-      featureChannels:channels
-      numberOfImages:n
-      usage:MTLTextureUsageShaderRead|MTLTextureUsageShaderWrite];
-  
-  return mpsimage_desc;
-}
-
 MPSCNNNeuron* API_AVAILABLE(macosx(10.13)) CreateMPSCNNNeuron(int32_t fuse_code) {
   MPSCNNNeuron* relu = nullptr;
   if (fuse_code == mojom::FUSED_NONE) {
@@ -137,7 +97,7 @@ void CompilationImplMac::finish(int32_t preference, finishCallback callback) {
   DLOG(INFO) << "CompilationImplMac::finish";
   DLOG(INFO) << "  " << "preference: " << preference;
 
-  if (@available(macOS 10.11, *)) {
+  if (@available(macOS 10.13, *)) {
     id<MTLDevice> device = GetMPSCNNContext().device;
     if (device == nil) {
       DLOG(ERROR) << "Cannot create MTLDevice";

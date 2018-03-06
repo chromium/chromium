@@ -14,6 +14,10 @@
 #include "services/ml/model_impl_mac.h"
 #include "services/ml/compilation_impl_mac.h"
 
+#include "base/mac/scoped_nsobject.h"
+
+@class MPSImage;
+
 namespace ml {
 
 class ExecutionImplMac : public mojom::Execution {
@@ -29,6 +33,9 @@ class ExecutionImplMac : public mojom::Execution {
   std::vector<std::unique_ptr<OperandInfo>> inputs_info_;
   std::vector<std::unique_ptr<OperandInfo>> outputs_info_;
   mojo::ScopedSharedBufferHandle memory_;
+
+  std::vector<base::scoped_nsobject<MPSImage> > input_mpsimages_;
+  std::vector<base::scoped_nsobject<MPSImage> > output_mpsimages_;
 
   DISALLOW_COPY_AND_ASSIGN(ExecutionImplMac);
 };

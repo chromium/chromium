@@ -10,18 +10,30 @@
 #import <Metal/MTLDevice.h>
 #import <Metal/MTLLibrary.h>
 
+#include <vector>
+#include <string>
+#include <unordered_map>
+
 namespace ml {
 
-struct API_AVAILABLE(macosx(10.11)) MPSCNNContext {
+struct API_AVAILABLE(macosx(10.13)) MPSCNNContext {
  public:
-  MPSCNNContext() : initialized(false) {}
-  bool initialized;
+  MPSCNNContext();
+  ~MPSCNNContext();
   id<MTLDevice> device;
   id<MTLCommandQueue> command_queue;
   id<MTLLibrary> library;
+  bool initialized;
+
+  id<MTLComputePipelineState> getPipelineState(NSString* kernel);
+  id<MTLComputePipelineState> getSpecializedPipelineState(NSString* kernel,
+                                                          const std::vector<ushort>& constants);
+
+ private:
+  std::unordered_map<std::string, id<MTLComputePipelineState>> pipelineCache_;
 };
 
-MPSCNNContext& API_AVAILABLE(macosx(10.11)) GetMPSCNNContext();
+MPSCNNContext& API_AVAILABLE(macosx(10.13)) GetMPSCNNContext();
 
 }
 
