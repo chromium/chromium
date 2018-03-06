@@ -9,6 +9,51 @@
 
 namespace ml {
 
+OperationMac::OperationMac() = default;
+OperationMac::OperationMac(const OperationMac& operation) = default;
+OperationMac::OperationMac(const Operation& operation) : Operation(operation) {}
+OperationMac::~OperationMac() = default;
+
+MPSImageDescriptor* API_AVAILABLE(macosx(10.13)) CreateMPSImageDescriptor(const Operand& operand) {
+  int32_t type = operand.type;
+  const std::vector<uint32_t>& dimensions = operand.dimensions;
+  MPSImageDescriptor* mpsimage_desc = nullptr;
+  if (type != mojom::TENSOR_FLOAT32) {
+    DLOG(ERROR) << "type " << type << " is not supported";
+    return mpsimage_desc;
+  }
+  uint32_t n, width, height, channels;
+  if (dimensions.size() == 4) {
+    n = dimensions[0];
+    height = dimensions[1];
+    width = dimensions[2];
+    channels = dimensions[3];
+  } else if (dimensions.size() == 2) {
+    n = dimensions[0];
+    channels = dimensions[1];
+    height = 1;
+    width = 1;
+  } else {
+    DLOG(ERROR) << "dimension " << dimensions.size() << " is not supported";
+    return mpsimage_desc;
+  }
+  if (n != 1) {
+    DLOG(ERROR) << "number of images " << n << " is not supported";
+    return mpsimage_desc;
+  }
+  DLOG(INFO) << "Create MPSImageDescriptor " << mpsimage_desc
+      << " [" << width << ", " << height << ", " << channels << "]";
+  mpsimage_desc = [MPSImageDescriptor
+      imageDescriptorWithChannelFormat:MPSImageFeatureChannelFormatFloat16
+      width:width
+      height:height
+      featureChannels:channels
+      numberOfImages:n
+      usage:MTLTextureUsageShaderRead|MTLTextureUsageShaderWrite];
+  
+  return mpsimage_desc;
+}
+
 MPSCNNNeuron* API_AVAILABLE(macosx(10.13)) CreateMPSCNNNeuron(int32_t fuse_code) {
   MPSCNNNeuron* relu = nullptr;
   if (fuse_code == mojom::FUSED_NONE) {
@@ -74,7 +119,10 @@ void API_AVAILABLE(macosx(10.13)) ComputeMPSOffsetForImplictPadding(
 
 CompilationImplMac::CompilationImplMac(ModelImplMac* model) {
   operands_ = model->operands_;
-  operations_ = model->operations_;
+  for (uint32_t i = 0; i < model->operations_.size(); ++i) {
+    OperationMac operation(model->operations_[i]);
+    operations_.push_back(operation);
+  }
   values_ = model->values_;
   inputs_ = model->inputs_;
   outputs_ = model->outputs_;
@@ -100,13 +148,17 @@ void CompilationImplMac::finish(int32_t preference, finishCallback callback) {
     }
   }
 
-  DLOG(INFO) << "operations(" << operations_.size() << ")";
+  DLOG(INFO) << "Compile operations(" << operations_.size() << ")";
   bool success = true;
   for (size_t i = 0; i < operations_.size(); ++i ) {
-    Operation operation = operations_[i];
+    OperationMac& operation = operations_[i];
     uint32_t type = operation.type;
     DLOG(INFO) << "  operation[" << i << "]";
     DLOG(INFO) << "    type: " << type;
+    std::vector<uint32_t>& inputs = operation.inputs;
+    std::vector<uint32_t>& outputs = operation.outputs;
+    DLOG(INFO) << "    inputs(" << inputs.size() << "): " << VectorToString(inputs.data(), inputs.size());
+    DLOG(INFO) << "    outputs(" << outputs.size() << "): " << VectorToString(outputs.data(), outputs.size());
     if (type == mojom::CONV_2D || type == mojom::DEPTHWISE_CONV_2D) {
       success = CompileConv2DOrDepthwiseConv2D(operation);
     } else if (type == mojom::AVERAGE_POOL_2D) {
@@ -119,7 +171,6 @@ void CompilationImplMac::finish(int32_t preference, finishCallback callback) {
       DLOG(ERROR) << "Operation is not supported";
       success = false;
     }
-
     if (!success) {
       break;
     }
@@ -132,7 +183,7 @@ void CompilationImplMac::finish(int32_t preference, finishCallback callback) {
   }
 }
 
-bool CompilationImplMac::CompileConv2DOrDepthwiseConv2D(const Operation& operation) {
+bool CompilationImplMac::CompileConv2DOrDepthwiseConv2D(OperationMac& operation) {
   DLOG(INFO) << "CompilationImplMac::CompileConv2DOrDepthwiseConv2D";
   DLOG_IF(FATAL, operation.type != mojom::CONV_2D && operation.type != mojom::DEPTHWISE_CONV_2D);
   int32_t input_width, input_height, output_width, output_height;
@@ -146,11 +197,13 @@ bool CompilationImplMac::CompileConv2DOrDepthwiseConv2D(const Operation& operati
 
   std::vector<uint32_t> inputs = operation.inputs;
   std::vector<uint32_t> outputs = operation.outputs;
-  Operand output = operands_[outputs[0]];
+  uint32_t output_idx = outputs[0];
+  Operand& output = operands_[output_idx];
   output_height = output.dimensions[1];
   output_width = output.dimensions[2];
   int32_t i = 0;
-  Operand input = operands_[inputs[i++]];
+  int32_t input_idx = inputs[i++];
+  Operand& input = operands_[input_idx];
   input_height = input.dimensions[1];
   input_width = input.dimensions[2];
 
@@ -250,20 +303,15 @@ bool CompilationImplMac::CompileConv2DOrDepthwiseConv2D(const Operation& operati
         [conv setOffset:offset];
       }
     }
-
     [conv setEdgeMode:MPSImageEdgeModeZero];
-    
     DLOG(INFO) << "  Create MPSCNNConvolution: " << conv;
-
-    base::scoped_nsobject<MPSCNNKernel> kernel;
-    kernel.reset(conv);
-    mpscnn_kernels_.push_back(kernel);
+    operation.mpscnn_kernel.reset(conv);
   }
 
   return true;
 }
 
-bool CompilationImplMac::CompileAveragePool2D(const Operation& operation) {
+bool CompilationImplMac::CompileAveragePool2D(OperationMac& operation) {
   DLOG(INFO) << "CompilationImplMac::CompileAveragePool2D";
   DLOG_IF(FATAL, operation.type != mojom::AVERAGE_POOL_2D);
   int32_t input_width, input_height, output_width, output_height;
@@ -275,11 +323,13 @@ bool CompilationImplMac::CompileAveragePool2D(const Operation& operation) {
 
   std::vector<uint32_t> inputs = operation.inputs;
   std::vector<uint32_t> outputs = operation.outputs;
-  Operand output = operands_[outputs[0]];
+  uint32_t output_idx = outputs[0];
+  Operand& output = operands_[output_idx];
   output_height = output.dimensions[1];
   output_width = output.dimensions[2];
   int32_t i = 0;
-  Operand input = operands_[inputs[i++]];
+  int32_t input_idx = inputs[i++];
+  Operand& input = operands_[input_idx];
   input_height = input.dimensions[1];
   input_width = input.dimensions[2];
 
@@ -355,19 +405,14 @@ bool CompilationImplMac::CompileAveragePool2D(const Operation& operation) {
         [pool setOffset:offset];
       }
     }
-
     [pool setEdgeMode:MPSImageEdgeModeClamp];
-
     DLOG(INFO) << "  Create MPSCNNPoolingAverage: " << pool;
-
-    base::scoped_nsobject<MPSCNNKernel> kernel;
-    kernel.reset(pool);
-    mpscnn_kernels_.push_back(kernel);
+    operation.mpscnn_kernel.reset(pool);
   }
   return true;
 }
 
-bool CompilationImplMac::CompileSoftmax(const Operation& operation) {
+bool CompilationImplMac::CompileSoftmax(OperationMac& operation) {
   DLOG(INFO) << "CompilationImplMac::CompileSoftmax";
   DLOG_IF(FATAL, operation.type != mojom::SOFTMAX);
   float beta = getScalarFloat(values_[operation.inputs[1]], memory_.get());
@@ -379,24 +424,19 @@ bool CompilationImplMac::CompileSoftmax(const Operation& operation) {
   if (@available(macOS 10.13, *)) {
     MPSCNNSoftMax* softmax =
         [[MPSCNNSoftMax alloc] initWithDevice:GetMPSCNNContext().device];
-    
     DLOG(INFO) << "  Create MPSCNNSoftMax: " << softmax;
-
-    base::scoped_nsobject<MPSCNNKernel> kernel;
-    kernel.reset(softmax);
-    mpscnn_kernels_.push_back(kernel);
+    operation.mpscnn_kernel.reset(softmax);
   }
   return true;
 }
 
-bool CompilationImplMac::CompileReshape(const Operation& operation) {
+bool CompilationImplMac::CompileReshape(OperationMac& operation) {
   DLOG(INFO) << "CompilationImplMac::CompileReshape";
   DLOG_IF(FATAL, operation.type != mojom::RESHAPE);
 
   DLOG(INFO) << "  Reshape is compiled to no-op";
   if (@available(macOS 10.13, *)) {
-    base::scoped_nsobject<MPSCNNKernel> kernel(nullptr);
-    mpscnn_kernels_.push_back(kernel);
+    operation.mpscnn_kernel.reset();
   }
   return true;
 }

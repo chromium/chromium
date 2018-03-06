@@ -24,10 +24,7 @@ class ExecutionImplMac : public mojom::Execution {
   void startCompute(startComputeCallback callback) override;
 
  private:
-  std::vector<Operand> operands_;
-  std::vector<Operation> operations_;
-  std::vector<uint32_t> inputs_;
-  std::vector<uint32_t> outputs_;
+  CompilationImplMac* compilation_;
 
   std::vector<std::unique_ptr<OperandInfo>> inputs_info_;
   std::vector<std::unique_ptr<OperandInfo>> outputs_info_;

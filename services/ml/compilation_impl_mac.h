@@ -20,6 +20,14 @@
 
 namespace ml {
 
+struct OperationMac : public Operation {
+  OperationMac();
+  OperationMac(const OperationMac&);
+  OperationMac(const Operation&);
+  ~OperationMac();
+  base::scoped_nsobject<MPSCNNKernel> mpscnn_kernel;
+};
+
 class CompilationImplMac : public mojom::Compilation {
  public:
   CompilationImplMac(ModelImplMac*);
@@ -29,21 +37,20 @@ class CompilationImplMac : public mojom::Compilation {
   void createExecution(createExecutionCallback callback) override;
 
  private:
-  bool CompileConv2DOrDepthwiseConv2D(const Operation&);
-  bool CompileAveragePool2D(const Operation&);
-  bool CompileSoftmax(const Operation&);
-  bool CompileReshape(const Operation&);
+  bool CompileConv2DOrDepthwiseConv2D(OperationMac&);
+  bool CompileAveragePool2D(OperationMac&);
+  bool CompileSoftmax(OperationMac&);
+  bool CompileReshape(OperationMac&);
 
  private:
   friend class ExecutionImplMac;
   std::vector<Operand> operands_;
-  std::vector<Operation> operations_;
+  std::vector<OperationMac> operations_;
   std::map<uint32_t, ValueInfo> values_;
   std::vector<uint32_t> inputs_;
   std::vector<uint32_t> outputs_;
   std::unique_ptr<int8_t []> memory_;
   uint32_t memory_size_;
-  std::vector<base::scoped_nsobject<MPSCNNKernel> > mpscnn_kernels_;
   DISALLOW_COPY_AND_ASSIGN(CompilationImplMac);
 };
 
