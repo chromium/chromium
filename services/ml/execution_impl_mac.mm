@@ -137,6 +137,7 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
       std::map<uint32_t, MPSImage*> mpsimage_cache;
       uint32_t input_idx = compilation_->inputs_[0];
       uint32_t output_idx = compilation_->outputs_[0];
+      //uint32_t output_idx = compilation_->operations_[0].outputs[0];
       const Operand& input = compilation_->operands_[input_idx];
       const Operand& output = compilation_->operands_[output_idx];
       MPSImage* input_img = [[MPSImage alloc]
@@ -144,9 +145,14 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
           imageDescriptor:CreateMPSImageDescriptor(input)];
       DLOG(INFO) << "Create MPSImage for input " << input_idx << " " << input_img;
       mpsimage_cache[input_idx] = input_img;
-      MPSImage* output_img = [[MPSImage alloc]
+      MPSImage* output_img;
+      if (output_idx == input_idx) {
+        output_img = input_img;
+      } else {
+        output_img = [[MPSImage alloc]
           initWithDevice:GetMPSCNNContext().device
           imageDescriptor:CreateMPSImageDescriptor(output)];
+      } 
       DLOG(INFO) << "Create MPSImage for output " << output_idx << " " << output_img;
       mpsimage_cache[output_idx] = output_img;
 
@@ -213,7 +219,7 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
             kernel << " src " << operation_input_idx << " sourceImage " << src_img <<
             " dst " << operation_output_idx << " destinationImage " << dst_img;
       }
-      
+
       if (outputs_info_.size() > 1) {
         DLOG(ERROR) << "Output size " << outputs_info_.size() << " is not supported";
         break;
@@ -223,9 +229,9 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
         DLOG(ERROR) << "Output shape is not supported";
         break;
       }
-      std::unique_ptr<OperandInfo>& output_data = outputs_info_[0];
+
       id<MTLBuffer> output_buffer = [GetMPSCNNContext().device
-          newBufferWithLength:output_data->length
+          newBufferWithLength:output.requiredSize()
           options:MTLResourceOptionCPUCacheModeWriteCombined];
 
       {
@@ -248,6 +254,10 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
       [command_buffer waitUntilCompleted];
 
       DLOG(INFO) << "Copy memory back from output buffer with length " << output_buffer.length;
+      //float* value = static_cast<float*>([output_buffer contents]);
+      //uint32_t size = output_buffer.length / 4;
+      //DLOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
+      std::unique_ptr<OperandInfo>& output_data = outputs_info_[0];
       memcpy(output_data->mapping.get(), [output_buffer contents], output_buffer.length);
       PrintOperand(output, output_data);
     } while(0);

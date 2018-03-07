@@ -21,9 +21,11 @@ MPSCNNNeuron* API_AVAILABLE(macosx(10.13)) CreateMPSCNNNeuron(int32_t fuse_code)
   } else if (fuse_code == mojom::FUSED_RELU) {
     relu = [[MPSCNNNeuronReLU alloc] initWithDevice:GetMPSCNNContext().device a:0];
   } else if (fuse_code == mojom::FUSED_RELU1) {
-    relu = [[MPSCNNNeuronReLU alloc] initWithDevice:GetMPSCNNContext().device a:1];
+    DLOG(INFO) << "Emulate RELU1 with RELU";
+    relu = [[MPSCNNNeuronReLU alloc] initWithDevice:GetMPSCNNContext().device a:0];
   } else if (fuse_code == mojom::FUSED_RELU6) {
-    relu = [[MPSCNNNeuronReLU alloc] initWithDevice:GetMPSCNNContext().device a:6];
+    DLOG(INFO) << "Emulate RELU6 with RELU";
+    relu = [[MPSCNNNeuronReLU alloc] initWithDevice:GetMPSCNNContext().device a:0];
   }
   return relu;
 }
@@ -65,16 +67,23 @@ MPSCNNConvolution* API_AVAILABLE(macosx(10.13)) CreateMPSCNNConvolution(
 }
 
 void API_AVAILABLE(macosx(10.13)) ComputeMPSOffsetForImplictPadding(
-    MPSOffset& offset,
+    bool same_padding, MPSOffset& offset,
     int32_t input_height, int32_t input_width, int32_t output_height, int32_t output_width,
     int32_t filter_height, int32_t filter_width, int32_t stride_height, int32_t stride_width) {
-  int pad_along_height = ((output_height - 1) * stride_height + filter_height - input_height);
-  int pad_along_width  = ((output_width - 1) * stride_width + filter_width - input_width);
-  int pad_top = (int)(pad_along_height / 2);
-  int pad_left = (int)(pad_along_width / 2);
-  offset.x = (int)(filter_width / 2) - pad_left;
-  offset.y = (int)(filter_height / 2) - pad_top;
-  offset.z = 0;
+  if (same_padding) {
+    int pad_along_height = ((output_height - 1) * stride_height + filter_height - input_height);
+    int pad_along_width  = ((output_width - 1) * stride_width + filter_width - input_width);
+    int pad_top = (int)(pad_along_height / 2);
+    int pad_left = (int)(pad_along_width / 2);
+
+    offset.x = (int)(filter_width / 2) - pad_left;
+    offset.y = (int)(filter_height / 2) - pad_top;
+    offset.z = 0;
+  } else {
+    offset.x = (int)(filter_width / 2);
+    offset.y = (int)(filter_height / 2);
+    offset.z = 0;
+  }
 }
 
 CompilationImplMac::CompilationImplMac(ModelImplMac* model) {
@@ -234,35 +243,30 @@ bool CompilationImplMac::CompileConv2DOrDepthwiseConv2D(OperationMac& operation)
     
     ValueInfo weights_value_info = values_.at(inputs[1]);
     const float* weights = reinterpret_cast<const float*>(memory_.get() + weights_value_info.offset);
+    //uint32_t size = weights_value_info.length / 4;
+    //DLOG(INFO) << "  " << "weights(" << size << "): " << VectorToString(weights, size);
     ValueInfo bias_value_info = values_.at(inputs[2]);
     const float* bias = reinterpret_cast<const float*>(memory_.get() + bias_value_info.offset);
+    //size = bias_value_info.length / 4;
+    //DLOG(INFO) << "  " << "bias(" << size << "): " << VectorToString(bias, size);
 
     MPSCNNConvolution* conv = CreateMPSCNNConvolution(
         filter_width, filter_height, depth_in, depth_out,
         stride_width, stride_height, weights, bias, relu, depthwise);
     
+    MPSOffset offset;
     if (implicit_padding) {
-      if (padding_code == mojom::PADDING_SAME) {
-        MPSOffset offset;
-        ComputeMPSOffsetForImplictPadding(
-            offset, input_height, input_width, output_height, output_width,
-            filter_height, filter_width, stride_height, stride_width);
-        DLOG(INFO) << "  MPSOffset x: " << offset.x << " y: " << offset.y;
-        [conv setOffset:offset];
-      }
+      ComputeMPSOffsetForImplictPadding(
+          padding_code == mojom::PADDING_SAME,
+          offset, input_height, input_width, output_height, output_width,
+          filter_height, filter_width, stride_height, stride_width);
     } else {
-      if (padding_left != padding_right || padding_top != padding_bottom) {
-        DLOG(ERROR) << "padding_left != padding_right || padding_top != padding_bottom";
-        return false;
-      } else {
-        MPSOffset offset;
-        offset.x = padding_left;
-        offset.y = padding_top;
-        offset.z = 0;
-        DLOG(INFO) << "  MPSOffset x: " << offset.x << " y: " << offset.y;
-        [conv setOffset:offset];
-      }
+      offset.x = (int)(filter_width / 2) - padding_left;
+      offset.y = (int)(filter_height / 2) - padding_top;
+      offset.z = 0;
     }
+    DLOG(INFO) << "  MPSOffset x: " << offset.x << " y: " << offset.y;
+    [conv setOffset:offset];
     [conv setEdgeMode:MPSImageEdgeModeZero];
     DLOG(INFO) << "  Create MPSCNNConvolution: " << conv;
     operation.mpscnn_kernel.reset(conv);
@@ -343,28 +347,19 @@ bool CompilationImplMac::CompileAveragePool2D(OperationMac& operation) {
             kernelHeight:filter_height
             strideInPixelsX:stride_width
             strideInPixelsY:stride_height];
+    MPSOffset offset;
     if (implicit_padding) {
-      if (padding_code == mojom::PADDING_SAME) {
-        MPSOffset offset;
-        ComputeMPSOffsetForImplictPadding(
-            offset, input_height, input_width, output_height, output_width,
-            filter_height, filter_width, stride_height, stride_width);
-        DLOG(INFO) << "  MPSOffset x: " << offset.x << " y: " << offset.y;
-        [pool setOffset:offset];
-      }
+      ComputeMPSOffsetForImplictPadding(
+          padding_code == mojom::PADDING_SAME,
+          offset, input_height, input_width, output_height, output_width,
+          filter_height, filter_width, stride_height, stride_width);
     } else {
-      if (padding_left != padding_right || padding_top != padding_bottom) {
-        DLOG(ERROR) << "padding_left != padding_right || padding_top != padding_bottom";
-        return false;
-      } else {
-        MPSOffset offset;
-        offset.x = padding_left;
-        offset.y = padding_top;
-        offset.z = 0;
-        DLOG(INFO) << "  MPSOffset x: " << offset.x << " y: " << offset.y;
-        [pool setOffset:offset];
-      }
+      offset.x = (int)(filter_width / 2) - padding_left;
+      offset.y = (int)(filter_height / 2) - padding_top;
+      offset.z = 0;
     }
+    DLOG(INFO) << "  MPSOffset x: " << offset.x << " y: " << offset.y;
+    [pool setOffset:offset];
     [pool setEdgeMode:MPSImageEdgeModeClamp];
     DLOG(INFO) << "  Create MPSCNNPoolingAverage: " << pool;
     operation.mpscnn_kernel.reset(pool);
