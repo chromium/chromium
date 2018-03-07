@@ -390,13 +390,20 @@ bool CompilationImplMac::CompileSoftmax(OperationMac& operation) {
   return true;
 }
 
-bool CompilationImplMac::CompileReshape(OperationMac& operation) {
+bool CompilationImplMac::CompileReshape(OperationMac& reshape) {
   DLOG(INFO) << "CompilationImplMac::CompileReshape";
-  DLOG_IF(FATAL, operation.type != mojom::RESHAPE);
+  DLOG_IF(FATAL, reshape.type != mojom::RESHAPE);
 
   DLOG(INFO) << "  Reshape is compiled to no-op";
-  if (@available(macOS 10.13, *)) {
-    operation.mpscnn_kernel.reset();
+  uint32_t reshape_input_idx = reshape.inputs[0];
+  uint32_t reshape_output_idx = reshape.outputs[0];
+  for (size_t i = 0; i < operations_.size(); ++i) {
+    OperationMac& operation = operations_[i];
+    if (operation.inputs[0] == reshape_output_idx) {
+      DLOG(INFO) << "  Connect op " << i << " type " << operation.type <<
+          " input from " << operation.inputs[0] << " to " << reshape_input_idx;
+      operation.inputs[0] = reshape_input_idx;
+    }
   }
   return true;
 }

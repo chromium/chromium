@@ -28,7 +28,7 @@ constant ushort ushort_arg_9[[function_constant(9)]];
 inline constexpr ushort divRoundUp(ushort x, ushort y) { return (x + (y - 1)) / y; }
 
 kernel void copy_nhwc_to_metal(constant float* in[[buffer(0)]],
-                               texture2d_array<float, access::write> out[[texture(0)]],
+                               texture2d_array<half, access::write> out[[texture(0)]],
                                ushort3 gid[[thread_position_in_grid]]) {
     const ushort H = ushort_arg_0;
     const ushort W = ushort_arg_1;
@@ -49,7 +49,7 @@ trns[idx] = in[n * H * W * C + int(h) * W * C + int(w) * C + int(c)]; \
 trns[idx] = 0.0h;                                                      \
 }
     
-    float4 trns;
+    half4 trns;
     HWC_TO_CHWP4(0, n, c * 4 + 0, gid.y, gid.x);
     HWC_TO_CHWP4(1, n, c * 4 + 1, gid.y, gid.x);
     HWC_TO_CHWP4(2, n, c * 4 + 2, gid.y, gid.x);
@@ -60,7 +60,7 @@ trns[idx] = 0.0h;                                                      \
 }
 
 kernel void copy_nhwc_to_metal_nonarray(constant float* in[[buffer(0)]],
-                                        texture2d<float, access::write> out[[texture(0)]],
+                                        texture2d<half, access::write> out[[texture(0)]],
                                         ushort2 gid[[thread_position_in_grid]]) {
     const ushort H = ushort_arg_0;
     const ushort W = ushort_arg_1;
@@ -70,15 +70,15 @@ kernel void copy_nhwc_to_metal_nonarray(constant float* in[[buffer(0)]],
         return;
     }
     
-    float4 trns;
+    half4 trns;
     // TODO: are the `else` branches needed?
     // TODO: trick the optimizer for case where C % 4 == 0?
     
-#define HWC_TO_CHWP4(idx, c, h, w)                        \
+#define HWC_TO_CHWP4(idx, c, h, w)                      \
 if ((c) < C) {                                          \
-trns[idx] = in[int(h) * W * C + int(w) * C + int(c)]; \
+  trns[idx] = in[int(h) * W * C + int(w) * C + int(c)]; \
 } else {                                                \
-trns[idx] = 0.0h;                                     \
+  trns[idx] = 0.0h;                                     \
 }
     
     HWC_TO_CHWP4(0, 0, gid.y, gid.x);
@@ -90,7 +90,7 @@ trns[idx] = 0.0h;                                     \
     out.write(trns, gid.xy);
 }
 
-kernel void copy_metal_to_nhwc(texture2d_array<float, access::read> in[[texture(0)]],
+kernel void copy_metal_to_nhwc(texture2d_array<half, access::read> in[[texture(0)]],
                                device float* out[[buffer(0)]],
                                ushort3 gid[[thread_position_in_grid]]) {
     const ushort H = ushort_arg_0;
@@ -103,11 +103,11 @@ kernel void copy_metal_to_nhwc(texture2d_array<float, access::read> in[[texture(
     const ushort n = gid.z / divRoundUp(C, 4);
     const ushort c = gid.z - n * divRoundUp(C, 4);
     
-    float4 cs = in.read(gid.xy, gid.z);
+    half4 cs = in.read(gid.xy, gid.z);
     
-#define CHWP4_TO_HWC(idx, n, c_, h, w)                                    \
+#define CHWP4_TO_HWC(idx, n, c_, h, w)                                  \
 if ((c_) < C) {                                                         \
-out[n * H * W * C + int(h) * W * C + int(w) * C + int(c)] = cs[idx]; \
+  out[n * H * W * C + int(h) * W * C + int(w) * C + int(c)] = cs[idx];  \
 }
     
     CHWP4_TO_HWC(0, n, c * 4 + 0, gid.y, gid.x);
@@ -117,7 +117,7 @@ out[n * H * W * C + int(h) * W * C + int(w) * C + int(c)] = cs[idx]; \
 #undef CHWP4_TO_HWC
 }
 
-kernel void copy_metal_to_nhwc_nonarray(texture2d<float, access::read> in[[texture(0)]],
+kernel void copy_metal_to_nhwc_nonarray(texture2d<half, access::read> in[[texture(0)]],
                                         device float* out[[buffer(0)]],
                                         ushort2 gid[[thread_position_in_grid]]) {
     const ushort H = ushort_arg_0;
@@ -128,11 +128,11 @@ kernel void copy_metal_to_nhwc_nonarray(texture2d<float, access::read> in[[textu
         return;
     }
     
-    float4 cs = in.read(gid.xy);
+    half4 cs = in.read(gid.xy);
     
-#define CHWP4_TO_HWC(idx, c, h, w)                       \
+#define CHWP4_TO_HWC(idx, c, h, w)                     \
 if ((c) < C) {                                         \
-out[int(h) * W * C + int(w) * C + int(c)] = cs[idx]; \
+  out[int(h) * W * C + int(w) * C + int(c)] = cs[idx]; \
 }
     
     CHWP4_TO_HWC(0, 0, gid.y, gid.x);
@@ -164,7 +164,7 @@ MPSCNNContext& GetMPSCNNContext() {
   return ctx;
 }
 
-id<MTLComputePipelineState> MPSCNNContext::getPipelineState(NSString* kernel) {
+id<MTLComputePipelineState> MPSCNNContext::GetPipelineState(NSString* kernel) {
   std::string kernelStr = std::string([kernel UTF8String]);
   if (pipelineCache_.find(kernelStr) != pipelineCache_.end()) {
     DLOG(INFO) << "Hit in pipeline cache for: " << kernelStr;
@@ -187,7 +187,7 @@ id<MTLComputePipelineState> MPSCNNContext::getPipelineState(NSString* kernel) {
   return state;
 }
 
-id<MTLComputePipelineState> MPSCNNContext::getSpecializedPipelineState(
+id<MTLComputePipelineState> MPSCNNContext::GetSpecializedPipelineState(
     NSString* kernel, const std::vector<ushort>& constants) {
   std::string kernelStr = std::string([kernel UTF8String]);
   for (size_t i = 0; i < constants.size(); ++i) {

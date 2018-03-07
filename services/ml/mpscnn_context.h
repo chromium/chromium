@@ -25,8 +25,8 @@ struct API_AVAILABLE(macosx(10.13)) MPSCNNContext {
   id<MTLLibrary> library;
   bool initialized;
 
-  id<MTLComputePipelineState> getPipelineState(NSString* kernel);
-  id<MTLComputePipelineState> getSpecializedPipelineState(NSString* kernel,
+  id<MTLComputePipelineState> GetPipelineState(NSString* kernel);
+  id<MTLComputePipelineState> GetSpecializedPipelineState(NSString* kernel,
                                                           const std::vector<ushort>& constants);
 
  private:

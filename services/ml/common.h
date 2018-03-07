@@ -65,7 +65,7 @@ std::string VectorToString(const T* vect, size_t length) {
   return output;
 }
 
-void PrintOperand(Operand& operand, std::unique_ptr<OperandInfo>& info);
+void PrintOperand(const Operand& operand, const std::unique_ptr<OperandInfo>& info);
 
 int32_t getScalarInt32(const ValueInfo&, int8_t*);
 float getScalarFloat(const ValueInfo&, int8_t*);

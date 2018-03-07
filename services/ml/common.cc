@@ -47,7 +47,7 @@ ValueInfo::ValueInfo() = default;
 ValueInfo::~ValueInfo() = default;
 ValueInfo::ValueInfo(const ValueInfo&) = default;
 
-void PrintOperand(Operand& operand, std::unique_ptr<OperandInfo>& info) {
+void PrintOperand(const Operand& operand, const std::unique_ptr<OperandInfo>& info) {
   uint32_t length = info->length;
   if (operand.type == mojom::TENSOR_FLOAT32 || operand.type == mojom::FLOAT32) {
     float* value = static_cast<float*>(info->mapping.get());
