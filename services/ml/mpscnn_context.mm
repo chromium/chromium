@@ -44,7 +44,7 @@ kernel void copy_nhwc_to_metal(constant float* in[[buffer(0)]],
     // TODO: trick the optimizer for case where C == 4?
 #define HWC_TO_CHWP4(idx, n, c_, h, w)                                     \
 if ((c_) < C) {                                                          \
-trns[idx] = in[n * H * W * C + int(h) * W * C + int(w) * C + int(c)]; \
+trns[idx] = in[n * H * W * C + int(h) * W * C + int(w) * C + int(c_)]; \
 } else {                                                                 \
 trns[idx] = 0.0h;                                                      \
 }
@@ -107,7 +107,7 @@ kernel void copy_metal_to_nhwc(texture2d_array<half, access::read> in[[texture(0
     
 #define CHWP4_TO_HWC(idx, n, c_, h, w)                                  \
 if ((c_) < C) {                                                         \
-  out[n * H * W * C + int(h) * W * C + int(w) * C + int(c)] = cs[idx];  \
+  out[n * H * W * C + int(h) * W * C + int(w) * C + int(c_)] = cs[idx];     \
 }
     
     CHWP4_TO_HWC(0, n, c * 4 + 0, gid.y, gid.x);
@@ -130,9 +130,9 @@ kernel void copy_metal_to_nhwc_nonarray(texture2d<half, access::read> in[[textur
     
     half4 cs = in.read(gid.xy);
     
-#define CHWP4_TO_HWC(idx, c, h, w)                     \
+#define CHWP4_TO_HWC(idx, c, h, w)                       \
 if ((c) < C) {                                         \
-  out[int(h) * W * C + int(w) * C + int(c)] = cs[idx]; \
+out[int(h) * W * C + int(w) * C + int(c)] = cs[idx];  \
 }
     
     CHWP4_TO_HWC(0, 0, gid.y, gid.x);

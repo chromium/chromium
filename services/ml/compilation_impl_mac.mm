@@ -265,10 +265,16 @@ bool CompilationImplMac::CompileConv2DOrDepthwiseConv2D(OperationMac& operation)
       offset.y = (int)(filter_height / 2) - padding_top;
       offset.z = 0;
     }
-    DLOG(INFO) << "  MPSOffset x: " << offset.x << " y: " << offset.y;
     [conv setOffset:offset];
     [conv setEdgeMode:MPSImageEdgeModeZero];
     DLOG(INFO) << "  Create MPSCNNConvolution: " << conv;
+    DLOG(INFO) << "    strideInPixelsY: " << conv.strideInPixelsY;
+    DLOG(INFO) << "    strideInPixelsX: " << conv.strideInPixelsX;
+    DLOG(INFO) << "    inputFeatureChannels: " << conv.inputFeatureChannels;
+    DLOG(INFO) << "    outputFeatureChannels: " << conv.outputFeatureChannels;
+    DLOG(INFO) << "    kernelWidth: " << conv.kernelWidth;
+    DLOG(INFO) << "    kernelHeight: " << conv.kernelHeight;
+    DLOG(INFO) << "    offset MPSOffset(x: " << offset.x << " y: " << offset.y << ")";
     operation.mpscnn_kernel.reset(conv);
   }
 

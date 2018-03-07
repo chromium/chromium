@@ -136,8 +136,8 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
 
       std::map<uint32_t, MPSImage*> mpsimage_cache;
       uint32_t input_idx = compilation_->inputs_[0];
-      uint32_t output_idx = compilation_->outputs_[0];
-      //uint32_t output_idx = compilation_->operations_[0].outputs[0];
+      //uint32_t output_idx = compilation_->outputs_[0];
+      uint32_t output_idx = compilation_->operations_[0].outputs[0];
       const Operand& input = compilation_->operands_[input_idx];
       const Operand& output = compilation_->operands_[output_idx];
       MPSImage* input_img = [[MPSImage alloc]
@@ -189,7 +189,7 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
         [encoder endEncoding];
       }
 
-      for (size_t i = 0; i < compilation_->operations_.size(); i++) {
+      for (size_t i = 0; i < 1; i++) {
         const OperationMac& operation = compilation_->operations_[i];
         MPSCNNKernel* kernel = operation.mpscnn_kernel.get();
         if (!kernel) {
@@ -254,12 +254,12 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
       [command_buffer waitUntilCompleted];
 
       DLOG(INFO) << "Copy memory back from output buffer with length " << output_buffer.length;
-      //float* value = static_cast<float*>([output_buffer contents]);
-      //uint32_t size = output_buffer.length / 4;
-      //DLOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
-      std::unique_ptr<OperandInfo>& output_data = outputs_info_[0];
-      memcpy(output_data->mapping.get(), [output_buffer contents], output_buffer.length);
-      PrintOperand(output, output_data);
+      float* value = static_cast<float*>([output_buffer contents]);
+      uint32_t size = output_buffer.length / 4;
+      DLOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
+      //std::unique_ptr<OperandInfo>& output_data = outputs_info_[0];
+      //memcpy(output_data->mapping.get(), [output_buffer contents], output_buffer.length);
+      //PrintOperand(output, output_data);
     } while(0);
   }
 
