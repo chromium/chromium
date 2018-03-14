@@ -182,7 +182,6 @@ bool CompilationImplMac::CompileConv2DOrDepthwiseConv2D(OperationMac& operation)
   Operand filter = operands_[inputs[i++]];
   if (depthwise) {
     depth_out = filter.dimensions[3];
-    depth_in = depth_out;  
   } else {
     depth_out = filter.dimensions[0];
     depth_in = filter.dimensions[3];
@@ -219,6 +218,7 @@ bool CompilationImplMac::CompileConv2DOrDepthwiseConv2D(OperationMac& operation)
       DLOG(ERROR) << "  depthwise_multiplier " << depthwise_multiplier << " is not supported.";
       return false;
     }
+    depth_in = depth_out / depthwise_multiplier;
   }
   fuse_code = getScalarInt32(values_[inputs[i++]], memory_.get());
 
@@ -250,9 +250,31 @@ bool CompilationImplMac::CompileConv2DOrDepthwiseConv2D(OperationMac& operation)
     //size = bias_value_info.length / 4;
     //DLOG(INFO) << "  " << "bias(" << size << "): " << VectorToString(bias, size);
 
-    MPSCNNConvolution* conv = CreateMPSCNNConvolution(
+    MPSCNNConvolution* conv;
+    if (depthwise) {
+      // Convert from WebML weights shape [1, filter_height, filter_width, depth_out]
+      // to MPSCNNConvlution weight[ outputChannels ][ kernelHeight ][ kernelWidth ][ inputChannels / groups ]
+      const uint32_t depthwise_weights_length = 1 * filter_height * filter_width * depth_out;
+      std::vector<float> depthwise_weights(depthwise_weights_length);
+      DLOG_IF(FATAL, depthwise_weights.size() * sizeof(float) != weights_value_info.length) <<
+          "depthwise weigths length is incorrect";
+      for (auto h = 0; h < filter_height; ++h) {
+        for (auto w = 0; w < filter_width; ++w) {
+          for (auto c = 0; c < depth_out; ++c) {
+            depthwise_weights[c * filter_height * filter_width + h * filter_width + w] =
+                weights[h * filter_width * depth_out  + w * depth_out + c];
+          }
+        }
+      }
+      //DLOG(INFO) << "  " << "depthwise_weights(" << depthwise_weights.size() << "): " << VectorToString(depthwise_weights.data(), depthwise_weights.size());
+      conv = CreateMPSCNNConvolution(
+          filter_width, filter_height, depth_in, depth_out,
+          stride_width, stride_height, depthwise_weights.data(), bias, relu, depthwise);
+    } else {
+      conv = CreateMPSCNNConvolution(
         filter_width, filter_height, depth_in, depth_out,
         stride_width, stride_height, weights, bias, relu, depthwise);
+    }
     
     MPSOffset offset;
     if (implicit_padding) {

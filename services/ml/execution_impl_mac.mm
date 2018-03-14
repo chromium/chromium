@@ -89,8 +89,8 @@ MPSImageDescriptor* API_AVAILABLE(macosx(10.13)) CreateMPSImageDescriptor(const 
       featureChannels:channels
       numberOfImages:n
       usage:MTLTextureUsageShaderRead|MTLTextureUsageShaderWrite];
-  DLOG(INFO) << "Create MPSImageDescriptor " << mpsimage_desc
-      << " [" << width << ", " << height << ", " << channels << "]";
+  //DLOG(INFO) << "Create MPSImageDescriptor " << mpsimage_desc
+  //    << " [" << width << ", " << height << ", " << channels << "]";
   return mpsimage_desc;
 }
 
@@ -136,14 +136,12 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
 
       std::map<uint32_t, MPSImage*> mpsimage_cache;
       uint32_t input_idx = compilation_->inputs_[0];
-      //uint32_t output_idx = compilation_->outputs_[0];
-      uint32_t output_idx = compilation_->operations_[0].outputs[0];
+      uint32_t output_idx = compilation_->outputs_[0];
       const Operand& input = compilation_->operands_[input_idx];
       const Operand& output = compilation_->operands_[output_idx];
       MPSImage* input_img = [[MPSImage alloc]
           initWithDevice:GetMPSCNNContext().device
           imageDescriptor:CreateMPSImageDescriptor(input)];
-      DLOG(INFO) << "Create MPSImage for input " << input_idx << " " << input_img;
       mpsimage_cache[input_idx] = input_img;
       MPSImage* output_img;
       if (output_idx == input_idx) {
@@ -153,7 +151,6 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
           initWithDevice:GetMPSCNNContext().device
           imageDescriptor:CreateMPSImageDescriptor(output)];
       } 
-      DLOG(INFO) << "Create MPSImage for output " << output_idx << " " << output_img;
       mpsimage_cache[output_idx] = output_img;
 
       if (inputs_info_.size() > 1) {
@@ -169,8 +166,6 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
       id<MTLBuffer> input_buffer = [GetMPSCNNContext().device
           newBufferWithLength:input_data->length
           options:MTLResourceOptionCPUCacheModeWriteCombined];
-      DLOG(INFO) << "Copy data to input buffer with length " << input_data->length;
-      PrintOperand(input, input_data);
       memcpy([input_buffer contents], input_data->mapping.get(), input_data->length);
       
       {
@@ -189,7 +184,7 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
         [encoder endEncoding];
       }
 
-      for (size_t i = 0; i < 1; i++) {
+      for (size_t i = 0; i < compilation_->operations_.size(); i++) {
         const OperationMac& operation = compilation_->operations_[i];
         MPSCNNKernel* kernel = operation.mpscnn_kernel.get();
         if (!kernel) {
@@ -215,9 +210,9 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
         [kernel encodeToCommandBuffer:command_buffer
             sourceImage:src_img
             destinationImage:dst_img];
-        DLOG(INFO) << "Encode operation " << i << " with kernel " << 
-            kernel << " src " << operation_input_idx << " sourceImage " << src_img <<
-            " dst " << operation_output_idx << " destinationImage " << dst_img;
+        //DLOG(INFO) << "Encode operation " << i << " with kernel " << 
+        //    kernel << " src " << operation_input_idx << " sourceImage " << src_img <<
+        //    " dst " << operation_output_idx << " destinationImage " << dst_img;
       }
 
       if (outputs_info_.size() > 1) {
@@ -253,13 +248,9 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
       [command_buffer commit];
       [command_buffer waitUntilCompleted];
 
-      DLOG(INFO) << "Copy memory back from output buffer with length " << output_buffer.length;
-      float* value = static_cast<float*>([output_buffer contents]);
-      uint32_t size = output_buffer.length / 4;
-      DLOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
-      //std::unique_ptr<OperandInfo>& output_data = outputs_info_[0];
-      //memcpy(output_data->mapping.get(), [output_buffer contents], output_buffer.length);
-      //PrintOperand(output, output_data);
+      //DLOG(INFO) << "Copy memory back from output buffer with length " << output_buffer.length;
+      std::unique_ptr<OperandInfo>& output_data = outputs_info_[0];
+      memcpy(output_data->mapping.get(), [output_buffer contents], output_buffer.length);
     } while(0);
   }
 
