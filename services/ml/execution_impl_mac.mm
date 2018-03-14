@@ -98,7 +98,9 @@ ExecutionImplMac::ExecutionImplMac(CompilationImplMac* compilation, mojo::Scoped
   compilation_ = compilation;
   memory_ = std::move(memory);
   uint32_t total_length = 0;
-  for (size_t i = 0; i < compilation_->inputs_.size(); ++i) {
+  uint32_t inputs_size = compilation_->inputs_.size();
+  input_mpsimages_.resize(inputs_size);
+  for (size_t i = 0; i < inputs_size; ++i) {
     Operand& operand = compilation_->operands_[compilation_->inputs_[i]];
     uint32_t offset = total_length;
     uint32_t length = operand.requiredSize();
@@ -106,8 +108,16 @@ ExecutionImplMac::ExecutionImplMac(CompilationImplMac* compilation, mojo::Scoped
     std::unique_ptr<OperandInfo> info(new OperandInfo(offset, length, std::move(mapping)));
     inputs_info_.push_back(std::move(info));
     total_length += length;
+    if (@available(macOS 10.13, *)) {
+      MPSImage* mps_img = [[MPSImage alloc]
+          initWithDevice:GetMPSCNNContext().device
+          imageDescriptor:CreateMPSImageDescriptor(operand)];
+      input_mpsimages_[i].reset(mps_img);
+    }
   }
-  for (size_t i = 0; i < compilation_->outputs_.size(); ++i) {
+  uint32_t outputs_size = compilation_->outputs_.size();
+  output_mpsimages_.resize(outputs_size);
+  for (size_t i = 0; i < outputs_size; ++i) {
     Operand& operand = compilation_->operands_[compilation_->outputs_[i]];
     uint32_t offset = total_length;
     uint32_t length = operand.requiredSize();
@@ -115,6 +125,12 @@ ExecutionImplMac::ExecutionImplMac(CompilationImplMac* compilation, mojo::Scoped
     std::unique_ptr<OperandInfo> info(new OperandInfo(offset, length, std::move(mapping)));
     outputs_info_.push_back(std::move(info));
     total_length += length;
+    if (@available(macOS 10.13, *)) {
+      MPSImage* mps_img = [[MPSImage alloc]
+          initWithDevice:GetMPSCNNContext().device
+          imageDescriptor:CreateMPSImageDescriptor(operand)];
+      output_mpsimages_[i].reset(mps_img);
+    }
   }
 }
 
@@ -134,34 +150,11 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
         break;
       }
 
-      std::map<uint32_t, MPSImage*> mpsimage_cache;
-      uint32_t input_idx = compilation_->inputs_[0];
-      uint32_t output_idx = compilation_->outputs_[0];
-      const Operand& input = compilation_->operands_[input_idx];
-      const Operand& output = compilation_->operands_[output_idx];
-      MPSImage* input_img = [[MPSImage alloc]
-          initWithDevice:GetMPSCNNContext().device
-          imageDescriptor:CreateMPSImageDescriptor(input)];
-      mpsimage_cache[input_idx] = input_img;
-      MPSImage* output_img;
-      if (output_idx == input_idx) {
-        output_img = input_img;
-      } else {
-        output_img = [[MPSImage alloc]
-          initWithDevice:GetMPSCNNContext().device
-          imageDescriptor:CreateMPSImageDescriptor(output)];
-      } 
-      mpsimage_cache[output_idx] = output_img;
+      const uint32_t input_idx = compilation_->inputs_[0];
+      const uint32_t output_idx = compilation_->outputs_[0];
+      MPSImage* input_img = input_mpsimages_[0].get();
+      MPSImage* output_img = output_mpsimages_[0].get();
 
-      if (inputs_info_.size() > 1) {
-        DLOG(ERROR) << "Input size " << inputs_info_.size() << " is not supported";
-        break;
-      }
-      uint32_t input_n, input_width, input_height, input_channels;
-      if (!GetMPSImageInfo(input, input_n, input_width, input_height, input_channels)) {
-        DLOG(ERROR) << "Input shape is not supported";
-        break;
-      }
       std::unique_ptr<OperandInfo>& input_data = inputs_info_[0];
       id<MTLBuffer> input_buffer = [GetMPSCNNContext().device
           newBufferWithLength:input_data->length
@@ -173,7 +166,7 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
         id<MTLComputePipelineState> state =
             GetMPSCNNContext().GetSpecializedPipelineState(
                 KernelFor(input_img, @"copy_nhwc_to_metal", @"copy_nhwc_to_metal_nonarray"),
-                {{ushort(input_height), ushort(input_width), ushort(input_channels)}});
+                {{ushort(input_img.height), ushort(input_img.width), ushort(input_img.featureChannels)}});
         [encoder setComputePipelineState:state];
         [encoder setBuffer:input_buffer offset:0 atIndex:0];
         [encoder setTexture:[input_img texture] atIndex:0];
@@ -184,6 +177,7 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
         [encoder endEncoding];
       }
 
+      std::map<uint32_t, MPSTemporaryImage*> tmp_mpsimage_cache;
       for (size_t i = 0; i < compilation_->operations_.size(); i++) {
         const OperationMac& operation = compilation_->operations_[i];
         MPSCNNKernel* kernel = operation.mpscnn_kernel.get();
@@ -191,22 +185,34 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
           DLOG(INFO) << "No kernel compiled for operation " << i << " type " << operation.type;
           continue;
         }
+        MPSImage* src_img = nullptr;
+        MPSImage* dst_img = nullptr;
         uint32_t operation_input_idx = operation.inputs[0];
         const Operand& operation_input = compilation_->operands_[operation_input_idx];
+        if (operation_input_idx == input_idx) {
+          src_img = input_img;
+        }
         uint32_t operation_output_idx = operation.outputs[0];
         const Operand& operation_output = compilation_->operands_[operation_output_idx];
-        if (mpsimage_cache.find(operation_input_idx) == mpsimage_cache.end()) {
-          mpsimage_cache[operation_input_idx] = [MPSTemporaryImage
-              temporaryImageWithCommandBuffer:command_buffer
-              imageDescriptor:CreateMPSImageDescriptor(operation_input)];
+        if (operation_output_idx == output_idx) {
+          dst_img = output_img;
         }
-        if (mpsimage_cache.find(operation_output_idx) == mpsimage_cache.end()) {
-          mpsimage_cache[operation_output_idx] = [MPSTemporaryImage
-              temporaryImageWithCommandBuffer:command_buffer
-              imageDescriptor:CreateMPSImageDescriptor(operation_output)];
+        if (!src_img) {
+          if (tmp_mpsimage_cache.find(operation_input_idx) == tmp_mpsimage_cache.end()) {
+            tmp_mpsimage_cache[operation_input_idx] = [MPSTemporaryImage
+                temporaryImageWithCommandBuffer:command_buffer
+                imageDescriptor:CreateMPSImageDescriptor(operation_input)];
+          }
+          src_img = tmp_mpsimage_cache[operation_input_idx];
         }
-        MPSImage* src_img = mpsimage_cache[operation_input_idx];
-        MPSImage* dst_img = mpsimage_cache[operation_output_idx];
+        if (!dst_img) {
+          if (tmp_mpsimage_cache.find(operation_output_idx) == tmp_mpsimage_cache.end()) {
+            tmp_mpsimage_cache[operation_output_idx] = [MPSTemporaryImage
+                temporaryImageWithCommandBuffer:command_buffer
+                imageDescriptor:CreateMPSImageDescriptor(operation_output)];
+          }
+          dst_img = tmp_mpsimage_cache[operation_output_idx];
+        }
         [kernel encodeToCommandBuffer:command_buffer
             sourceImage:src_img
             destinationImage:dst_img];
@@ -215,25 +221,16 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
         //    " dst " << operation_output_idx << " destinationImage " << dst_img;
       }
 
-      if (outputs_info_.size() > 1) {
-        DLOG(ERROR) << "Output size " << outputs_info_.size() << " is not supported";
-        break;
-      }
-      uint32_t output_n, output_width, output_height, output_channels;
-      if (!GetMPSImageInfo(output, output_n, output_width, output_height, output_channels)) {
-        DLOG(ERROR) << "Output shape is not supported";
-        break;
-      }
-
+      std::unique_ptr<OperandInfo>& output_data = outputs_info_[0];
       id<MTLBuffer> output_buffer = [GetMPSCNNContext().device
-          newBufferWithLength:output.requiredSize()
+          newBufferWithLength:output_data->length
           options:MTLResourceOptionCPUCacheModeWriteCombined];
 
       {
         id<MTLComputeCommandEncoder> encoder = [command_buffer computeCommandEncoder];
         id<MTLComputePipelineState> state = GetMPSCNNContext().GetSpecializedPipelineState(
             KernelFor(output_img, @"copy_metal_to_nhwc", @"copy_metal_to_nhwc_nonarray"),
-            {{ushort(output_height), ushort(output_width), ushort(output_channels)}});
+            {{ushort(output_img.height), ushort(output_img.width), ushort(output_img.featureChannels)}});
               
         [encoder setComputePipelineState:state];
         [encoder setBuffer:output_buffer offset:0 atIndex:0];
@@ -249,8 +246,7 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
       [command_buffer waitUntilCompleted];
 
       //DLOG(INFO) << "Copy memory back from output buffer with length " << output_buffer.length;
-      std::unique_ptr<OperandInfo>& output_data = outputs_info_[0];
-      memcpy(output_data->mapping.get(), [output_buffer contents], output_buffer.length);
+      memcpy(output_data->mapping.get(), [output_buffer contents], output_data->length);
     } while(0);
   }
 
