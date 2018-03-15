@@ -6,6 +6,7 @@
 #define SERVICES_ML_EXECUTION_IMPL_MAC_H_
 
 #include "base/macros.h"
+#include "base/mac/scoped_nsobject.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/ml/public/interfaces/execution.mojom.h"
 #include "services/ml/public/interfaces/constants.mojom.h"
@@ -14,7 +15,7 @@
 #include "services/ml/model_impl_mac.h"
 #include "services/ml/compilation_impl_mac.h"
 
-#include "base/mac/scoped_nsobject.h"
+#import <Metal/MTLBuffer.h>
 
 @class MPSImage;
 
@@ -35,7 +36,9 @@ class ExecutionImplMac : public mojom::Execution {
   mojo::ScopedSharedBufferHandle memory_;
 
   std::vector<base::scoped_nsobject<MPSImage> > input_mpsimages_;
+  API_AVAILABLE(macos(10_13)) std::vector<id<MTLBuffer>> input_mtlbuffers_;
   std::vector<base::scoped_nsobject<MPSImage> > output_mpsimages_;
+  API_AVAILABLE(macos(10_13)) std::vector<id<MTLBuffer>> output_mtlbuffers_;
 
   DISALLOW_COPY_AND_ASSIGN(ExecutionImplMac);
 };

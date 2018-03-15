@@ -99,7 +99,10 @@ ExecutionImplMac::ExecutionImplMac(CompilationImplMac* compilation, mojo::Scoped
   memory_ = std::move(memory);
   uint32_t total_length = 0;
   uint32_t inputs_size = compilation_->inputs_.size();
-  input_mpsimages_.resize(inputs_size);
+  if (@available(macOS 10.13, *)) {
+    input_mpsimages_.resize(inputs_size);
+    input_mtlbuffers_.resize(inputs_size);
+  }
   for (size_t i = 0; i < inputs_size; ++i) {
     Operand& operand = compilation_->operands_[compilation_->inputs_[i]];
     uint32_t offset = total_length;
@@ -113,10 +116,16 @@ ExecutionImplMac::ExecutionImplMac(CompilationImplMac* compilation, mojo::Scoped
           initWithDevice:GetMPSCNNContext().device
           imageDescriptor:CreateMPSImageDescriptor(operand)];
       input_mpsimages_[i].reset(mps_img);
+      input_mtlbuffers_[i] = [GetMPSCNNContext().device
+          newBufferWithLength:length
+          options:MTLResourceOptionCPUCacheModeWriteCombined];
     }
   }
   uint32_t outputs_size = compilation_->outputs_.size();
-  output_mpsimages_.resize(outputs_size);
+  if (@available(macOS 10.13, *)) {
+    output_mpsimages_.resize(outputs_size);
+    output_mtlbuffers_.resize(outputs_size);
+  }
   for (size_t i = 0; i < outputs_size; ++i) {
     Operand& operand = compilation_->operands_[compilation_->outputs_[i]];
     uint32_t offset = total_length;
@@ -130,6 +139,9 @@ ExecutionImplMac::ExecutionImplMac(CompilationImplMac* compilation, mojo::Scoped
           initWithDevice:GetMPSCNNContext().device
           imageDescriptor:CreateMPSImageDescriptor(operand)];
       output_mpsimages_[i].reset(mps_img);
+      output_mtlbuffers_[i] = [GetMPSCNNContext().device
+          newBufferWithLength:length
+          options:MTLResourceOptionCPUCacheModeWriteCombined];
     }
   }
 }
@@ -141,112 +153,107 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
   bool success = true;
   if (@available(macOS 10.13, *)) {
     do {
-      base::mac::ScopedNSAutoreleasePool scoped_pool;
-      id<MTLCommandBuffer> command_buffer = [GetMPSCNNContext().command_queue commandBuffer];
+      @autoreleasepool {
+        id<MTLCommandBuffer> command_buffer = [GetMPSCNNContext().command_queue commandBuffer];
 
-      if (compilation_->inputs_.size() > 1 || compilation_->outputs_.size() > 1) {
-        DLOG(ERROR) << "Only input size and output size 1 is supported";
-        success = false;
-        break;
-      }
-
-      const uint32_t input_idx = compilation_->inputs_[0];
-      const uint32_t output_idx = compilation_->outputs_[0];
-      MPSImage* input_img = input_mpsimages_[0].get();
-      MPSImage* output_img = output_mpsimages_[0].get();
-
-      std::unique_ptr<OperandInfo>& input_data = inputs_info_[0];
-      id<MTLBuffer> input_buffer = [GetMPSCNNContext().device
-          newBufferWithLength:input_data->length
-          options:MTLResourceOptionCPUCacheModeWriteCombined];
-      memcpy([input_buffer contents], input_data->mapping.get(), input_data->length);
-      
-      {
-        id<MTLComputeCommandEncoder> encoder = [command_buffer computeCommandEncoder];
-        id<MTLComputePipelineState> state =
-            GetMPSCNNContext().GetSpecializedPipelineState(
-                KernelFor(input_img, @"copy_nhwc_to_metal", @"copy_nhwc_to_metal_nonarray"),
-                {{ushort(input_img.height), ushort(input_img.width), ushort(input_img.featureChannels)}});
-        [encoder setComputePipelineState:state];
-        [encoder setBuffer:input_buffer offset:0 atIndex:0];
-        [encoder setTexture:[input_img texture] atIndex:0];
-        const auto& inputLaunchParams =
-            SpatialPointwiseKernelLaunchParams(state, input_img);
-        [encoder dispatchThreadgroups:inputLaunchParams.threadgroupsPerGrid
-                threadsPerThreadgroup:inputLaunchParams.threadsPerThreadgroup];
-        [encoder endEncoding];
-      }
-
-      std::map<uint32_t, MPSTemporaryImage*> tmp_mpsimage_cache;
-      for (size_t i = 0; i < compilation_->operations_.size(); i++) {
-        const OperationMac& operation = compilation_->operations_[i];
-        MPSCNNKernel* kernel = operation.mpscnn_kernel.get();
-        if (!kernel) {
-          DLOG(INFO) << "No kernel compiled for operation " << i << " type " << operation.type;
-          continue;
+        if (compilation_->inputs_.size() > 1 || compilation_->outputs_.size() > 1) {
+          DLOG(ERROR) << "Only input size and output size 1 is supported";
+          success = false;
+          break;
         }
-        MPSImage* src_img = nullptr;
-        MPSImage* dst_img = nullptr;
-        uint32_t operation_input_idx = operation.inputs[0];
-        const Operand& operation_input = compilation_->operands_[operation_input_idx];
-        if (operation_input_idx == input_idx) {
-          src_img = input_img;
+
+        const uint32_t input_idx = compilation_->inputs_[0];
+        const uint32_t output_idx = compilation_->outputs_[0];
+        std::unique_ptr<OperandInfo>& input_data = inputs_info_[0];
+        std::unique_ptr<OperandInfo>& output_data = outputs_info_[0];
+        MPSImage* input_img = input_mpsimages_[0].get();
+        MPSImage* output_img = output_mpsimages_[0].get();
+        id<MTLBuffer> input_buffer = input_mtlbuffers_[0];
+        id<MTLBuffer> output_buffer = output_mtlbuffers_[0];
+
+        {
+          memcpy([input_buffer contents], input_data->mapping.get(), input_data->length);
+          id<MTLComputeCommandEncoder> encoder = [command_buffer computeCommandEncoder];
+          id<MTLComputePipelineState> state =
+              GetMPSCNNContext().GetSpecializedPipelineState(
+                  KernelFor(input_img, @"copy_nhwc_to_metal", @"copy_nhwc_to_metal_nonarray"),
+                  {{ushort(input_img.height), ushort(input_img.width), ushort(input_img.featureChannels)}});
+          [encoder setComputePipelineState:state];
+          [encoder setBuffer:input_buffer offset:0 atIndex:0];
+          [encoder setTexture:[input_img texture] atIndex:0];
+          const auto& inputLaunchParams =
+              SpatialPointwiseKernelLaunchParams(state, input_img);
+          [encoder dispatchThreadgroups:inputLaunchParams.threadgroupsPerGrid
+                  threadsPerThreadgroup:inputLaunchParams.threadsPerThreadgroup];
+          [encoder endEncoding];
         }
-        uint32_t operation_output_idx = operation.outputs[0];
-        const Operand& operation_output = compilation_->operands_[operation_output_idx];
-        if (operation_output_idx == output_idx) {
-          dst_img = output_img;
-        }
-        if (!src_img) {
-          if (tmp_mpsimage_cache.find(operation_input_idx) == tmp_mpsimage_cache.end()) {
-            tmp_mpsimage_cache[operation_input_idx] = [MPSTemporaryImage
-                temporaryImageWithCommandBuffer:command_buffer
-                imageDescriptor:CreateMPSImageDescriptor(operation_input)];
+
+        std::map<uint32_t, MPSTemporaryImage*> tmp_mpsimage_cache;
+        for (size_t i = 0; i < compilation_->operations_.size(); i++) {
+          const OperationMac& operation = compilation_->operations_[i];
+          MPSCNNKernel* kernel = operation.mpscnn_kernel.get();
+          if (!kernel) {
+            DLOG(INFO) << "No kernel compiled for operation " << i << " type " << operation.type;
+            continue;
           }
-          src_img = tmp_mpsimage_cache[operation_input_idx];
-        }
-        if (!dst_img) {
-          if (tmp_mpsimage_cache.find(operation_output_idx) == tmp_mpsimage_cache.end()) {
-            tmp_mpsimage_cache[operation_output_idx] = [MPSTemporaryImage
-                temporaryImageWithCommandBuffer:command_buffer
-                imageDescriptor:CreateMPSImageDescriptor(operation_output)];
+          MPSImage* src_img = nullptr;
+          MPSImage* dst_img = nullptr;
+          uint32_t operation_input_idx = operation.inputs[0];
+          const Operand& operation_input = compilation_->operands_[operation_input_idx];
+          if (operation_input_idx == input_idx) {
+            src_img = input_img;
           }
-          dst_img = tmp_mpsimage_cache[operation_output_idx];
+          uint32_t operation_output_idx = operation.outputs[0];
+          const Operand& operation_output = compilation_->operands_[operation_output_idx];
+          if (operation_output_idx == output_idx) {
+            dst_img = output_img;
+          }
+          if (!src_img) {
+            if (tmp_mpsimage_cache.find(operation_input_idx) == tmp_mpsimage_cache.end()) {
+              tmp_mpsimage_cache[operation_input_idx] = [MPSTemporaryImage
+                  temporaryImageWithCommandBuffer:command_buffer
+                  imageDescriptor:CreateMPSImageDescriptor(operation_input)];
+            }
+            src_img = tmp_mpsimage_cache[operation_input_idx];
+          }
+          if (!dst_img) {
+            if (tmp_mpsimage_cache.find(operation_output_idx) == tmp_mpsimage_cache.end()) {
+              tmp_mpsimage_cache[operation_output_idx] = [MPSTemporaryImage
+                  temporaryImageWithCommandBuffer:command_buffer
+                  imageDescriptor:CreateMPSImageDescriptor(operation_output)];
+            }
+            dst_img = tmp_mpsimage_cache[operation_output_idx];
+          }
+          [kernel encodeToCommandBuffer:command_buffer
+              sourceImage:src_img
+              destinationImage:dst_img];
+          //DLOG(INFO) << "Encode operation " << i << " with kernel " << 
+          //    kernel << " src " << operation_input_idx << " sourceImage " << src_img <<
+          //    " dst " << operation_output_idx << " destinationImage " << dst_img;
         }
-        [kernel encodeToCommandBuffer:command_buffer
-            sourceImage:src_img
-            destinationImage:dst_img];
-        //DLOG(INFO) << "Encode operation " << i << " with kernel " << 
-        //    kernel << " src " << operation_input_idx << " sourceImage " << src_img <<
-        //    " dst " << operation_output_idx << " destinationImage " << dst_img;
-      }
 
-      std::unique_ptr<OperandInfo>& output_data = outputs_info_[0];
-      id<MTLBuffer> output_buffer = [GetMPSCNNContext().device
-          newBufferWithLength:output_data->length
-          options:MTLResourceOptionCPUCacheModeWriteCombined];
-
-      {
-        id<MTLComputeCommandEncoder> encoder = [command_buffer computeCommandEncoder];
-        id<MTLComputePipelineState> state = GetMPSCNNContext().GetSpecializedPipelineState(
-            KernelFor(output_img, @"copy_metal_to_nhwc", @"copy_metal_to_nhwc_nonarray"),
-            {{ushort(output_img.height), ushort(output_img.width), ushort(output_img.featureChannels)}});
+        {
+          id<MTLComputeCommandEncoder> encoder = [command_buffer computeCommandEncoder];
+          id<MTLComputePipelineState> state = GetMPSCNNContext().GetSpecializedPipelineState(
+              KernelFor(output_img, @"copy_metal_to_nhwc", @"copy_metal_to_nhwc_nonarray"),
+              {{ushort(output_img.height), ushort(output_img.width), ushort(output_img.featureChannels)}});
+                
+          [encoder setComputePipelineState:state];
+          [encoder setBuffer:output_buffer offset:0 atIndex:0];
+          [encoder setTexture:[output_img texture] atIndex:0];
               
-        [encoder setComputePipelineState:state];
-        [encoder setBuffer:output_buffer offset:0 atIndex:0];
-        [encoder setTexture:[output_img texture] atIndex:0];
-            
-        const auto& outputLaunchParams = SpatialPointwiseKernelLaunchParams(state, output_img);
-        [encoder dispatchThreadgroups:outputLaunchParams.threadgroupsPerGrid
-                threadsPerThreadgroup:outputLaunchParams.threadsPerThreadgroup];
-        [encoder endEncoding];
-      }
+          const auto& outputLaunchParams = SpatialPointwiseKernelLaunchParams(state, output_img);
+          [encoder dispatchThreadgroups:outputLaunchParams.threadgroupsPerGrid
+                  threadsPerThreadgroup:outputLaunchParams.threadsPerThreadgroup];
+          [encoder endEncoding];
+        }
 
-      [command_buffer commit];
-      [command_buffer waitUntilCompleted];
+        [command_buffer commit];
+        [command_buffer waitUntilCompleted];
 
-      //DLOG(INFO) << "Copy memory back from output buffer with length " << output_buffer.length;
-      memcpy(output_data->mapping.get(), [output_buffer contents], output_data->length);
+        //DLOG(INFO) << "Copy memory back from output buffer with length " << output_buffer.length;
+        memcpy(output_data->mapping.get(), [output_buffer contents], output_data->length);
+      }  // @autoreleasepool
     } while(0);
   }
 
