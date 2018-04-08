@@ -7,6 +7,54 @@
 
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
 
+API_AVAILABLE(macosx(10.13)) @interface ConvDataSource : NSObject<MPSCNNConvolutionDataSource> {}
+@property(nonatomic, assign) float* weights_;
+@property(nonatomic, assign) float* bias_;
+@property(nonatomic, assign) MPSCNNConvolutionDescriptor* desc_;
+@end
+
+@implementation ConvDataSource
+@synthesize weights_;
+@synthesize bias_;
+@synthesize desc_;
+- (id)initWithWeight:(float*)weights
+                bias:(float*)bias
+                desc:(MPSCNNConvolutionDescriptor*)desc {
+  self = [super init];
+  self.weights_ = weights;
+  self.bias_ = bias;
+  self.desc_ = desc;
+  return self;
+}
+- (float*)biasTerms {
+  return self.bias_;
+}
+- (MPSDataType)dataType {
+  return MPSDataTypeFloat32;
+}
+- (MPSCNNConvolutionDescriptor*)descriptor {
+  return self.desc_;
+}
+- (NSString*)label {
+  return nullptr;
+}
+- (BOOL)load {
+  return true;
+}
+- (float*)lookupTableForUInt8Kernel {
+  return nullptr;
+}
+- (void)purge {
+  return;
+}
+- (vector_float2*)rangesForUInt8Kernel {
+  return nullptr;
+}
+- (void*)weights {
+  return self.weights_;
+}
+@end
+
 namespace ml {
 
 OperationMac::OperationMac() = default;
@@ -56,13 +104,14 @@ MPSCNNConvolution* API_AVAILABLE(macosx(10.13)) CreateMPSCNNConvolution(
   desc.strideInPixelsY = stride_height;
   desc.groups = 1;
 
+  auto data_source = [[ConvDataSource alloc]
+                       initWithWeight:(float*)weights
+                       bias:(float*)bias
+                       desc:(MPSCNNConvolutionDescriptor*)desc];
   MPSCNNConvolution* conv = 
       [[MPSCNNConvolution alloc]
         initWithDevice:GetMPSCNNContext().device
-        convolutionDescriptor:desc
-        kernelWeights:weights
-        biasTerms:bias
-        flags:MPSCNNConvolutionFlagsNone];
+        weights:data_source];
   return conv;
 }
 
