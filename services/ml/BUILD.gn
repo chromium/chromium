@@ -41,8 +41,24 @@ source_set("lib") {
       "${android_ndk_root}/sysroot/usr/include"
     ]
 
+    libdir = ""
+    if (current_cpu == "x86") {
+      libdir = "arch-x86/usr/lib"
+    } else if (target_cpu == "arm") {
+      libdir = "arch-arm/usr/lib"
+    } else if (target_cpu == "mips") {
+      libdir = "arch-mips/usr/lib"
+    } else if (target_cpu == "arm64") {
+      libdir = "arch-arm64/usr/lib"
+    } else if (target_cpu == "x64") {
+      libdir = "arch-x86_64/usr/lib64"
+    } else if (target_cpu == "mips64") {
+      libdir = "arch-mips64/usr/lib64"
+    } else {
+      assert(false, "Need android neuralnetworks support for your target arch.")
+    }
     lib_dirs = [
-      "${android_ndk_root}/platforms/android-${android_sdk_platform_version}/arch-${target_cpu}/usr/lib"
+      "${android_ndk_root}/platforms/android-${android_sdk_platform_version}/${libdir}"
     ]
 
     libs = [
@@ -89,3 +105,4 @@ service_manifest("manifest") {
   name = "ml"
   source = "manifest.json"
 }
+
