@@ -38,7 +38,7 @@ class CompilationImplMac : public mojom::Compilation {
 
  private:
   bool CompileConv2DOrDepthwiseConv2D(OperationMac&);
-  bool CompileAveragePool2D(OperationMac&);
+  bool CompileAverageOrMaxPool2D(OperationMac&);
   bool CompileSoftmax(OperationMac&);
   bool CompileReshape(OperationMac&);
 

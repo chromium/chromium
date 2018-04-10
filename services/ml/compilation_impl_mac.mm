@@ -179,8 +179,8 @@ void CompilationImplMac::finish(int32_t preference, finishCallback callback) {
     DLOG(INFO) << "    outputs(" << outputs.size() << "): " << VectorToString(outputs.data(), outputs.size());
     if (type == mojom::CONV_2D || type == mojom::DEPTHWISE_CONV_2D) {
       success = CompileConv2DOrDepthwiseConv2D(operation);
-    } else if (type == mojom::AVERAGE_POOL_2D) {
-      success = CompileAveragePool2D(operation);
+    } else if (type == mojom::AVERAGE_POOL_2D || type == mojom::MAX_POOL_2D) {
+      success = CompileAverageOrMaxPool2D(operation);
     } else if (type == mojom::SOFTMAX) {
       success = CompileSoftmax(operation);
     } else if (type == mojom::RESHAPE) {
@@ -352,9 +352,9 @@ bool CompilationImplMac::CompileConv2DOrDepthwiseConv2D(OperationMac& operation)
   return true;
 }
 
-bool CompilationImplMac::CompileAveragePool2D(OperationMac& operation) {
-  DLOG(INFO) << "CompilationImplMac::CompileAveragePool2D";
-  DLOG_IF(FATAL, operation.type != mojom::AVERAGE_POOL_2D);
+bool CompilationImplMac::CompileAverageOrMaxPool2D(OperationMac& operation) {
+  DLOG(INFO) << "CompilationImplMac::CompileAverageOrMaxPool2D";
+  DLOG_IF(FATAL, operation.type != mojom::AVERAGE_POOL_2D && operation.type != mojom::MAX_POOL_2D);
   int32_t input_width, input_height, output_width, output_height;
   bool implicit_padding;
   int32_t padding_left, padding_right, padding_top, padding_bottom;
@@ -417,13 +417,25 @@ bool CompilationImplMac::CompileAveragePool2D(OperationMac& operation) {
   }
 
   if (@available(macOS 10.13, *)) {
-    MPSCNNPoolingAverage* pool =
-        [[MPSCNNPoolingAverage alloc]
-            initWithDevice:GetMPSCNNContext().device
-            kernelWidth:filter_width
-            kernelHeight:filter_height
-            strideInPixelsX:stride_width
-            strideInPixelsY:stride_height];
+    MPSCNNPooling* pool;
+    if (operation.type == mojom::AVERAGE_POOL_2D) {
+      pool = [[MPSCNNPoolingAverage alloc]
+               initWithDevice:GetMPSCNNContext().device
+               kernelWidth:filter_width
+               kernelHeight:filter_height
+               strideInPixelsX:stride_width
+               strideInPixelsY:stride_height];
+    } else if (operation.type == mojom::MAX_POOL_2D) {
+      pool = [[MPSCNNPoolingMax alloc]
+               initWithDevice:GetMPSCNNContext().device
+               kernelWidth:filter_width
+               kernelHeight:filter_height
+               strideInPixelsX:stride_width
+               strideInPixelsY:stride_height];
+    } else {
+      DLOG(ERROR) << "Operation " << operation.type << " is not supported";
+      return false;
+    }
     MPSOffset offset;
     if (implicit_padding) {
       ComputeMPSOffsetForImplictPadding(
