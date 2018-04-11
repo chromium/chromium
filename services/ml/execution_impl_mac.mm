@@ -47,7 +47,7 @@ LaunchParams API_AVAILABLE(macosx(10.13)) SpatialPointwiseKernelLaunchParams(
     return {threadsPerThreadgroup, threadgroupsPerGrid};
 };
 
-bool GetMPSImageInfo(const Operand& operand, uint32_t& n, uint32_t& width, uint32_t& height, uint32_t& channels) {
+bool GetMPSImageInfo(const OperandMac& operand, uint32_t& n, uint32_t& width, uint32_t& height, uint32_t& channels) {
   const std::vector<uint32_t>& dimensions = operand.dimensions;
   if (dimensions.size() == 4) {
     n = dimensions[0];
@@ -67,7 +67,7 @@ bool GetMPSImageInfo(const Operand& operand, uint32_t& n, uint32_t& width, uint3
   }
 }
 
-MPSImageDescriptor* API_AVAILABLE(macosx(10.13)) CreateMPSImageDescriptor(const Operand& operand) {
+MPSImageDescriptor* API_AVAILABLE(macosx(10.13)) CreateMPSImageDescriptor(const OperandMac& operand) {
   int32_t type = operand.type;
   MPSImageDescriptor* mpsimage_desc = nullptr;
   if (type != mojom::TENSOR_FLOAT32) {
@@ -89,8 +89,8 @@ MPSImageDescriptor* API_AVAILABLE(macosx(10.13)) CreateMPSImageDescriptor(const 
       featureChannels:channels
       numberOfImages:n
       usage:MTLTextureUsageShaderRead|MTLTextureUsageShaderWrite];
-  //DLOG(INFO) << "Create MPSImageDescriptor " << mpsimage_desc
-  //    << " [" << width << ", " << height << ", " << channels << "]";
+  DLOG(INFO) << "Create MPSImageDescriptor " << mpsimage_desc
+      << " [" << width << ", " << height << ", " << channels << "]";
   return mpsimage_desc;
 }
 
@@ -104,7 +104,7 @@ ExecutionImplMac::ExecutionImplMac(CompilationImplMac* compilation, mojo::Scoped
     input_mtlbuffers_.resize(inputs_size);
   }
   for (size_t i = 0; i < inputs_size; ++i) {
-    Operand& operand = compilation_->operands_[compilation_->inputs_[i]];
+    OperandMac& operand = compilation_->operands_[compilation_->inputs_[i]];
     uint32_t offset = total_length;
     uint32_t length = operand.requiredSize();
     mojo::ScopedSharedBufferMapping mapping = memory_->MapAtOffset(length, offset);
@@ -127,7 +127,7 @@ ExecutionImplMac::ExecutionImplMac(CompilationImplMac* compilation, mojo::Scoped
     output_mtlbuffers_.resize(outputs_size);
   }
   for (size_t i = 0; i < outputs_size; ++i) {
-    Operand& operand = compilation_->operands_[compilation_->outputs_[i]];
+    OperandMac& operand = compilation_->operands_[compilation_->outputs_[i]];
     uint32_t offset = total_length;
     uint32_t length = operand.requiredSize();
     mojo::ScopedSharedBufferMapping mapping = memory_->MapAtOffset(length, offset);
@@ -199,37 +199,43 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
           MPSImage* src_img = nullptr;
           MPSImage* dst_img = nullptr;
           uint32_t operation_input_idx = operation.inputs[0];
-          const Operand& operation_input = compilation_->operands_[operation_input_idx];
+          const OperandMac& operation_input = compilation_->operands_[operation_input_idx];
           if (operation_input_idx == input_idx) {
             src_img = input_img;
           }
           uint32_t operation_output_idx = operation.outputs[0];
-          const Operand& operation_output = compilation_->operands_[operation_output_idx];
+          const OperandMac& operation_output = compilation_->operands_[operation_output_idx];
           if (operation_output_idx == output_idx) {
             dst_img = output_img;
           }
           if (!src_img) {
             if (tmp_mpsimage_cache.find(operation_input_idx) == tmp_mpsimage_cache.end()) {
-              tmp_mpsimage_cache[operation_input_idx] = [MPSTemporaryImage
+              MPSTemporaryImage* temp_image = [MPSTemporaryImage
                   temporaryImageWithCommandBuffer:command_buffer
                   imageDescriptor:CreateMPSImageDescriptor(operation_input)];
+              DLOG(INFO) << "Set readCount as " << operation_input.read_count;
+              temp_image.readCount = operation_input.read_count;
+              tmp_mpsimage_cache[operation_input_idx] = temp_image;
             }
             src_img = tmp_mpsimage_cache[operation_input_idx];
           }
           if (!dst_img) {
             if (tmp_mpsimage_cache.find(operation_output_idx) == tmp_mpsimage_cache.end()) {
-              tmp_mpsimage_cache[operation_output_idx] = [MPSTemporaryImage
+              MPSTemporaryImage* temp_image = [MPSTemporaryImage
                   temporaryImageWithCommandBuffer:command_buffer
                   imageDescriptor:CreateMPSImageDescriptor(operation_output)];
+              DLOG(INFO) << "Set readCount as " << operation_output.read_count;
+              temp_image.readCount = operation_output.read_count;
+              tmp_mpsimage_cache[operation_output_idx] = temp_image;
             }
             dst_img = tmp_mpsimage_cache[operation_output_idx];
           }
+          DLOG(INFO) << "Encode operation " << i << " with kernel " <<
+              kernel << " src " << operation_input_idx << " sourceImage " << src_img <<
+              " dst " << operation_output_idx << " destinationImage " << dst_img;
           [kernel encodeToCommandBuffer:command_buffer
               sourceImage:src_img
               destinationImage:dst_img];
-          //DLOG(INFO) << "Encode operation " << i << " with kernel " << 
-          //    kernel << " src " << operation_input_idx << " sourceImage " << src_img <<
-          //    " dst " << operation_output_idx << " destinationImage " << dst_img;
         }
 
         {

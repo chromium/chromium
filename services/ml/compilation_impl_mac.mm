@@ -57,6 +57,11 @@ API_AVAILABLE(macosx(10.13)) @interface ConvDataSource : NSObject<MPSCNNConvolut
 
 namespace ml {
 
+OperandMac::OperandMac() = default;
+OperandMac::OperandMac(const OperandMac& operand) = default;
+OperandMac::OperandMac(const Operand& operand) : Operand(operand), read_count(0) {}
+OperandMac::~OperandMac() = default;
+
 OperationMac::OperationMac() = default;
 OperationMac::OperationMac(const OperationMac& operation) = default;
 OperationMac::OperationMac(const Operation& operation) : Operation(operation) {}
@@ -136,7 +141,10 @@ void API_AVAILABLE(macosx(10.13)) ComputeMPSOffsetForImplictPadding(
 }
 
 CompilationImplMac::CompilationImplMac(ModelImplMac* model) {
-  operands_ = model->operands_;
+  for (uint32_t i = 0; i < model->operands_.size(); ++i) {
+    OperandMac operand(model->operands_[i]);
+    operands_.push_back(operand);
+  }
   for (uint32_t i = 0; i < model->operations_.size(); ++i) {
     OperationMac operation(model->operations_[i]);
     operations_.push_back(operation);
@@ -177,6 +185,11 @@ void CompilationImplMac::finish(int32_t preference, finishCallback callback) {
     std::vector<uint32_t>& outputs = operation.outputs;
     DLOG(INFO) << "    inputs(" << inputs.size() << "): " << VectorToString(inputs.data(), inputs.size());
     DLOG(INFO) << "    outputs(" << outputs.size() << "): " << VectorToString(outputs.data(), outputs.size());
+    // Adjust the read count
+    for (size_t j = 0; j < inputs.size(); ++j) {
+      OperandMac& operand = operands_[inputs[j]];
+      operand.read_count += 1;
+    }
     if (type == mojom::CONV_2D || type == mojom::DEPTHWISE_CONV_2D) {
       success = CompileConv2DOrDepthwiseConv2D(operation);
     } else if (type == mojom::AVERAGE_POOL_2D || type == mojom::MAX_POOL_2D) {
@@ -185,6 +198,8 @@ void CompilationImplMac::finish(int32_t preference, finishCallback callback) {
       success = CompileSoftmax(operation);
     } else if (type == mojom::RESHAPE) {
       success = CompileReshape(operation);
+    } else if (type == mojom::CONCATENATION) {
+      success = CompileConcatenation(operation);
     } else {
       DLOG(ERROR) << "Operation is not supported";
       success = false;
@@ -216,19 +231,19 @@ bool CompilationImplMac::CompileConv2DOrDepthwiseConv2D(OperationMac& operation)
   std::vector<uint32_t> inputs = operation.inputs;
   std::vector<uint32_t> outputs = operation.outputs;
   uint32_t output_idx = outputs[0];
-  Operand& output = operands_[output_idx];
+  OperandMac& output = operands_[output_idx];
   output_height = output.dimensions[1];
   output_width = output.dimensions[2];
   int32_t i = 0;
   int32_t input_idx = inputs[i++];
-  Operand& input = operands_[input_idx];
+  OperandMac& input = operands_[input_idx];
   input_height = input.dimensions[1];
   input_width = input.dimensions[2];
 
   DLOG(INFO) << "  input_height: " << input_height << " input_width: " << input_width;
   DLOG(INFO) << "  output_height: " << output_height << " output_width: " << output_width;
 
-  Operand filter = operands_[inputs[i++]];
+  OperandMac& filter = operands_[inputs[i++]];
   if (depthwise) {
     depth_out = filter.dimensions[3];
   } else {
@@ -243,7 +258,9 @@ bool CompilationImplMac::CompileConv2DOrDepthwiseConv2D(OperationMac& operation)
   DLOG(INFO) << "  filter_width: " << filter_width;
   DLOG(INFO) << "  depth_in: " << depth_in;
 
-  Operand bias = operands_[inputs[i++]];
+  OperandMac& bias = operands_[inputs[i++]];
+  DLOG(INFO) << "  bias length: " << bias.dimensions[0];
+
   if ((!depthwise && inputs.size() == 10) ||
       (depthwise && inputs.size() == 11)) {
     implicit_padding = false;
@@ -365,12 +382,12 @@ bool CompilationImplMac::CompileAverageOrMaxPool2D(OperationMac& operation) {
   std::vector<uint32_t> inputs = operation.inputs;
   std::vector<uint32_t> outputs = operation.outputs;
   uint32_t output_idx = outputs[0];
-  Operand& output = operands_[output_idx];
+  OperandMac& output = operands_[output_idx];
   output_height = output.dimensions[1];
   output_width = output.dimensions[2];
   int32_t i = 0;
   int32_t input_idx = inputs[i++];
-  Operand& input = operands_[input_idx];
+  OperandMac& input = operands_[input_idx];
   input_height = input.dimensions[1];
   input_width = input.dimensions[2];
 
@@ -492,13 +509,65 @@ bool CompilationImplMac::CompileReshape(OperationMac& reshape) {
   return true;
 }
 
+bool CompilationImplMac::CompileConcatenation(OperationMac& concat) {
+  DLOG(INFO) << "CompilationImplMac::CompileConcatenation";
+  DLOG_IF(FATAL, concat.type != mojom::CONCATENATION);
+
+  std::vector<uint32_t> inputs = concat.inputs;
+  std::vector<uint32_t> outputs = concat.outputs;
+
+  uint32_t axis = getScalarInt32(values_[inputs[inputs.size() - 1]], memory_.get());
+
+  if (axis != 3) {
+    DLOG(ERROR) << "Only axis == 3 is supported";
+    return false;
+  }
+
+  if (@available(macOS 10.13, *)) {
+    DLOG(INFO) << "  Concatenation is compiled to no-op";
+    uint32_t concat_output_idx = concat.outputs[0];
+    uint32_t channelOffset = 0;
+    for (size_t i = 0; i < inputs.size() - 1; ++i) {
+      uint32_t concat_input_idx = inputs[i];
+      for (size_t j = 0; j < operations_.size(); ++j) {
+        OperationMac& operation = operations_[j];
+        if (operation.outputs[0] == concat_input_idx) {
+          DLOG(INFO) << "  Rewrite op " << j << " type " << operation.type
+                     << " output from " << operation.outputs[0] << " to " << concat_output_idx;
+          operation.outputs[0] = concat_output_idx;
+          MPSCNNKernel* kernel = operation.mpscnn_kernel.get();
+          if (!kernel) {
+            DLOG(ERROR) << "MPSKernel of operation " << j << " type " << operation.type
+                        << " is not found";
+            return false;
+          }
+          if (channelOffset % 4 != 0) {
+            DLOG(ERROR) << "Invalid channelOffset " << channelOffset << ". It must be multiple of 4";
+            return false;
+          }
+          DLOG(INFO) << "  Set destinationFeatureChannelOffset to " << channelOffset;
+          [kernel setDestinationFeatureChannelOffset:channelOffset];
+          OperandMac& operand = operands_[concat_input_idx];
+          if (operand.dimensions.size() < 4) {
+            DLOG(ERROR) << "Invalid dimensions of operand " << concat_input_idx << " length is " << operand.dimensions.size();
+            return false;
+          }
+          channelOffset += operand.dimensions[axis];
+        }
+      }
+    }
+  }
+
+  return true;
+}
+
 void CompilationImplMac::createExecution(createExecutionCallback callback) {
   DLOG(INFO) << "CompilationImplMac::createExecution";
   auto init_params = mojom::ExecutionInitParams::New();
 
   uint32_t input_memory_size = 0;
   for (size_t i = 0; i < inputs_.size(); ++i) {
-    Operand operand = operands_[inputs_[i]];
+    OperandMac& operand = operands_[inputs_[i]];
     input_memory_size += operand.requiredSize();
     init_params->inputs.push_back(
         mojom::OperandInfo::New(operand.type, operand.dimensions));
@@ -507,7 +576,7 @@ void CompilationImplMac::createExecution(createExecutionCallback callback) {
 
   uint32_t output_memory_size = 0;
   for (size_t i = 0; i < outputs_.size(); ++i) {
-    Operand operand = operands_[outputs_[i]];
+    OperandMac& operand = operands_[outputs_[i]];
     output_memory_size += operand.requiredSize();
     init_params->outputs.push_back(
         mojom::OperandInfo::New(operand.type, operand.dimensions));

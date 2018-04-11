@@ -20,6 +20,14 @@
 
 namespace ml {
 
+struct OperandMac : public Operand {
+  OperandMac();
+  OperandMac(const OperandMac&);
+  OperandMac(const Operand&);
+  ~OperandMac();
+  uint32_t read_count;
+};
+
 struct OperationMac : public Operation {
   OperationMac();
   OperationMac(const OperationMac&);
@@ -41,10 +49,11 @@ class CompilationImplMac : public mojom::Compilation {
   bool CompileAverageOrMaxPool2D(OperationMac&);
   bool CompileSoftmax(OperationMac&);
   bool CompileReshape(OperationMac&);
+  bool CompileConcatenation(OperationMac&);
 
  private:
   friend class ExecutionImplMac;
-  std::vector<Operand> operands_;
+  std::vector<OperandMac> operands_;
   std::vector<OperationMac> operations_;
   std::map<uint32_t, ValueInfo> values_;
   std::vector<uint32_t> inputs_;
