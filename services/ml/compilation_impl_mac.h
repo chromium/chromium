@@ -34,6 +34,7 @@ struct OperationMac : public Operation {
   OperationMac(const Operation&);
   ~OperationMac();
   base::scoped_nsobject<MPSCNNKernel> mpscnn_kernel;
+  int fuse_code;
 };
 
 class CompilationImplMac : public mojom::Compilation {

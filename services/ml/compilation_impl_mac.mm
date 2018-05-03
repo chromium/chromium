@@ -73,12 +73,8 @@ MPSCNNNeuron* API_AVAILABLE(macosx(10.13)) CreateMPSCNNNeuron(int32_t fuse_code)
     relu = nullptr;
   } else if (fuse_code == mojom::FUSED_RELU) {
     relu = [[MPSCNNNeuronReLU alloc] initWithDevice:GetMPSCNNContext().device a:0];
-  } else if (fuse_code == mojom::FUSED_RELU1) {
-    DLOG(INFO) << "Emulate RELU1 with RELU";
-    relu = [[MPSCNNNeuronReLU alloc] initWithDevice:GetMPSCNNContext().device a:0];
-  } else if (fuse_code == mojom::FUSED_RELU6) {
-    DLOG(INFO) << "Emulate RELU6 with RELU";
-    relu = [[MPSCNNNeuronReLU alloc] initWithDevice:GetMPSCNNContext().device a:0];
+  } else {
+    DLOG(INFO) << "Fuse code " << fuse_code << " is not supported by MPSCNNNeuron";
   }
   return relu;
 }
@@ -306,6 +302,7 @@ bool CompilationImplMac::CompileConv2DOrDepthwiseConv2D(OperationMac& operation)
 
   if (@available(macOS 10.13, *)) {
     MPSCNNNeuron* relu = CreateMPSCNNNeuron(fuse_code);
+    operation.fuse_code = fuse_code;
     
     ValueInfo weights_value_info = values_.at(inputs[1]);
     const float* weights = reinterpret_cast<const float*>(memory_.get() + weights_value_info.offset);

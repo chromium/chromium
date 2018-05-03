@@ -142,6 +142,31 @@ out[int(h) * W * C + int(w) * C + int(c)] = cs[idx];  \
 #undef CHWP4_TO_HWC
 }
 
+kernel void relu(texture2d_array<half, access::read> in[[texture(0)]],
+                 texture2d_array<half, access::write> out[[texture(1)]],
+                 ushort3 gid[[thread_position_in_grid]]) {
+    const half T = half(ushort_arg_0);
+    if (gid.x >= out.get_width() || gid.y >= out.get_height()) {
+        return;
+    }
+    ushort2 gid_(gid.x, gid.y);
+    half4 x = in.read(gid_, gid.z);
+    half4 y = fmin(fmax(x, 0.0h), T);
+    out.write(y, gid_, gid.z);
+}
+
+kernel void relu_nonarray(texture2d<half, access::read> in[[texture(0)]],
+                          texture2d<half, access::write> out[[texture(1)]],
+                          ushort2 gid[[thread_position_in_grid]]) {
+    const half T = half(ushort_arg_0);
+    if (gid.x >= out.get_width() || gid.y >= out.get_height()) {
+        return;
+    }
+    half4 x = in.read(gid);
+    half4 y = fmin(fmax(x, 0.0h), T);
+    out.write(y, gid);
+}
+
 )V0G0N";
 
 MPSCNNContext::MPSCNNContext() = default;

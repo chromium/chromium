@@ -156,20 +156,16 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
       @autoreleasepool {
         id<MTLCommandBuffer> command_buffer = [GetMPSCNNContext().command_queue commandBuffer];
 
-        if (compilation_->inputs_.size() > 1 || compilation_->outputs_.size() > 1) {
-          DLOG(ERROR) << "Only input size and output size 1 is supported";
+        if (compilation_->inputs_.size() > 1) {
+          DLOG(ERROR) << "Only input size 1 is supported";
           success = false;
           break;
         }
 
         const uint32_t input_idx = compilation_->inputs_[0];
-        const uint32_t output_idx = compilation_->outputs_[0];
         std::unique_ptr<OperandInfo>& input_data = inputs_info_[0];
-        std::unique_ptr<OperandInfo>& output_data = outputs_info_[0];
         MPSImage* input_img = input_mpsimages_[0].get();
-        MPSImage* output_img = output_mpsimages_[0].get();
         id<MTLBuffer> input_buffer = input_mtlbuffers_[0];
-        id<MTLBuffer> output_buffer = output_mtlbuffers_[0];
 
         {
           memcpy([input_buffer contents], input_data->mapping.get(), input_data->length);
@@ -205,8 +201,10 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
           }
           uint32_t operation_output_idx = operation.outputs[0];
           const OperandMac& operation_output = compilation_->operands_[operation_output_idx];
-          if (operation_output_idx == output_idx) {
-            dst_img = output_img;
+          for (size_t j = 0; j < compilation_->outputs_.size(); ++j) {
+            if (operation_output_idx == compilation_->outputs_[j]) {
+              dst_img = output_mpsimages_[j];
+            }
           }
           if (!src_img) {
             if (tmp_mpsimage_cache.find(operation_input_idx) == tmp_mpsimage_cache.end()) {
@@ -233,12 +231,45 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
           DLOG(INFO) << "Encode operation " << i << " with kernel " <<
               kernel << " src " << operation_input_idx << " sourceImage " << src_img <<
               " dst " << operation_output_idx << " destinationImage " << dst_img;
-          [kernel encodeToCommandBuffer:command_buffer
-              sourceImage:src_img
-              destinationImage:dst_img];
+          if (operation.fuse_code == mojom::FUSED_RELU1 || operation.fuse_code == mojom::FUSED_RELU6) {
+            // Insert relu layer
+            MPSTemporaryImage* relu_input = [MPSTemporaryImage
+                  temporaryImageWithCommandBuffer:command_buffer
+                  imageDescriptor:CreateMPSImageDescriptor(operation_output)];
+            [kernel encodeToCommandBuffer:command_buffer
+                sourceImage:src_img
+                destinationImage:relu_input];
+            short threshold = 6;
+            if (operation.fuse_code == mojom::FUSED_RELU1) {
+              threshold = 1;
+            }
+            {
+              id<MTLComputeCommandEncoder> encoder = [command_buffer computeCommandEncoder];
+              id<MTLComputePipelineState> state =
+                  GetMPSCNNContext().GetSpecializedPipelineState(
+                      KernelFor(dst_img, @"relu", @"relu_nonarray"),
+                      {ushort(threshold)});
+              [encoder setComputePipelineState:state];
+              [encoder setTexture:[relu_input texture] atIndex:0];
+              [encoder setTexture:[dst_img texture] atIndex:1];
+              const auto& inputLaunchParams =
+                  SpatialPointwiseKernelLaunchParams(state, relu_input);
+              [encoder dispatchThreadgroups:inputLaunchParams.threadgroupsPerGrid
+                      threadsPerThreadgroup:inputLaunchParams.threadsPerThreadgroup];
+              [encoder endEncoding];
+            }
+          } else {
+            [kernel encodeToCommandBuffer:command_buffer
+                sourceImage:src_img
+                destinationImage:dst_img];
+          }
         }
 
+        for (size_t i = 0; i < compilation_->outputs_.size(); ++i)
         {
+          MPSImage* output_img = output_mpsimages_[i];
+          id<MTLBuffer> output_buffer = output_mtlbuffers_[i];
+
           id<MTLComputeCommandEncoder> encoder = [command_buffer computeCommandEncoder];
           id<MTLComputePipelineState> state = GetMPSCNNContext().GetSpecializedPipelineState(
               KernelFor(output_img, @"copy_metal_to_nhwc", @"copy_metal_to_nhwc_nonarray"),
@@ -257,8 +288,14 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
         [command_buffer commit];
         [command_buffer waitUntilCompleted];
 
-        //DLOG(INFO) << "Copy memory back from output buffer with length " << output_buffer.length;
-        memcpy(output_data->mapping.get(), [output_buffer contents], output_data->length);
+        for (size_t i = 0; i < compilation_->outputs_.size(); ++i) {
+          std::unique_ptr<OperandInfo>& output_data = outputs_info_[i];
+          id<MTLBuffer> output_buffer = output_mtlbuffers_[i];
+          //DLOG(INFO) << "Copy memory back from output buffer with length " << output_buffer.length;
+          memcpy(output_data->mapping.get(), [output_buffer contents], output_data->length);
+          //OperandMac& operand = compilation_->operands_[compilation_->outputs_[i]];
+          //PrintOperand(operand, output_data);
+        }
       }  // @autoreleasepool
     } while(0);
   }
