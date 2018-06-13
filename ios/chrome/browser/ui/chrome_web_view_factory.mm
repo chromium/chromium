@@ -25,10 +25,10 @@ NSString* const kExternalUserAgent = @"UIWebViewForExternalContent";
 namespace ChromeWebView {
 // Shared desktop user agent used to mimic Safari on a mac.
 NSString* const kDesktopUserAgent =
-    @"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) "
-    @"AppleWebKit/600.7.12 (KHTML, like Gecko) "
-    @"Version/8.0.7 "
-    @"Safari/600.7.12";
+    @"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) "
+    @"AppleWebKit/605.1.15 (KHTML, like Gecko) "
+    @"Version/11.1 "
+    @"Safari/605.1.15";
 
 NSString* const kExternalRequestGroupID = @"kExternalRequestGroupID";
 
