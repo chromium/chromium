@@ -78,8 +78,9 @@ source_set("lib") {
     ]
 
     libs = [
+      "Accelerate.framework",
       "Metal.framework",
-      "MetalPerformanceShaders.framework",
+      "MetalPerformanceShaders.framework"
     ]
   } else {
     sources += [
