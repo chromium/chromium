@@ -55,6 +55,12 @@ bool GetMPSImageInfo(const OperandMac& operand, uint32_t& n, uint32_t& width, ui
     width = dimensions[2];
     channels = dimensions[3];
     return true;
+  } else if (dimensions.size() == 3) {
+    n = 1;
+    height = dimensions[0];
+    width = dimensions[1];
+    channels = dimensions[2];
+    return true;
   } else if (dimensions.size() == 2) {
     n = dimensions[0];
     channels = dimensions[1];
