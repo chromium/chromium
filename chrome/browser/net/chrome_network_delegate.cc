@@ -404,6 +404,7 @@ int ChromeNetworkDelegate::OnBeforeStartTransaction(
 
         switch (resource_type) {
           case content::RESOURCE_TYPE_IMAGE:
+          case content::RESOURCE_TYPE_FAVICON:
             adblock_content_type = AdblockPlus::FilterEngine::ContentType::CONTENT_TYPE_IMAGE;
             break;
             
