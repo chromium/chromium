@@ -229,10 +229,14 @@ base::LazyInstance<scoped_refptr<ConfigurationList>>::Leaky
 // Constant definitions -------------------------------------------------------
 
 const base::Feature kSafeBrowsingSubresourceFilter{
-    "SubresourceFilter", base::FEATURE_ENABLED_BY_DEFAULT};
+    // Disabled in favour of Adblock implementation
+    // see https://gitlab.com/eyeo/adblockplus/chromium/issues/20
+    "SubresourceFilter", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kSafeBrowsingSubresourceFilterExperimentalUI{
-    "SubresourceFilterExperimentalUI", base::FEATURE_ENABLED_BY_DEFAULT};
+    // Disabled in favour of Adblock implementation
+    // see https://gitlab.com/eyeo/adblockplus/chromium/issues/20
+    "SubresourceFilterExperimentalUI", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Legacy name `activation_state` is used in variation parameters.
 const char kActivationLevelParameterName[] = "activation_state";

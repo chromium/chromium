@@ -1021,6 +1021,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/preferences/NotificationsPreferences.java",
   "java/src/org/chromium/chrome/browser/preferences/PrefChangeRegistrar.java",
   "java/src/org/chromium/chrome/browser/preferences/PrefServiceBridge.java",
+  "java/src/org/chromium/chrome/browser/adblock/AdblockBridge.java",
   "java/src/org/chromium/chrome/browser/preferences/Preferences.java",
   "java/src/org/chromium/chrome/browser/preferences/PreferenceUtils.java",
   "java/src/org/chromium/chrome/browser/preferences/PreferencesLauncher.java",

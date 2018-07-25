@@ -1,0 +1,67 @@
+import("//third_party/libadblockplus_common/abi.gni")
+
+# Build libadblockplus using make
+action("make") {
+  script = "//third_party/libadblockplus_common/subproc.py"
+  _cwd = rebase_path("./src")
+  _build_dir = "${target_out_dir}/build"
+  _abs_build_dir = rebase_path("${_build_dir}")
+  _abs_v8_include_dir = rebase_path("../../v8/include")
+  _abs_v8_libraries_dir = rebase_path("../../third_party/libadblockplus/src/third_party/prebuilt-v8/android-${v8_abi_dir}-release")
+  
+  inputs = [
+  ]
+
+  outputs = [
+    "${_build_dir}/local/${libadblockplus_abi_dir}/libadblockplus.a"
+  ]
+
+  args = [
+    # command line:
+    # 1. one could add/remove "clean" after "make"
+    # 2. one could add/remove "V=1" to add/remove verbose output
+    "/usr/bin/make", "-j8",
+
+    # cwd
+    "--cwd${_cwd}",
+
+    # environment variables
+
+    # skip updating dependencies in `ensure_dependencies.py` while building
+    # (this is done during `gclient sync` or `gclient runhooks`)
+    "--envSKIP_DEPENDENCY_UPDATES=true",
+
+    # Android NDK
+    "--envANDROID_NDK_ROOT=${_cwd}/third_party/android-ndk-r16b",
+
+    # build for android
+    "--envTARGET_OS=android",
+
+    # ARCH
+    "--envABP_TARGET_ARCH=${v8_abi_dir}",
+
+    # Configuration release/debug
+    "--envConfiguration=release",
+
+    # V8 headers
+    "--envLIBV8_INCLUDE_DIR=${_abs_v8_include_dir}",
+
+    # prebuilt V8 static library dirextory (not used in fact)
+    "--envLIBV8_LIB_DIR=${_abs_v8_libraries_dir}",
+
+    # required to set output dir to subdirectory of ${target_out_dir}
+    "--envBUILD_DIR=${_abs_build_dir}",
+
+    # workaround for building for Target platform on Linux GYP issue
+    "--envCXX.host=g++",
+    "--envCC.host=gcc",
+    # For some reason, the .host env variables are ignored on Ubuntu 16.04.
+    # Given that, we need to fallback to _host variables
+    "--envCXX_host=g++",
+    "--envCC_host=gcc"
+  ]
+}
+
+config("headers") {
+  include_dirs = [ "src/include" ]
+}

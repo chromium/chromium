@@ -149,6 +149,9 @@ check_targets = [
   "//storage/*",
   "//testing/*",
 
+  # libadblockplus-android generates .aar and we need to generate .info for it
+  "//third_party/libadblockplus_android/BUILD.gn",
+
   #"//third_party/*",  # May not ever want this.
   #"//third_party/breakpad/*",  # Small errors.
   "//third_party/boringssl/*",
@@ -264,4 +267,8 @@ exec_script_whitelist =
       # Not gypi-to-gn.
       "//google_apis/BUILD.gn",
       "//printing/BUILD.gn",
+
+      # libadblockplus and libadblockplus-android
+      "//third_party/libadblockplus/BUILD.gn",
+      "//third_party/libadblockplus_android/BUILD.gn",
     ]

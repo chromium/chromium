@@ -223,3 +223,6 @@
 /yasm/generate_files.xml
 /yasm/source/patched-yasm
 /yasm/yasm.xml
+# https://issues.adblockplus.org/ticket/6536
+/libadblockplus/src
+/libadblockplus_android/src

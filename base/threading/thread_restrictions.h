@@ -14,6 +14,7 @@ class BrowserProcessImpl;
 class HistogramSynchronizer;
 class NativeBackendKWallet;
 class KeyStorageLinux;
+class AdblockIsolationProviderCompositor;
 
 namespace android_webview {
 class AwFormDatabaseService;
@@ -325,6 +326,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
   friend class midi::TaskService;  // https://crbug.com/796830
   // Not used in production yet, https://crbug.com/844078.
   friend class service_manager::ServiceProcessLauncher;
+  friend class ::AdblockIsolationProviderCompositor;
 
   ScopedAllowBaseSyncPrimitivesOutsideBlockingScope()
       EMPTY_BODY_IF_DCHECK_IS_OFF;

@@ -853,6 +853,11 @@ if (enable_java_templates) {
 
         _rebased_build_config =
             rebase_path(invoker.build_config, root_build_dir)
+
+        if (defined(invoker.native_libraries_dir)) {
+          _native_libraries_dir = invoker.native_libraries_dir
+        }
+
         args += [
           "--jar-path",
           rebase_path(invoker.jar_path, root_build_dir),

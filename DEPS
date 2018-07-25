@@ -83,6 +83,9 @@ vars = {
   'cros_download_vm': '"{cros_board}" == "amd64-generic"',
 
   'android_git': 'https://android.googlesource.com',
+  'adblockplus_github': 'https://github.com/adblockplus',
+  'adblockplus_gitlab': 'https://gitlab.com/eyeo/adblockplus',
+  'eyeo_external': 'https://gitlab.com/eyeo/external-dependencies',
   'aomedia_git': 'https://aomedia.googlesource.com',
   'chromium_git': 'https://chromium.googlesource.com',
   'swiftshader_git': 'https://swiftshader.googlesource.com',
@@ -101,7 +104,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '57c1fc31d0a8fd1e57534d9f4f26916c6a493b9b',
+  'v8_revision': '490cb75560639af23b1d86f6a4610eea6ac91c57',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling swarming_client
   # and whatever else without interference from each other.
@@ -665,7 +668,7 @@ deps = {
     Var('chromium_git') + '/chromium/deps/hunspell_dictionaries.git' + '@' + 'a9bac57ce6c9d390a52ebaad3259f5fdb871210e',
 
   'src/third_party/icu':
-    Var('chromium_git') + '/chromium/deps/icu.git' + '@' + 'f61e46dbee9d539a32551493e3bcc1dea92f83ec',
+    Var('adblockplus_gitlab') + '/icu.git' + '@' + '829bcbc53b1efab9c7b0bb850a21c073327e0797',
 
   'src/third_party/icu4j': {
       'packages': [
@@ -987,6 +990,20 @@ deps = {
       'condition': 'checkout_linux',
   },
 
+  'src/third_party/libadblockplus/src': {
+    'condition':
+      'checkout_android',
+    'url':
+      Var('adblockplus_gitlab') + '/libadblockplus.git@40f5d4d2d00abe3f94ce69210267bcce908cd748',
+  },
+
+  'src/third_party/libadblockplus_android/src': {
+    'condition':
+      'checkout_android',
+    'url':
+      Var('adblockplus_github') + '/libadblockplus-android.git@5342ea7697a7a55a3f649aadb6a976a0799e7922'
+  },
+
   'src/third_party/xstream': {
       'packages': [
           {
@@ -1011,7 +1028,7 @@ deps = {
     Var('chromium_git') + '/infra/luci/client-py.git' + '@' +  Var('swarming_revision'),
 
   'src/v8':
-    Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
+    Var('eyeo_external') + '/chromium-v8-v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
     'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@7011670c092cea90a24776a9f6589387d1ff0c1c',
@@ -2100,6 +2117,87 @@ hooks = [
                 '-vpython-tool', 'install',
     ],
   },
+
+  {
+    # Download dependencies for libadblockplus
+    'name': 'libadblockplus_ensure_dependencies',
+    'pattern': 'dependencies',
+    'action': [
+      'python',
+      'src/third_party/libadblockplus/src/ensure_dependencies.py'
+    ],
+    'condition':
+      'checkout_android'
+  },
+  {
+    # Download official Android NDK
+    'name': 'libadblockplus_download_ndk',
+    'pattern': 'dependencies',
+    'action': [
+      'python',
+      'src/third_party/libadblockplus/download_ndk.py',
+    ],
+    'condition':
+      'checkout_android'
+  },
+  {
+    # Download prebuilt v8 to generate prebuilt .aar to generate .info for ARM
+    # Actually it's required for libadblockplus-android, not libadblockplus
+    'name': 'libadblockplus_download_prebuilt_v8_arm',
+    'pattern': 'dependencies',
+    'action': [
+      'python',
+      'src/third_party/libadblockplus_common/subproc.py',
+      '/usr/bin/make',
+      '--cwdsrc/third_party/libadblockplus/src/',
+      '--envTARGET_OS=android',
+      '--envABP_TARGET_ARCH=arm',
+      '--envConfiguration=release',
+      'get-prebuilt-v8'
+    ],
+    'condition':
+      'checkout_android'
+  },
+  {
+    # Download prebuilt v8 to generate prebuilt .aar to generate .info for ARM
+    # Actually it's required for libadblockplus-android, not libadblockplus
+    'name': 'libadblockplus_download_prebuilt_v8_x86',
+    'pattern': 'dependencies',
+    'action': [
+      'python',
+      'src/third_party/libadblockplus_common/subproc.py',
+      '/usr/bin/make',
+      '--cwdsrc/third_party/libadblockplus/src/',
+      '--envTARGET_OS=android',
+      '--envABP_TARGET_ARCH=ia32',
+      '--envConfiguration=release',
+      'get-prebuilt-v8'
+    ],
+    'condition':
+      'checkout_android'
+  },
+  {
+    # Download build tools dependencies for libadblockplus-android.
+    'name': 'libadblockplus_android_prepare_build_tools',
+    'pattern': 'dependencies',
+    'action': [
+      'python',
+      'src/third_party/libadblockplus_android/prepare_build_tools.py'
+    ],
+    'condition':
+      'checkout_android'
+  },
+  {
+    # Download dependencies for libadblockplus-android.
+    'name': 'libadblockplus_android_ensure_dependencies',
+    'pattern': 'dependencies',
+    'action': [
+      'python',
+      'src/third_party/libadblockplus_android/src/ensure_dependencies.py'
+    ],
+    'condition':
+      'checkout_android'
+  }
 ]
 
 recursedeps = [

@@ -187,6 +187,7 @@ def Download(args):
                         args.verbose, args.dry_run)
 
     if (not _IsBotEnvironment() and
+        not _DoAgreeLicense() and
         not _CheckLicenseAgreement(new_license, paths.license,
                                    config.version_number)):
         logging.warning('Your version of the Google Play services library is '
@@ -402,6 +403,10 @@ def _CheckLicenseAgreement(expected_license_path, actual_license_path,
 def _IsBotEnvironment():
   return bool(os.environ.get('CHROME_HEADLESS'))
 
+# we should be able to agree to License automatically (for CI)
+# see https://gitlab.com/eyeo/adblockplus/chromium/issues/1
+def _DoAgreeLicense():
+  return bool(os.environ.get('GOOGLE_PLAY_AGREE_LICENSE'))
 
 def _VerifyBucketPathFormat(bucket_name, version_number, is_dry_run):
   '''

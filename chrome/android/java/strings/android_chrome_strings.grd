@@ -247,6 +247,9 @@ CHAR-LIMIT guidelines:
       <message name="IDS_PREFS_SECTION_ADVANCED" desc='Title of "Advanced" section of preferences. [CHAR-LIMIT=32]'>
         Advanced
       </message>
+      <message name="IDS_AD_BLOCK_SETTINGS_TITLE" desc="Title of Adblock settings menu item [CHAR-LIMIT=12]">
+        Ad blocking
+      </message>
       <message name="IDS_ENTER_VR" desc="Menu item for entering VR. [CHAR-LIMIT=27]">
         Enter VR
       </message>

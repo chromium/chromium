@@ -730,6 +730,14 @@ public class PrefServiceBridge {
         nativeSetDoNotTrackEnabled(enabled);
     }
 
+    public void setAdblockEnabled(boolean enabled) {
+        nativeSetAdblockEnabled(enabled);
+    }
+
+    public void setAdblockWhitelistedDomains(String[] domains) {
+        nativeSetAdblockWhitelistedDomains(domains);
+    }
+
     public void setRememberPasswordsEnabled(boolean allow) {
         nativeSetRememberPasswordsEnabled(allow);
     }
@@ -1155,6 +1163,8 @@ public class PrefServiceBridge {
     private native void nativeSetBlockThirdPartyCookiesEnabled(boolean enabled);
     private native void nativeSetClipboardEnabled(boolean allow);
     private native void nativeSetDoNotTrackEnabled(boolean enabled);
+    private native void nativeSetAdblockEnabled(boolean enabled);
+    private native void nativeSetAdblockWhitelistedDomains(String[] domains);
     private native void nativeSetRememberPasswordsEnabled(boolean allow);
     private native void nativeSetPasswordManagerAutoSigninEnabled(boolean enabled);
     private native void nativeSetProtectedMediaIdentifierEnabled(boolean enabled);

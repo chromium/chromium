@@ -164,6 +164,8 @@
 #include "net/ssl/client_cert_store_mac.h"
 #endif  // defined(OS_MACOSX)
 
+#include "chrome/browser/android/adblock/adblock_bridge.h"
+
 #if BUILDFLAG(ENABLE_REPORTING)
 #include "net/network_error_logging/network_error_logging_service.h"
 #include "net/reporting/reporting_service.h"
@@ -505,10 +507,15 @@ void ProfileIOData::InitializeOnUIThread(Profile* profile) {
 
   ChromeNetworkDelegate::InitializePrefsOnUIThread(
       &enable_referrers_,
+      &enable_adblock_,
+      &adblock_whitelisted_domains_,
       &force_google_safesearch_,
       &force_youtube_restrict_,
       &allowed_domains_for_apps_,
       pref_service);
+
+  // it will be initialized in observer while notification received
+  AdblockBridge::InitializePrefsOnUIThread(pref_service);
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner =
       BrowserThread::GetTaskRunnerForThread(BrowserThread::IO);
@@ -1078,6 +1085,8 @@ void ProfileIOData::Init(
     chrome_network_delegate->set_profile_path(profile_params_->path);
     chrome_network_delegate->set_cookie_settings(
         profile_params_->cookie_settings.get());
+    chrome_network_delegate->set_enable_adblock(&enable_adblock_);
+    chrome_network_delegate->set_adblock_whitelisted_domains(&adblock_whitelisted_domains_);
     chrome_network_delegate->set_force_google_safe_search(
         &force_google_safesearch_);
     chrome_network_delegate->set_force_youtube_restrict(
@@ -1370,6 +1379,8 @@ void ProfileIOData::ShutdownOnUIThread(
   if (dice_enabled_)
     dice_enabled_->Destroy();
   enable_referrers_.Destroy();
+  enable_adblock_.Destroy();
+  adblock_whitelisted_domains_.Destroy();
 #if !defined(OS_CHROMEOS)
   signin_scoped_device_id_.Destroy();
 #endif

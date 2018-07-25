@@ -205,6 +205,10 @@ if (is_android || is_chromeos) {
     # Refer to android_aar_prebuilt() for more details.
     update_android_aar_prebuilts = false
 
+    # When false, chromium android linker is forced to be Not used for Release build
+    # https://issues.adblockplus.org/ticket/6396
+    use_chromium_android_linker = true
+
     # When true, uses the third party libraries from //third_party/android_deps
     # over the ones in other places. (instead of the support library from
     # android_tools for example)

@@ -8,6 +8,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -34,6 +35,20 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 
+import org.chromium.chrome.browser.preferences.PrefServiceBridge;
+import org.chromium.chrome.browser.adblock.AdblockBridge;
+
+import java.util.List;
+
+import org.adblockplus.libadblockplus.android.AdblockEngine;
+import org.adblockplus.libadblockplus.android.settings.AdblockHelper;
+import org.adblockplus.libadblockplus.android.settings.AdblockSettings;
+import org.adblockplus.libadblockplus.android.Utils;
+import org.adblockplus.libadblockplus.android.settings.BaseSettingsFragment;
+import org.adblockplus.libadblockplus.android.settings.GeneralSettingsFragment;
+import org.adblockplus.libadblockplus.android.settings.AdblockSettingsStorage;
+import org.adblockplus.libadblockplus.android.settings.WhitelistedDomainsSettingsFragment;
+
 /**
  * The Chrome settings activity.
  *
@@ -43,7 +58,10 @@ import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
  * android.preference.PreferenceActivity.
  */
 public class Preferences extends AppCompatActivity implements
-        OnPreferenceStartFragmentCallback {
+        OnPreferenceStartFragmentCallback,
+        BaseSettingsFragment.Provider,
+        GeneralSettingsFragment.Listener,
+        WhitelistedDomainsSettingsFragment.Listener {
 
     public static final String EXTRA_SHOW_FRAGMENT = "show_fragment";
     public static final String EXTRA_SHOW_FRAGMENT_ARGUMENTS = "show_fragment_args";
@@ -63,6 +81,8 @@ public class Preferences extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         ensureActivityNotExported();
 
+        Log.d(TAG, "Preferences.onCreate() " + this);
+
         // The browser process must be started here because this Activity may be started explicitly
         // from Android notifications, when Android is restoring Preferences after Chrome was
         // killed, or for tests. This should happen before super.onCreate() because it might
@@ -78,6 +98,46 @@ public class Preferences extends AppCompatActivity implements
             System.exit(-1);
             return;
         }
+
+        /*
+        if (!AdblockHelper.get().isInit()) {
+            Log.e(TAG, "AdblockHelper is not initialized!!!");
+
+             Log.w(TAG, "Adblock: getting isolate pointer async in Thread " + java.lang.Thread.currentThread());
+             long isolateProviderPtr = AdblockBridge.getInstance().getIsolateProviderNativePtr();
+             Log.w(TAG, "Adblock: got isolate pointer = " + isolateProviderPtr
+                 + " in thread " + Thread.currentThread());
+
+            String basePath = getDir(
+                 AdblockEngine.BASE_PATH_DIRECTORY,
+                 Context.MODE_PRIVATE)
+                     .getAbsolutePath();
+
+            AdblockHelper
+                .get()
+                .init(this, basePath, true, AdblockHelper.PREFERENCE_NAME)
+                .useV8IsolateProvider(isolateProviderPtr);
+        }
+        */
+
+        // for Adblock settings we need AdblockEngine instance
+        // TODO: since it's required for Adblock fragments only and it takes relatively
+        // lot's of memory we need to create it for Adblock settings UI fragments only
+        // WARNING: we should do it before activity is started with super.onCreate() as it adds fragment and
+        // it requires ready Adblock engine instace or retaining to be done before
+        Log.d(TAG, "Adblock: retaining adblock engine in " + this);
+
+        // synchronously (blocks the UI but allows to get pointer here)
+        // TODO: (improvement) do it async and wait for engine to be created
+        // and passed when URL is about to load
+        if (AdblockHelper.get().getProvider().retain(false)) {
+            // pass FilterEngine instance pointer to C++ side
+            long ptr = AdblockHelper.get().getProvider().getEngine().getFilterEngine().getNativePtr();
+            android.util.Log.w(TAG, "Adblock: Notify C++ FilterEngine is created (passing pointer) " + ptr + " in thread " + Thread.currentThread());
+            AdblockBridge.getInstance().setFilterEngineNativePtr(ptr);
+        };
+
+        Log.d(TAG, "Adblock: adblock engine counter = " + AdblockHelper.get().getProvider().getCounter());
 
         super.onCreate(savedInstanceState);
 
@@ -112,6 +172,20 @@ public class Preferences extends AppCompatActivity implements
         ApiCompatibilityUtils.setTaskDescription(this, res.getString(R.string.app_name),
                 BitmapFactory.decodeResource(res, R.mipmap.app_icon),
                 ApiCompatibilityUtils.getColor(res, R.color.default_primary_color));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // don't forget to release Adblock engine
+        Log.d(TAG, "Adblock: releasing adblock engine in " + this);
+        // if it's the last instance then we need to notify C++ side (stop using it)
+        if (AdblockHelper.get().getProvider().release()) {
+            Log.w(TAG, "Adblock: Notify C++ side filterEngine can't be used anymore in thread " + Thread.currentThread());
+            AdblockBridge.getInstance().setFilterEngineNativePtr(0L);
+        };
+        Log.d(TAG, "Adblock: adblock engine counter = " + AdblockHelper.get().getProvider().getCounter());
     }
 
     // OnPreferenceStartFragmentCallback:
@@ -238,5 +312,58 @@ public class Preferences extends AppCompatActivity implements
             // Something terribly wrong has happened.
             throw new RuntimeException(ex);
         }
+    }
+
+    // Adblock provider
+
+    @Override
+    public AdblockEngine getAdblockEngine() {
+        AdblockHelper.get().getProvider().waitForReady();
+        return AdblockHelper.get().getProvider().getEngine();
+    }
+
+    @Override
+    public AdblockSettingsStorage getAdblockSettingsStorage() {
+        return AdblockHelper.get().getStorage();
+    }
+
+    // listener
+
+    @Override
+    public void onAdblockSettingsChanged(BaseSettingsFragment fragment) {
+        Log.d(TAG, "AdblockHelper setting changed:\n" + fragment.getSettings().toString());
+
+        // sending settings over JNI to C++ side
+        boolean isAdblockEnabled = fragment.getSettings().isAdblockEnabled();
+        PrefServiceBridge.getInstance().setAdblockEnabled(isAdblockEnabled);
+
+        List<String> whitelistedDomains = fragment.getSettings().getWhitelistedDomains();
+        String[] whitelistedDomainsArray = (whitelistedDomains != null
+            ? whitelistedDomains.toArray(new String[whitelistedDomains.size()])
+            : new String[0]);
+        PrefServiceBridge.getInstance().setAdblockWhitelistedDomains(whitelistedDomainsArray);
+    }
+
+    @Override
+    public void onWhitelistedDomainsClicked(GeneralSettingsFragment fragment) {
+        insertWhitelistedFragment();
+    }
+
+    @Override
+    public boolean isValidDomain(WhitelistedDomainsSettingsFragment fragment,
+                               String domain,
+                               AdblockSettings settings) {
+        // show error here if domain is invalid
+        return domain != null && domain.length() > 0;
+    }
+
+    private void insertWhitelistedFragment() {
+        getFragmentManager()
+            .beginTransaction()
+            .replace(
+                android.R.id.content,
+                WhitelistedDomainsSettingsFragment.newInstance())
+            .addToBackStack(WhitelistedDomainsSettingsFragment.class.getSimpleName())
+            .commit();
     }
 }

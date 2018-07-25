@@ -803,6 +803,10 @@ if (enable_java_templates) {
         resource_dirs += invoker.generated_resource_dirs
       }
 
+      if (defined(invoker.native_libraries_dir)) {
+        native_libraries_dir = invoker.native_libraries_dir
+      }
+
       if (defined(_srcjar_path)) {
         forward_variables_from(invoker,
                                [
@@ -832,6 +836,7 @@ if (enable_java_templates) {
                                "generated_resource_dirs",
                                "generated_resource_files",
                                "resource_dirs",
+                               "native_libraries_dir",
                                "v14_skip",
                              ])
       deps = _deps
@@ -3226,12 +3231,16 @@ if (enable_java_templates) {
            "android_aar_prebuilt() assets not yet supported." +
                " Implement or use ignore_assets = true." +
                " http://crbug.com/643966")
-    assert(_ignore_native_libraries || !_scanned_files.has_native_libraries,
-           "android_aar_prebuilt() with .so files is not supported." +
-               " Use ignore_native_libraries = true to silence this error.")
+    #assert(_ignore_native_libraries || !_scanned_files.has_native_libraries,
+    #       "android_aar_prebuilt() with .so files is not supported." +
+    #           " Use ignore_native_libraries = true to silence this error.")
     assert(_scanned_files.has_classes_jar || _scanned_files.subjars == [])
 
     action(_unpack_target_name) {
+      if (defined(invoker.unpack_deps)) {
+        deps = invoker.unpack_deps
+      }
+
       script = "//build/android/gyp/aar.py"  # Unzips the AAR
       args = [
         "extract",
@@ -3269,6 +3278,16 @@ if (enable_java_templates) {
       if (_scanned_files.has_proguard_flags) {
         outputs += [ "${_output_path}/proguard.txt" ]
       }
+
+      # Adding native libraries to the output
+      if (!_ignore_native_libraries &&
+        _scanned_files.has_native_libraries &&
+        _scanned_files.native_libraries != []) {
+        _native_outputs = get_path_info(
+                rebase_path(_scanned_files.native_libraries, "", _output_path),
+                "abspath")
+        outputs += _native_outputs
+      }
     }
 
     # Create the android_resources target for resources.
@@ -3299,6 +3318,42 @@ if (enable_java_templates) {
           r_text_file = "${_output_path}/R.txt"
         }
         v14_skip = true
+      }
+    }
+
+    # Create native library targets
+    if (!_ignore_native_libraries && _scanned_files.has_native_libraries) {
+      # TODO: improve ARCH detecting
+      if (target_cpu == "x86") {
+        _native_libraries = _scanned_files.native_libraries_x86
+      } else {
+        _native_libraries = _scanned_files.native_libraries_armeabi_v7a
+      }
+
+      # Add targets to copy native libraries
+      _native_library_targets = []
+      foreach(_tuple, _native_libraries) {
+        _current_target = "copy_${target_name}_native_library_${_tuple[0]}"
+        _native_library_targets += [ ":$_current_target" ]
+        _fullpath = "${_output_path}/${_tuple[1]}"
+        _basepath = _tuple[2]
+
+        copy(_current_target) {
+          deps = [
+            ":$_unpack_target_name",
+          ]
+
+          sources = [ _fullpath ]
+          outputs = [ "$root_shlib_dir/$_basepath" ]
+          data = [ "$root_shlib_dir/$_basepath" ]
+        }
+      }
+
+      # add this target to shared_libraries,
+      # eg. `shared_libraries += [ "//third_party/some_library_aar:some_target_native" ]`
+      _group_native_libraries_target = "${target_name}_native"
+      group(_group_native_libraries_target) {
+        public_deps = _native_library_targets
       }
     }
 

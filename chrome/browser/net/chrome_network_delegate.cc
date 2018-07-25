@@ -62,6 +62,9 @@
 #if defined(OS_ANDROID)
 #include "base/android/path_utils.h"
 #include "chrome/browser/io_thread.h"
+
+#include "chrome/browser/android/adblock/adblock_bridge.h"
+#include "AdblockPlus.h"
 #endif
 
 #if defined(OS_CHROMEOS)
@@ -204,6 +207,8 @@ ChromeNetworkDelegate::ChromeNetworkDelegate(
     BooleanPrefMember* enable_referrers)
     : profile_(nullptr),
       enable_referrers_(enable_referrers),
+      enable_adblock_(nullptr),
+      adblock_whitelisted_domains_(nullptr),
       force_google_safe_search_(nullptr),
       force_youtube_restrict_(nullptr),
       allowed_domains_for_apps_(nullptr),
@@ -244,6 +249,8 @@ void ChromeNetworkDelegate::set_data_use_aggregator(
 // static
 void ChromeNetworkDelegate::InitializePrefsOnUIThread(
     BooleanPrefMember* enable_referrers,
+    BooleanPrefMember* enable_adblock,
+    StringListPrefMember* adblock_whitelisted_domains,
     BooleanPrefMember* force_google_safe_search,
     IntegerPrefMember* force_youtube_restrict,
     StringPrefMember* allowed_domains_for_apps,
@@ -252,6 +259,19 @@ void ChromeNetworkDelegate::InitializePrefsOnUIThread(
   enable_referrers->Init(prefs::kEnableReferrers, pref_service);
   enable_referrers->MoveToThread(
       BrowserThread::GetTaskRunnerForThread(BrowserThread::IO));
+
+  if (enable_adblock) {
+    enable_adblock->Init(prefs::kEnableAdblock, pref_service);
+    enable_adblock->MoveToThread(
+        BrowserThread::GetTaskRunnerForThread(BrowserThread::IO));
+  }
+
+  if (adblock_whitelisted_domains) {
+    adblock_whitelisted_domains->Init(prefs::kAdblockWhitelistedDomains, pref_service);
+    adblock_whitelisted_domains->MoveToThread(
+        BrowserThread::GetTaskRunnerForThread(BrowserThread::IO));
+  }
+
   if (force_google_safe_search) {
     force_google_safe_search->Init(prefs::kForceGoogleSafeSearch, pref_service);
     force_google_safe_search->MoveToThread(
@@ -321,6 +341,124 @@ int ChromeNetworkDelegate::OnBeforeStartTransaction(
           static_cast<safe_search_util::YouTubeRestrictMode>(value));
     }
   }
+
+  // -----------------------------------------------------------------------
+
+  LOG(WARNING) << "Adblock: OnBeforeStartTransaction";
+
+  // check settings
+
+  bool is_adblock_enabled = true;
+  if (enable_adblock_) {
+    is_adblock_enabled = enable_adblock_->GetValue();
+  }
+
+  LOG(WARNING) << "Adblock: isAdBlockEnabled = "
+               << (is_adblock_enabled ? "true" : "false")
+               << ", FilterEngine ptr = " << AdblockBridge::getFilterEnginePtr();
+
+  const std::string filename = request->url().ExtractFileName();
+  const std::string url = request->url().spec();
+  LOG(WARNING) << "Adblock: loading url " << url;
+
+  if (is_adblock_enabled && AdblockBridge::getFilterEnginePtr()) {
+    // retain local filter engine to prevent usage of released instance if it's released on android/java side
+    AdblockPlus::FilterEnginePtr* extFilterEngine =
+      reinterpret_cast<AdblockPlus::FilterEnginePtr*>(AdblockBridge::getFilterEnginePtr());
+    AdblockPlus::FilterEnginePtr filterEngine(*extFilterEngine);
+
+    const ResourceRequestInfo* info = ResourceRequestInfo::ForRequest(request);
+
+    LOG(WARNING) << "Adblock: casted to AdblockPlus::FilterEnginePtr, "
+                 << "use_count = " << filterEngine.use_count();
+
+    content::ResourceType resource_type;
+    if (info) {
+      resource_type = info->GetResourceType();
+     bool isResourceTypeImage = (resource_type == content::RESOURCE_TYPE_IMAGE);
+      LOG(WARNING) << "Adblock: resource type of " << url << " is " << info->GetResourceType()
+                   << " (isImage = " << (isResourceTypeImage ? "true" : "false") << ")";
+    } else {
+      LOG(WARNING) << "Adblock: No resourceRequestInfo";
+
+    }
+
+    // check referrer (required for proper ad blocking)
+    std::vector<std::string> documentUrls;
+    std::string referrer;
+    if (headers->GetHeader("Referer", &referrer)) {
+      LOG(WARNING) << "Adblock: Referrer = " << referrer;
+      documentUrls.push_back(referrer);
+    } else {
+      LOG(WARNING) << "Adblock: No referer";
+    }
+
+    if (info && info->IsMainFrame() && resource_type == content::RESOURCE_TYPE_MAIN_FRAME) {
+      LOG(WARNING) << "Adblock: " << url << " is main frame, allow loading";
+    } else {
+      LOG(WARNING) << "Adblock: invoking IsDocumentWhitelisted(" << url << ")";
+      if (filterEngine->IsDocumentWhitelisted(url, documentUrls)) {
+        LOG(WARNING) << "Adblock: document whitelisted " << url;
+      } else {
+        AdblockPlus::FilterEngine::ContentType adblock_content_type;
+
+        switch (resource_type) {
+          case content::RESOURCE_TYPE_IMAGE:
+            adblock_content_type = AdblockPlus::FilterEngine::ContentType::CONTENT_TYPE_IMAGE;
+            break;
+            
+          case content::RESOURCE_TYPE_XHR:
+            adblock_content_type = AdblockPlus::FilterEngine::ContentType::CONTENT_TYPE_XMLHTTPREQUEST;
+            break;
+
+          case content::RESOURCE_TYPE_STYLESHEET:
+            adblock_content_type = AdblockPlus::FilterEngine::ContentType::CONTENT_TYPE_STYLESHEET;
+            break;
+
+          case content::RESOURCE_TYPE_SCRIPT:
+            adblock_content_type = AdblockPlus::FilterEngine::ContentType::CONTENT_TYPE_SCRIPT;
+            break;
+
+          case content::RESOURCE_TYPE_FONT_RESOURCE:
+            adblock_content_type = AdblockPlus::FilterEngine::ContentType::CONTENT_TYPE_FONT;
+            break;
+
+          case content::RESOURCE_TYPE_OBJECT:
+            adblock_content_type = AdblockPlus::FilterEngine::ContentType::CONTENT_TYPE_OBJECT;
+            break;
+
+          case content::RESOURCE_TYPE_SUB_FRAME:
+            adblock_content_type = AdblockPlus::FilterEngine::ContentType::CONTENT_TYPE_SUBDOCUMENT;
+            break;
+
+         case content::RESOURCE_TYPE_MEDIA:
+            adblock_content_type = AdblockPlus::FilterEngine::ContentType::CONTENT_TYPE_MEDIA;
+            break;
+
+          default:
+            adblock_content_type = AdblockPlus::FilterEngine::ContentType::CONTENT_TYPE_OTHER;
+        }
+
+        LOG(WARNING) << "Adblock: mapped to adblock content type " << adblock_content_type;
+
+        AdblockPlus::FilterPtr filterPtr = filterEngine->Matches(url, adblock_content_type, documentUrls);
+        if (filterPtr && filterPtr->GetType() != AdblockPlus::Filter::TYPE_EXCEPTION) {
+          LOG(ERROR) << "Adblock: !!! Prevented loading " << url;
+
+          // URL access blocked by Adblock Plus.
+          request->net_log().AddEvent(
+            net::NetLogEventType::CHROME_POLICY_ABORTED_REQUEST,
+            net::NetLog::StringCallback("url", &request->url().possibly_invalid_spec()));
+
+          return net::ERR_BLOCKED_BY_ADMINISTRATOR;
+        }
+      }
+    }
+  }
+
+  LOG(WARNING) << "Adblock: exiting OnBeforeStartTransaction()";
+
+  // -----------------------------------------------------------------------
 
   return extensions_delegate_->OnBeforeStartTransaction(request, callback,
                                                         headers);

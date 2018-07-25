@@ -1,0 +1,179 @@
+import("//build/config/android/rules.gni")
+import("//third_party/libadblockplus_common/abi.gni")
+
+_cwd = rebase_path("./src")
+_build_dir = "${target_out_dir}/build"
+_abs_build_dir = rebase_path("${_build_dir}")
+_abs_libadblockplus_dir = rebase_path("//third_party/libadblockplus/src")
+_abs_libadblockplus_include_dir = "${_abs_libadblockplus_dir}/include"
+_abs_v8_libraries_dir = rebase_path("../../third_party/libadblockplus/src/third_party/prebuilt-v8/android-${v8_abi_dir}-release")
+_abs_libadblockplus_libraries_dir = rebase_path("${target_out_dir}/../libadblockplus/build/local/${libadblockplus_abi_dir}")
+_abs_sdk_dir = rebase_path("//third_party/libadblockplus_android/src/third_party/android_sdk")
+_abs_v8_shared_libraries_dir = rebase_path("${root_out_dir}")
+
+action("clear") {
+  script = "//third_party/libadblockplus_common/delete_dir.py"
+  args = [
+    "${_cwd}/adblock-android/.externalNativeBuild"
+  ]
+  outputs = [
+    "${_build_dir}/tmp"
+  ]
+}
+
+# Build libadblockplus-android using Gradle
+action("make") {
+  deps = [
+    "//third_party/libadblockplus:make",
+    ":clear",
+
+    # V8
+    "//v8:v8_libbase",
+    "//v8:v8_libplatform",
+    "//v8:v8"
+  ]
+
+  script = "//third_party/libadblockplus_common/subproc.py"
+  
+  inputs = [
+  ]
+
+  outputs = [
+    "${_build_dir}/adblock-android/outputs/aar/adblock-android-abi_${target_cpu}-release.aar",
+    "${_build_dir}/adblock-android-settings/outputs/aar/adblock-android-settings-release.aar",
+  ]
+
+  args = [
+    # command line:
+    "${_cwd}/gradlew", "assembleAbi_${target_cpu}Release", ":adblock-android-settings:assembleRelease",
+
+    # cwd
+    "--cwd${_cwd}",
+
+    # environment variables
+    "--envANDROID_HOME=${_abs_sdk_dir}",
+    "--envANDROID_NDK_HOME=${_abs_libadblockplus_dir}/third_party/android-ndk-r16b",
+    "--envGRADLE_BUILD_DIR=${_abs_build_dir}",
+
+    # link with libadblockplus statically
+    "--envLIBABP_INCLUDE_DIR=${_abs_libadblockplus_include_dir}",
+    "--envLIBABP_LIB_DIR=${_abs_libadblockplus_libraries_dir}",
+
+    # link with v8 dynamically
+    "--envSHARED_V8_LIB_DIR=${_abs_v8_shared_libraries_dir}",
+    "--envSHARED_V8_LIB_FILENAMES=libv8.cr.so libv8_libbase.cr.so libv8_libplatform.cr.so"
+  ]
+}
+
+# Chromium's "android_aar_prebuilt" target expects .aar file to exist when running 'gn ...'
+# (see `_scanned_files = read_file(_info_path, "scope")` and it means _info_path file should already exist).
+# Since we do generate .aar from sources we can't have .aar existing when running 'gn ...'.
+# So the trick here is to prebuild libadblockplus-android with default V8 to generate .aar
+# right when running 'gn ...' and generate according .info file for it.
+
+# Obviously it slows down running 'gn ...' dramatically, but it allows to run 'gn' and 'ninja' only once.
+# Otherwise you have to run 'gn' and 'ninja' to generate .aar first, then rerun 'gn' with 'update_android_aar_prebuilts=true'
+# to generate .info and then rerun 'ninja' again to build with existing .info file.
+
+# prebuilding libadblockplus
+
+_libadblockplus_prebuild_dir = "${target_out_dir}/prebuild_libadblockplus"
+_abs_libadblockplus_prebuild_dir = rebase_path("${_libadblockplus_prebuild_dir}")
+_abs_v8_include_dir = rebase_path("../../v8/include")
+
+exec_script("//third_party/libadblockplus_common/subproc.py", [
+  "/usr/bin/make", "-j8",
+
+  # cwd
+  "--cwd${_abs_libadblockplus_dir}",
+
+  # environment variables
+  "--envSKIP_DEPENDENCY_UPDATES=true",
+  "--envANDROID_NDK_ROOT=${_abs_libadblockplus_dir}/third_party/android-ndk-r16b",
+  "--envTARGET_OS=android",
+  "--envABP_TARGET_ARCH=${v8_abi_dir}",
+  "--envConfiguration=release",
+  "--envBUILD_DIR=${_abs_libadblockplus_prebuild_dir}",
+
+  # v8
+  "--envLIBV8_INCLUDE_DIR=${_abs_v8_include_dir}",
+  "--envSTATIC_V8_LIB_DIR=${_abs_v8_libraries_dir}"
+])
+
+# prebuilding libadblockplus-android
+
+_libadblockplus_android_prebuild_dir = "${target_out_dir}/prebuild_libadblockplus_android"
+_abs_libadblockplus_android_prebuild_dir = rebase_path("${_libadblockplus_android_prebuild_dir}")
+
+exec_script("//third_party/libadblockplus_common/delete_dir.py", [
+  "${_abs_libadblockplus_android_prebuild_dir}"
+])
+
+exec_script("//third_party/libadblockplus_common/delete_dir.py", [
+  "${_cwd}/adblock-android/.externalNativeBuild"
+])
+
+exec_script("//third_party/libadblockplus_common/subproc.py", [
+  "${_cwd}/gradlew",  "clean", ":adblock-android:assembleAbi_${target_cpu}Release", ":adblock-android-settings:assembleRelease",
+
+  # cwd
+  "--cwd${_cwd}",
+
+  # environment variables
+  "--envANDROID_HOME=${_abs_sdk_dir}",
+  "--envANDROID_NDK_HOME=${_abs_libadblockplus_dir}/third_party/android-ndk-r16b",
+  "--envGRADLE_BUILD_DIR=${_abs_libadblockplus_android_prebuild_dir}",
+  "--envTARGET_OUT=${_abs_libadblockplus_android_prebuild_dir}",
+
+  # link with libadblockplus statically
+  "--envLIBABP_INCLUDE_DIR=${_abs_libadblockplus_include_dir}",
+  "--envLIBABP_LIB_DIR=${_abs_libadblockplus_prebuild_dir}/local/${libadblockplus_abi_dir}",
+
+  # link with prebuilt v8 statically
+  "--envSTATIC_V8_LIB_DIR=${_abs_v8_libraries_dir}"
+])
+
+_pre_aar_path = rebase_path("${_libadblockplus_android_prebuild_dir}/adblock-android/outputs/aar/adblock-android-abi_${target_cpu}-release.aar")
+_info_path = rebase_path("${_build_dir}/adblock-android/outputs/aar/adblock-android-abi_${target_cpu}-release.info")
+
+write_file(_info_path, "") # to mkdirs
+exec_script("//build/android/gyp/aar.py", [
+  "list", _pre_aar_path,
+  "--output", _info_path
+])
+
+_pre_settings_aar_path = rebase_path("${_libadblockplus_android_prebuild_dir}/adblock-android-settings/outputs/aar/adblock-android-settings-release.aar")
+_settings_info_path = rebase_path("${_build_dir}/adblock-android-settings/outputs/aar/adblock-android-settings-release.info")
+
+#print("Generate .info ($_settings_info_path) for settings .aar ($_pre_settings_aar_path)")
+write_file(_settings_info_path, "") # to mkdirs
+exec_script("//build/android/gyp/aar.py", [
+  "list", _pre_settings_aar_path,
+  "--output", _settings_info_path
+])
+
+_aar_path = rebase_path("${_build_dir}/adblock-android/outputs/aar/adblock-android-abi_${target_cpu}-release.aar")
+android_aar_prebuilt("aar_java") {
+  unpack_deps = [
+    ":make"
+  ]
+  aar_path = "${_aar_path}"
+  info_path = "${_info_path}"
+  proguard_configs = [ "proguard-adblock.txt" ]
+  ignore_native_libraries = false # We need .so from the aar
+  # assets are ignored (we don't need them if not using AdblockWebView)
+}
+
+_settings_aar_path = rebase_path("${_build_dir}/adblock-android-settings/outputs/aar/adblock-android-settings-release.aar")
+android_aar_prebuilt("settings_aar_java") {
+  deps = [
+    ":aar_java"
+  ]
+  unpack_deps = [
+    ":make"
+  ]
+  aar_path = "$_settings_aar_path"
+  info_path = "$_settings_info_path"
+  proguard_configs = [ "proguard-adblock.txt" ]
+  ignore_native_libraries = false
+}

@@ -15,6 +15,9 @@ enum ChromeIsolatedWorldIDs {
   // Isolated world ID for internal Chrome features.
   ISOLATED_WORLD_ID_CHROME_INTERNAL,
 
+  // Isolated world for Adblock Plus (element hiding)
+  ISOLATED_WORLD_ID_ADBLOCK,
+
 #if defined(OS_MACOSX)
   // Isolated world ID for AppleScript.
   ISOLATED_WORLD_ID_APPLESCRIPT,

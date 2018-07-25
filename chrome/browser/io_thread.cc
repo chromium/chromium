@@ -362,6 +362,8 @@ IOThread::IOThread(
       nullptr,
       nullptr,
       nullptr,
+      nullptr,
+      nullptr,
       local_state);
 
   local_state->SetDefaultPrefValue(prefs::kBuiltInDnsClientEnabled,
@@ -568,6 +570,8 @@ void IOThread::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kAuthAndroidNegotiateAccountType,
                                std::string());
   registry->RegisterBooleanPref(prefs::kEnableReferrers, true);
+  registry->RegisterBooleanPref(prefs::kEnableAdblock, true);
+  registry->RegisterListPref(prefs::kAdblockWhitelistedDomains);
   data_reduction_proxy::RegisterPrefs(registry);
   registry->RegisterBooleanPref(prefs::kBuiltInDnsClientEnabled, true);
   registry->RegisterListPref(prefs::kDnsOverHttpsServers);

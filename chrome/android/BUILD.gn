@@ -21,8 +21,10 @@ import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("channel.gni")
 import("java_sources.gni")
 import("static_initializers.gni")
+import("package.gni")
 
-manifest_package = "org.chromium.chrome"
+# manifest_package is configurable with default value of "org.chromium.chrome"
+# see https://gitlab.com/eyeo/adblockplus/chromium/issues/22
 
 chrome_public_jinja_variables = default_chrome_public_jinja_variables +
                                 [ "manifest_package=$manifest_package" ]
@@ -111,6 +113,10 @@ android_resources("chrome_java_resources") {
     "//third_party/android_tools:android_support_design_java",
     "//third_party/android_tools:android_support_v7_appcompat_java",
     "//third_party/android_tools:android_support_v7_recyclerview_java",
+
+    # libadblockplus-android
+    "//third_party/libadblockplus_android:aar_java",
+    "//third_party/libadblockplus_android:settings_aar_java"
   ]
   custom_package = "org.chromium.chrome"
 }
@@ -278,6 +284,11 @@ android_library("chrome_java") {
     "//third_party/jsr-305:jsr_305_javalib",
     "//third_party/leakcanary:leakcanary_java",
     "//third_party/protobuf:protobuf_lite_javalib",
+
+     # libadblockplus-android
+    "//third_party/libadblockplus_android:aar_java",
+    "//third_party/libadblockplus_android:settings_aar_java",
+
     "//ui/android:ui_java",
     "//ui/base/mojo:mojo_bindings_java",
     "//ui/gfx/geometry/mojo:mojo_java",
@@ -846,7 +857,20 @@ chrome_shared_library("libchrome") {
   ]
   deps = [
     ":chrome_jni_registration($default_toolchain)",
+    "//build/config:exe_and_shlib_deps",
+    "//third_party/libadblockplus_android:aar_java",
+    "//v8:v8_libplatform"
   ]
+
+  if (target_cpu == "arm") {
+    _abi_directory = "armeabi-v7a"
+  } else {
+    _abi_directory = "x86"
+  }
+  _abs_out_path = rebase_path(root_out_dir)
+
+  ldflags  = [ "-L$_abs_out_path/gen/third_party/libadblockplus_android/aar_java/jni/${_abi_directory}" ]
+  ldflags += [ "-ladblockplus-jni" ]
 }
 
 chrome_shared_library("libchromefortest") {
@@ -1108,6 +1132,7 @@ chrome_public_apk_tmpl_shared("chrome_public_apk") {
   android_manifest_dep = ":chrome_public_android_manifest"
   apk_name = "ChromePublic"
   shared_libraries = [ ":libchrome" ]
+  shared_libraries += [ "//third_party/libadblockplus_android:aar_java_native" ]
   add_unwind_tables_in_apk = _add_unwind_tables_in_chrome_public_apk
   if (_add_unwind_tables_in_chrome_public_apk) {
     shared_library_for_unwind_asset = "chrome"
@@ -1136,6 +1161,7 @@ chrome_public_apk_tmpl_shared("chrome_modern_public_apk") {
   android_manifest_dep = ":chrome_modern_public_android_manifest"
   apk_name = "ChromeModernPublic"
   shared_libraries = [ ":libchrome" ]
+  shared_libraries += [ "//third_party/libadblockplus_android:aar_java_native" ]
   add_unwind_tables_in_apk = _add_unwind_tables_in_chrome_public_apk
   if (_add_unwind_tables_in_chrome_public_apk) {
     shared_library_for_unwind_asset = "chrome"

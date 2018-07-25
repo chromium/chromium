@@ -57,6 +57,10 @@ enum NotificationType {
   // DEPRECATED: Use WebContentsObserver::DocumentOnLoadCompletedInMainFrame()
   NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
 
+  // Adblock Plus: WebContentsImpl::DidFinishNavigation(..) called.
+  // This is required to inject JavaScript to implement element hiding.
+  NOTIFICATION_DID_FINISH_NAVIGATION,
+
   // A content load is starting.  The source will be a
   // Source<NavigationController> corresponding to the tab in which the load
   // is occurring.  No details are expected for this notification.

@@ -61,6 +61,10 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kModuleConflictBubbleShown, 0);
   registry->RegisterInt64Pref(prefs::kDefaultBrowserLastDeclined, 0);
   bool reset_check_default = false;
+
+  registry->RegisterBooleanPref(prefs::kEnableAdblock, true);
+  registry->RegisterListPref(prefs::kAdblockWhitelistedDomains);
+
 #if defined(OS_WIN)
   reset_check_default = base::win::GetVersion() >= base::win::VERSION_WIN10;
 #endif

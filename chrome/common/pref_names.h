@@ -344,6 +344,8 @@ extern const char kDisable3DAPIs[];
 extern const char kEnableDeprecatedWebPlatformFeatures[];
 extern const char kEnableHyperlinkAuditing[];
 extern const char kEnableReferrers[];
+extern const char kEnableAdblock[];
+extern const char kAdblockWhitelistedDomains[];
 extern const char kEnableDoNotTrack[];
 extern const char kEnableEncryptedMedia[];
 

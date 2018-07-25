@@ -65,6 +65,26 @@ def _CreateInfo(aar_file):
         label = re.sub(r'[^a-zA-Z0-9._]', '_', label)
         data['subjars'].append(name)
         data['subjar_tuples'].append([label, name])
+      elif name.endswith('.so'):
+        basename = posixpath.basename(name)
+        label = basename[:-3]
+        label = re.sub(r'[^a-zA-Z0-9._]', '_', label)
+        data['has_native_libraries'] = True
+        if not 'native_libraries' in data:
+          data['native_libraries'] = []
+
+        data['native_libraries'] += [ name ]
+
+        # arch
+        if name.startswith('jni'):
+          # dictionaries are not supported by GN in '.info' files so using key with arch at the end
+          # example: 'native_libraries_armeabi_v7a'
+          arch = name[4:name.find('/', 4)].replace('-', '_')
+          native_libraries_key = 'native_libraries_' + arch
+          if not native_libraries_key in data:
+            data[native_libraries_key] = []
+          data[native_libraries_key].append([label, name, basename])
+
       elif name.startswith('assets/'):
         data['assets'].append(name)
       elif name.startswith('jni/'):

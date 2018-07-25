@@ -10,4 +10,4 @@ import("//build/config/sanitizers/sanitizers.gni")
 # disable for component builds, see crbug.com/657093.
 # Chromium linker causes instrumentation to return incorrect results.
 chromium_linker_supported =
-    !is_component_build && !enable_profiling && !use_order_profiling && !is_asan
+    !is_component_build && use_chromium_android_linker && !enable_profiling && !use_order_profiling && !is_asan

@@ -1,0 +1,18 @@
+# unfortunately GN language does not support Maps
+
+if (target_cpu == "arm") {
+    libadblockplus_abi_dir = "armeabi-v7a"
+} else if (target_cpu == "x86") {
+    libadblockplus_abi_dir = "x86"
+}
+# if ABI is unsupported then `libadblockplus_abi_dir` variable will be not set
+# and GN will throw unknown identifier error while generating build.
+
+if (target_cpu == "arm") {
+    v8_abi_dir = "arm"
+} else if (target_cpu == "x86") {
+    v8_abi_dir = "ia32"
+}
+
+# if ABI is unsupported then `v8_abi_dir` variable will be not set
+# and GN will throw unknown identifier error while generating build.
