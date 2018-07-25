@@ -1001,7 +1001,7 @@ deps = {
     'condition':
       'checkout_android',
     'url':
-      Var('adblockplus_github') + '/libadblockplus-android.git@5342ea7697a7a55a3f649aadb6a976a0799e7922'
+      Var('adblockplus_github') + '/libadblockplus-android.git@da7f888d7ef0c4a9fb798a972e5132612730b740'
   },
 
   'src/third_party/xstream': {
