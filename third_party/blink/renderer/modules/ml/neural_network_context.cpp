@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "modules/ml/NeuralNetworkContext.h"
+#include "third_party/blink/renderer/modules/ml/neural_network_context.h"
 
-#include "bindings/core/v8/ScriptPromiseResolver.h"
-#include "core/dom/DOMException.h"
-#include "core/dom/Document.h"
-#include "core/dom/ExceptionCode.h"
-#include "core/dom/ExecutionContext.h"
-#include "core/frame/LocalDOMWindow.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 
-#include "modules/ml/NavigatorML.h"
-#include "modules/ml/Model.h"
+#include "third_party/blink/renderer/modules/ml/model.h"
+#include "third_party/blink/renderer/modules/ml/navigator_ml.h"
 
 namespace blink {
 
@@ -37,8 +35,9 @@ ScriptPromise NeuralNetworkContext::createModel(ScriptState* script_state) {
   ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
   ScriptPromise promise = resolver->Promise();
   if (!neural_network_) {
-    resolver->Reject(DOMException::Create(
-        kNotSupportedError, "Neural Network service unavailable."));
+    resolver->Reject(
+        DOMException::Create(DOMExceptionCode::kNotSupportedError,
+                             "Neural Network service unavailable."));
     return promise;
   }
   requests_.insert(resolver);
@@ -60,8 +59,8 @@ void NeuralNetworkContext::OnCreateModel(
   } else {
     String msg("createModel fails: ");
     msg.append(String::Number(result_code));
-    resolver->Reject(DOMException::Create(
-                     kInvalidStateError, msg));
+    resolver->Reject(
+        DOMException::Create(DOMExceptionCode::kInvalidStateError, msg));
   }
 }
 
@@ -71,12 +70,9 @@ void NeuralNetworkContext::Trace(blink::Visitor* visitor) {
   ContextLifecycleObserver::Trace(visitor);
 }
 
-void NeuralNetworkContext::TraceWrappers(const ScriptWrappableVisitor* visitor) const {
-}
-
 void NeuralNetworkContext::OnConnectionError() {
   for (const auto& request : requests_) {
-    request->Reject(DOMException::Create(kNotSupportedError,
+    request->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
                                          "Neural Network is not implemented."));
   }
   requests_.clear();

@@ -29,8 +29,7 @@ MLService::~MLService() = default;
 
 void MLService::OnStart() {
   ref_factory_.reset(new service_manager::ServiceContextRefFactory(
-      base::Bind(&service_manager::ServiceContext::RequestQuit,
-                 base::Unretained(context()))));
+      context()->CreateQuitClosure()));
 
 #if defined(OS_LINUX)
   registry_.AddInterface(base::Bind(&NeuralNetworkImplLinux::Create));

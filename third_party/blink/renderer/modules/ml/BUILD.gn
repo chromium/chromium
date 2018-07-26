@@ -2,22 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/WebKit/Source/modules/modules.gni")
+import("../modules.gni")
 
 blink_modules_sources("ml") {
   sources = [
-    "NeuralNetworkContext.cpp",
-    "NeuralNetworkContext.h",
-    "NavigatorML.cpp",
-    "NavigatorML.h",
-    "ML.cpp",
-    "ML.h",
-    "Model.cpp",
-    "Model.h",
-    "Compilation.cpp",
-    "Compilation.h",
-    "Execution.cpp",
-    "Execution.h"
+    "compilation.cpp",
+    "compilation.h",
+    "execution.cpp",
+    "execution.h",
+    "ml.cpp",
+    "ml.h",
+    "model.cpp",
+    "model.h",
+    "navigator_ml.cpp",
+    "navigator_ml.h",
+    "neural_network_context.cpp",
+    "neural_network_context.h",
   ]
 
   public_deps = [

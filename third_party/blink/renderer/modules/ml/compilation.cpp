@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "modules/ml/Compilation.h"
+#include "third_party/blink/renderer/modules/ml/compilation.h"
 
-#include "bindings/core/v8/ScriptPromiseResolver.h"
-#include "core/dom/DOMException.h"
-#include "core/dom/Document.h"
-#include "core/dom/ExceptionCode.h"
-#include "core/dom/ExecutionContext.h"
-#include "core/frame/LocalDOMWindow.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 
-#include "modules/ml/Execution.h"
+#include "third_party/blink/renderer/modules/ml/execution.h"
 
 namespace blink {
 
@@ -26,7 +24,7 @@ Compilation::~Compilation() = default;
 
 void Compilation::setPreference(int32_t preference, ExceptionState& exception_state) {
   if (is_finished_) {
-    exception_state.ThrowDOMException(kInvalidStateError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Compilation is finished.");
   }
   preference_ = preference;
@@ -36,13 +34,13 @@ ScriptPromise Compilation::finish(ScriptState* script_state) {
   ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
   ScriptPromise promise = resolver->Promise();
   if (is_finished_) {
-    resolver->Reject(DOMException::Create(
-        kNotSupportedError, "Compilation is finished."));
+    resolver->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
+                                          "Compilation is finished."));
     return promise;
   }
   if (!compilation_) {
-    resolver->Reject(DOMException::Create(
-        kNotSupportedError, "Compilation service unavailable."));
+    resolver->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
+                                          "Compilation service unavailable."));
     return promise;
   }
   requests_.insert(resolver);
@@ -59,13 +57,13 @@ ScriptPromise Compilation::createExecution(ScriptState* script_state) {
   ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
   ScriptPromise promise = resolver->Promise();
   if (!is_finished_) {
-    resolver->Reject(DOMException::Create(
-        kNotSupportedError, "Compilation is not finished."));
+    resolver->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
+                                          "Compilation is not finished."));
     return promise;
   }
   if (!compilation_) {
-    resolver->Reject(DOMException::Create(
-        kNotSupportedError, "Compilation service unavailable."));
+    resolver->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
+                                          "Compilation service unavailable."));
     return promise;
   }
   requests_.insert(resolver);
@@ -88,8 +86,8 @@ void Compilation::OnCreateExecution(
   } else {
     String msg("createExecution fails: ");
     msg.append(String::Number(result_code));
-    resolver->Reject(DOMException::Create(
-                     kInvalidStateError, msg));
+    resolver->Reject(
+        DOMException::Create(DOMExceptionCode::kInvalidStateError, msg));
   }
 }
 
@@ -110,14 +108,14 @@ void Compilation::OnResultCode(ScriptPromiseResolver* resolver,
     String msg(operation_name);
     msg.append("fails: ");
     msg.append(String::Number(result_code));
-    resolver->Reject(DOMException::Create(
-                     kInvalidStateError, msg));
+    resolver->Reject(
+        DOMException::Create(DOMExceptionCode::kInvalidStateError, msg));
   }
 }
 
 void Compilation::OnConnectionError() {
   for (const auto& request : requests_) {
-    request->Reject(DOMException::Create(kNotSupportedError,
+    request->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
                                          "Compilation is not implemented."));
   }
   requests_.clear();

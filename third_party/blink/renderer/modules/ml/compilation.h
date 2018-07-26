@@ -5,11 +5,11 @@
 #ifndef Compilation_h
 #define Compilation_h
 
-#include "bindings/core/v8/ScriptPromise.h"
-#include "bindings/core/v8/ScriptPromiseResolver.h"
-#include "platform/bindings/ScriptWrappable.h"
 #include "services/ml/public/interfaces/compilation.mojom-blink.h"
 #include "services/ml/public/interfaces/constants.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
 
@@ -23,7 +23,7 @@ class Compilation final : public ScriptWrappable {
   ScriptPromise finish(ScriptState*);
   ScriptPromise createExecution(ScriptState*);
 
-  void Trace(blink::Visitor*);
+  void Trace(blink::Visitor*) override;
 
  private:
   void OnResultCode(ScriptPromiseResolver*, const String&, int32_t);

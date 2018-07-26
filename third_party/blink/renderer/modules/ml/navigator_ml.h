@@ -5,9 +5,8 @@
 #ifndef NavigatorML_h
 #define NavigatorML_h
 
-#include "core/frame/Navigator.h"
-#include "platform/Supplementable.h"
-#include "platform/heap/Handle.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -20,6 +19,8 @@ class NavigatorML final : public GarbageCollected<NavigatorML>,
   USING_GARBAGE_COLLECTED_MIXIN(NavigatorML);
 
  public:
+  static const char kSupplementName[];
+
   // Gets, or creates, NavigatorML supplement on Navigator.
   static NavigatorML& From(Navigator&);
 
@@ -28,11 +29,9 @@ class NavigatorML final : public GarbageCollected<NavigatorML>,
   Document* GetDocument();
 
   void Trace(blink::Visitor*) override;
-  void TraceWrappers(const ScriptWrappableVisitor*) const override;
 
  private:
   explicit NavigatorML(Navigator&);
-  static const char* SupplementName();
 
   TraceWrapperMember<ML> ml_;
 };

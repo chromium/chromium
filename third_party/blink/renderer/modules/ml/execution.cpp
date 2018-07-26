@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "modules/ml/Execution.h"
+#include "third_party/blink/renderer/modules/ml/execution.h"
 
-#include "bindings/core/v8/ScriptPromiseResolver.h"
-#include "core/dom/DOMException.h"
-#include "core/dom/Document.h"
-#include "core/dom/ExceptionCode.h"
-#include "core/dom/ExecutionContext.h"
-#include "core/frame/LocalDOMWindow.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 
 namespace blink {
 
@@ -74,13 +72,13 @@ void Execution::setInput(uint32_t index,
                          MaybeShared<DOMArrayBufferView> data,
                          ExceptionState& exception_state) {
   if (index > inputs_.size()) {
-    exception_state.ThrowDOMException(kInvalidStateError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid index");
   }
   std::unique_ptr<OperandInfo>& info = inputs_.at(index);
   uint32_t length = data.View()->byteLength();
   if (info->length != length) {
-    exception_state.ThrowDOMException(kInvalidStateError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid data");
   }
   memcpy(static_cast<void*>(info->mapping.get()), data.View()->BaseAddress(), length);
@@ -90,13 +88,13 @@ void Execution::setOutput(uint32_t index,
                           MaybeShared<DOMArrayBufferView> data,
                           ExceptionState& exception_state) {
   if (index > output_buffer_views_.size()) {
-    exception_state.ThrowDOMException(kInvalidStateError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid index");
   }
   std::unique_ptr<OperandInfo>& info = outputs_.at(index);
   uint32_t length = data.View()->byteLength();
   if (info->length != length) {
-    exception_state.ThrowDOMException(kInvalidStateError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid data");
   }                                   
 
@@ -107,8 +105,9 @@ ScriptPromise Execution::startCompute(ScriptState* script_state) {
   ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
   ScriptPromise promise = resolver->Promise();
   if (!execution_) {
-    resolver->Reject(DOMException::Create(
-        kNotSupportedError, "Neural Network service unavailable."));
+    resolver->Reject(
+        DOMException::Create(DOMExceptionCode::kNotSupportedError,
+                             "Neural Network service unavailable."));
     return promise;
   }
   requests_.insert(resolver);
@@ -136,8 +135,8 @@ void Execution::OnStartCompute(ScriptPromiseResolver* resolver, int32_t result_c
     String msg("startCompute");
     msg.append("fails: ");
     msg.append(String::Number(result_code));
-    resolver->Reject(DOMException::Create(
-                     kInvalidStateError, msg));
+    resolver->Reject(
+        DOMException::Create(DOMExceptionCode::kInvalidStateError, msg));
   }
 }
 
@@ -153,8 +152,8 @@ void Execution::OnResultCode(ScriptPromiseResolver* resolver,
     String msg(operation_name);
     msg.append("fails: ");
     msg.append(String::Number(result_code));
-    resolver->Reject(DOMException::Create(
-                     kInvalidStateError, msg));
+    resolver->Reject(
+        DOMException::Create(DOMExceptionCode::kInvalidStateError, msg));
   }
 }
 
@@ -166,7 +165,7 @@ void Execution::Trace(blink::Visitor* visitor) {
 
 void Execution::OnConnectionError() {
   for (const auto& request : requests_) {
-    request->Reject(DOMException::Create(kNotSupportedError,
+    request->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
                                          "Execution is not implemented."));
   }
   requests_.clear();

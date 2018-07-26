@@ -4,7 +4,7 @@
 
 module ml.mojom;
 
-import "execution.mojom";
+import "services/ml/public/interfaces/execution.mojom";
 
 struct OperandInfo {
   int32 type;

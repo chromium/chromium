@@ -120,7 +120,7 @@ jumbo_component("modules") {
     "//third_party/blink/renderer/modules/mediasource",
     "//third_party/blink/renderer/modules/mediastream",
     "//third_party/blink/renderer/modules/media",
-    "//third_party/WebKit/Source/modules/ml",
+    "//third_party/blink/renderer/modules/ml",
     "//third_party/blink/renderer/modules/webrtc",
     "//third_party/blink/renderer/modules/native_file_system",
     "//third_party/blink/renderer/modules/native_io",

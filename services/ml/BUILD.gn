@@ -37,9 +37,7 @@ source_set("lib") {
       "neural_network_impl_android.h",
     ]
 
-    include_dirs = [
-      "${android_ndk_root}/sysroot/usr/include"
-    ]
+    include_dirs = [ "${android_ndk_root}/sysroot/usr/include" ]
 
     libdir = ""
     if (current_cpu == "x86") {
@@ -58,30 +56,30 @@ source_set("lib") {
       assert(false, "Need android neuralnetworks support for your target arch.")
     }
     lib_dirs = [
-      "${android_ndk_root}/platforms/android-${android_sdk_platform_version}/${libdir}"
+      # TODO(junwei.fu): https://github.com/otcshare/webml-polyfill/issues/83
+      # ${android_sdk_platform_version} current is 28 the library in android ndk
+      # isn't ported.
+      "${android_ndk_root}/platforms/android-27/${libdir}",
     ]
 
-    libs = [
-      "neuralnetworks",
-    ]
-
+    libs = [ "neuralnetworks" ]
   } else if (is_mac) {
     sources += [
-      "compilation_impl_mac.mm",
       "compilation_impl_mac.h",
-      "execution_impl_mac.mm",
+      "compilation_impl_mac.mm",
       "execution_impl_mac.h",
-      "model_impl_mac.mm",
+      "execution_impl_mac.mm",
       "model_impl_mac.h",
-      "neural_network_impl_mac.mm",
-      "neural_network_impl_mac.h",
+      "model_impl_mac.mm",
+      "mpscnn_context.h",
       "mpscnn_context.mm",
-      "mpscnn_context.h", 
+      "neural_network_impl_mac.h",
+      "neural_network_impl_mac.mm",
     ]
 
     libs = [
       "Metal.framework",
-      "MetalPerformanceShaders.framework"
+      "MetalPerformanceShaders.framework",
     ]
   } else {
     sources += [
@@ -96,8 +94,8 @@ source_set("lib") {
 
   public_deps = [
     "//base",
-    "//services/service_manager/public/cpp",
     "//services/ml/public/interfaces",
+    "//services/service_manager/public/cpp",
   ]
 }
 
@@ -105,4 +103,3 @@ service_manifest("manifest") {
   name = "ml"
   source = "manifest.json"
 }
-

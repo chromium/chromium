@@ -1,18 +1,16 @@
 // Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "modules/ml/Model.h"
+#include "third_party/blink/renderer/modules/ml/model.h"
 
-#include "bindings/core/v8/ScriptPromiseResolver.h"
-#include "core/dom/DOMException.h"
-#include "core/dom/Document.h"
-#include "core/dom/ExceptionCode.h"
-#include "core/dom/ExecutionContext.h"
-#include "core/frame/LocalDOMWindow.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 
-#include "modules/ml/Compilation.h"
-#include "modules/ml/NeuralNetworkContext.h"
+#include "third_party/blink/renderer/modules/ml/compilation.h"
+#include "third_party/blink/renderer/modules/ml/neural_network_context.h"
 
 namespace blink {
 
@@ -27,11 +25,11 @@ Model::~Model() {}
 
 void Model::addOperand(const OperandOptions& options, ExceptionState& exception_state) {
   if (is_finished_) {
-    exception_state.ThrowDOMException(kInvalidStateError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Model is finished.");
   }
   if (!options.hasType()) {
-    exception_state.ThrowDOMException(kInvalidStateError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Operand type is missing.");
   }
   int32_t type = options.type();
@@ -60,12 +58,12 @@ void Model::setOperandValue(uint32_t index,
                             MaybeShared<DOMArrayBufferView> data,
                             ExceptionState& exception_state) {
   if (is_finished_) {
-    exception_state.ThrowDOMException(kInvalidStateError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Model is finished.");
   }
 
   if (index > model_info_->operands.size()) {
-    exception_state.ThrowDOMException(kInvalidStateError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Index is invalid.");
   }
 
@@ -76,26 +74,26 @@ void Model::setOperandValue(uint32_t index,
   if (view_type == WTF::ArrayBufferView::kTypeFloat32 &&
       !(operand->type == NeuralNetworkContext::kFloat32 ||
         operand->type == NeuralNetworkContext::kTensorFloat32)) {
-    exception_state.ThrowDOMException(kInvalidStateError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Data type is invalid.");
   }
 
   if (view_type == WTF::ArrayBufferView::kTypeInt32 &&
       !(operand->type == NeuralNetworkContext::kInt32 ||
         operand->type == NeuralNetworkContext::kTensorInt32)) {
-    exception_state.ThrowDOMException(kInvalidStateError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Data type is invalid.");
   }
 
   if (view_type == WTF::ArrayBufferView::kTypeUint32 &&
       (operand->type != NeuralNetworkContext::kUint32)) {
-    exception_state.ThrowDOMException(kInvalidStateError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Data type is invalid.");
   }
 
   if (view_type == WTF::ArrayBufferView::kTypeUint8 &&
       (operand->type != NeuralNetworkContext::kTensorQuant8Asymm)) {
-    exception_state.ThrowDOMException(kInvalidStateError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Data type is invalid.");
   }
 
@@ -108,18 +106,18 @@ void Model::addOperation(int32_t type,
                          Vector<uint32_t>& outputs,
                          ExceptionState& exception_state) {
   if (is_finished_) {
-    exception_state.ThrowDOMException(kInvalidStateError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Model is finished.");
   }
   for (size_t i = 0; i < inputs.size(); ++i) {
     if (inputs[i] > model_info_->operands.size()) {
-      exception_state.ThrowDOMException(kInvalidStateError,
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Inputs is invalid.");
     }
   }
   for (size_t i = 0; i < outputs.size(); ++i) {
     if (outputs[i] > model_info_->operands.size()) {
-      exception_state.ThrowDOMException(kInvalidStateError,
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Outputs is invalid.");
     }
   }
@@ -131,18 +129,18 @@ void Model::identifyInputsAndOutputs(Vector<uint32_t>& inputs,
                                      Vector<uint32_t>& outputs,
                                      ExceptionState& exception_state) {
   if (is_finished_) {
-    exception_state.ThrowDOMException(kInvalidStateError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Model is finished.");
   }
   for (size_t i = 0; i < inputs.size(); ++i) {
     if (inputs[i] > model_info_->operands.size()) {
-      exception_state.ThrowDOMException(kInvalidStateError,
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Inputs is invalid.");
     }
   }
   for (size_t i = 0; i < outputs.size(); ++i) {
     if (outputs[i] > model_info_->operands.size()) {
-      exception_state.ThrowDOMException(kInvalidStateError,
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Outputs is invalid.");
     }
   }
@@ -154,13 +152,13 @@ ScriptPromise Model::finish(ScriptState* script_state) {
   ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
   ScriptPromise promise = resolver->Promise();
   if (is_finished_) {
-    resolver->Reject(DOMException::Create(
-        kNotSupportedError, "Model is finished."));
+    resolver->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
+                                          "Model is finished."));
     return promise;
   }
   if (!model_) {
-    resolver->Reject(DOMException::Create(
-        kNotSupportedError, "Model service unavailable."));
+    resolver->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
+                                          "Model service unavailable."));
     return promise;
   }
   requests_.insert(resolver);
@@ -199,13 +197,13 @@ ScriptPromise Model::createCompilation(ScriptState* script_state) {
   ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
   ScriptPromise promise = resolver->Promise();
   if (!is_finished_) {
-    resolver->Reject(DOMException::Create(
-        kNotSupportedError, "Model is not finished."));
+    resolver->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
+                                          "Model is not finished."));
     return promise;
   }
   if (!model_) {
-    resolver->Reject(DOMException::Create(
-        kNotSupportedError, "Model service unavailable."));
+    resolver->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
+                                          "Model service unavailable."));
     return promise;
   }
   requests_.insert(resolver);
@@ -228,8 +226,8 @@ void Model::OnCreateCompilation(
   } else {
     String msg("createCompilation fails: ");
     msg.append(String::Number(result_code));
-    resolver->Reject(DOMException::Create(
-                     kInvalidStateError, msg));
+    resolver->Reject(
+        DOMException::Create(DOMExceptionCode::kInvalidStateError, msg));
   }
 }
 
@@ -243,8 +241,8 @@ void Model::OnResultCode(ScriptPromiseResolver* resolver, const String& operatio
     String msg(operation_name);
     msg.append("fails: ");
     msg.append(String::Number(result_code));
-    resolver->Reject(DOMException::Create(
-                     kInvalidStateError, msg));
+    resolver->Reject(
+        DOMException::Create(DOMExceptionCode::kInvalidStateError, msg));
   }
 }
 
@@ -256,7 +254,7 @@ void Model::Trace(blink::Visitor* visitor) {
 
 void Model::OnConnectionError() {
   for (const auto& request : requests_) {
-    request->Reject(DOMException::Create(kNotSupportedError,
+    request->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
                                          "Model is not implemented."));
   }
   requests_.clear();

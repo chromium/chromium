@@ -5,10 +5,10 @@
 #ifndef NeuralNetworkContext_h
 #define NeuralNetworkContext_h
 
-#include "bindings/core/v8/ScriptPromise.h"
-#include "platform/bindings/ScriptWrappable.h"
-#include "bindings/core/v8/ScriptPromiseResolver.h"
-#include "core/dom/ContextLifecycleObserver.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/dom/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 #include "services/ml/public/interfaces/neuralnetwork.mojom-blink.h"
 #include "services/ml/public/interfaces/constants.mojom-blink.h"
@@ -93,7 +93,6 @@ class NeuralNetworkContext final
 
   // Interface required by garbage collection.
   void Trace(blink::Visitor*) override;
-  void TraceWrappers(const ScriptWrappableVisitor*) const override;
 
  private:
   void OnCreateModel(ScriptPromiseResolver*, int32_t, ml::mojom::blink::ModelInitParamsPtr);

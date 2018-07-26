@@ -5,13 +5,12 @@
 #ifndef Model_h
 #define Model_h
 
-#include "bindings/core/v8/ScriptPromise.h"
-#include "platform/bindings/ScriptWrappable.h"
-#include "bindings/core/v8/ScriptPromiseResolver.h"
-#include "core/typed_arrays/ArrayBufferViewHelpers.h"
-#include "core/typed_arrays/DOMTypedArray.h"
-#include "platform/wtf/Vector.h"
-#include "modules/ml/OperandOptions.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
+#include "third_party/blink/renderer/modules/ml/operand_options.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 #include "services/ml/public/interfaces/model.mojom-blink.h"
 
@@ -30,7 +29,7 @@ class Model final : public ScriptWrappable {
   ScriptPromise finish(ScriptState*);
   ScriptPromise createCompilation(ScriptState*);
 
-  void Trace(blink::Visitor*);
+  void Trace(blink::Visitor*) override;
 
  private:
   void OnResultCode(ScriptPromiseResolver*, const String&, int32_t);

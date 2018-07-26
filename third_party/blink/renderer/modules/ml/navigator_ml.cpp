@@ -2,28 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "modules/ml/NavigatorML.h"
+#include "third_party/blink/renderer/modules/ml/navigator_ml.h"
 
-#include "core/frame/Navigator.h"
-#include "core/dom/Document.h"
-#include "core/frame/LocalFrame.h"
-#include "modules/ml/ML.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/modules/ml/ml.h"
 
 namespace blink {
 
 NavigatorML::NavigatorML(Navigator& navigator)
     : Supplement<Navigator>(navigator) {}
 
-const char* NavigatorML::SupplementName() {
-  return "NavigatorML";
-}
+// static
+const char NavigatorML::kSupplementName[] = "NavigatorML";
 
 NavigatorML& NavigatorML::From(Navigator& navigator) {
-  NavigatorML* supplement = static_cast<NavigatorML*>(
-      Supplement<Navigator>::From(navigator, SupplementName()));
+  NavigatorML* supplement = Supplement<Navigator>::From<NavigatorML>(navigator);
   if (!supplement) {
     supplement = new NavigatorML(navigator);
-    ProvideTo(navigator, SupplementName(), supplement);
+    ProvideTo(navigator, supplement);
   }
   return *supplement;
 }
@@ -48,11 +45,6 @@ ML* NavigatorML::ml(Navigator& navigator) {
 void NavigatorML::Trace(blink::Visitor* visitor) {
   visitor->Trace(ml_);
   Supplement<Navigator>::Trace(visitor);
-}
-
-void NavigatorML::TraceWrappers(const ScriptWrappableVisitor* visitor) const {
-  visitor->TraceWrappers(ml_);
-  Supplement<Navigator>::TraceWrappers(visitor);
 }
 
 }  // namespace blink
