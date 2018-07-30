@@ -8,6 +8,7 @@ action("make") {
   _abs_build_dir = rebase_path("${_build_dir}")
   _abs_v8_include_dir = rebase_path("../../v8/include")
   _abs_v8_libraries_dir = rebase_path("../../third_party/libadblockplus/src/third_party/prebuilt-v8/android-${v8_abi_dir}-release")
+  _abs_ndk_dir = rebase_path("../../third_party/android_ndk")
   
   inputs = [
   ]
@@ -32,7 +33,7 @@ action("make") {
     "--envSKIP_DEPENDENCY_UPDATES=true",
 
     # Android NDK
-    "--envANDROID_NDK_ROOT=${_cwd}/third_party/android-ndk-r16b",
+    "--envANDROID_NDK_ROOT=${_abs_ndk_dir}",
 
     # build for android
     "--envTARGET_OS=android",

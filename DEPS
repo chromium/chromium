@@ -2130,17 +2130,6 @@ hooks = [
       'checkout_android'
   },
   {
-    # Download official Android NDK
-    'name': 'libadblockplus_download_ndk',
-    'pattern': 'dependencies',
-    'action': [
-      'python',
-      'src/third_party/libadblockplus/download_ndk.py',
-    ],
-    'condition':
-      'checkout_android'
-  },
-  {
     # Download prebuilt v8 to generate prebuilt .aar to generate .info for ARM
     # Actually it's required for libadblockplus-android, not libadblockplus
     'name': 'libadblockplus_download_prebuilt_v8_arm',

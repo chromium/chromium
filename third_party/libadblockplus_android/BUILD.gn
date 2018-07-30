@@ -10,6 +10,7 @@ _abs_v8_libraries_dir = rebase_path("../../third_party/libadblockplus/src/third_
 _abs_libadblockplus_libraries_dir = rebase_path("${target_out_dir}/../libadblockplus/build/local/${libadblockplus_abi_dir}")
 _abs_sdk_dir = rebase_path("//third_party/libadblockplus_android/src/third_party/android_sdk")
 _abs_v8_shared_libraries_dir = rebase_path("${root_out_dir}")
+_abs_ndk_dir = rebase_path("../../third_party/android_ndk")
 
 action("clear") {
   script = "//third_party/libadblockplus_common/delete_dir.py"
@@ -52,7 +53,7 @@ action("make") {
 
     # environment variables
     "--envANDROID_HOME=${_abs_sdk_dir}",
-    "--envANDROID_NDK_HOME=${_abs_libadblockplus_dir}/third_party/android-ndk-r16b",
+    "--envANDROID_NDK_HOME=${_abs_ndk_dir}",
     "--envGRADLE_BUILD_DIR=${_abs_build_dir}",
 
     # link with libadblockplus statically
@@ -89,7 +90,7 @@ exec_script("//third_party/libadblockplus_common/subproc.py", [
 
   # environment variables
   "--envSKIP_DEPENDENCY_UPDATES=true",
-  "--envANDROID_NDK_ROOT=${_abs_libadblockplus_dir}/third_party/android-ndk-r16b",
+  "--envANDROID_NDK_ROOT=${_abs_ndk_dir}",
   "--envTARGET_OS=android",
   "--envABP_TARGET_ARCH=${v8_abi_dir}",
   "--envConfiguration=release",
@@ -121,7 +122,7 @@ exec_script("//third_party/libadblockplus_common/subproc.py", [
 
   # environment variables
   "--envANDROID_HOME=${_abs_sdk_dir}",
-  "--envANDROID_NDK_HOME=${_abs_libadblockplus_dir}/third_party/android-ndk-r16b",
+  "--envANDROID_NDK_HOME=${_abs_ndk_dir}",
   "--envGRADLE_BUILD_DIR=${_abs_libadblockplus_android_prebuild_dir}",
   "--envTARGET_OUT=${_abs_libadblockplus_android_prebuild_dir}",
 
