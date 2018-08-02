@@ -125,7 +125,7 @@ void Execution::OnStartCompute(ScriptPromiseResolver* resolver, int32_t result_c
   DCHECK(requests_.Contains(resolver));
   requests_.erase(resolver);
 
-  if (result_code == ml::mojom::blink::NO_ERROR) {
+  if (result_code == ml::mojom::blink::NOT_ERROR) {
     for (size_t i = 0; i < outputs_.size(); ++i) {
       DOMArrayBufferView* view = output_buffer_views_.at(i);
       if (view) {
@@ -150,7 +150,7 @@ void Execution::OnResultCode(ScriptPromiseResolver* resolver,
   DCHECK(requests_.Contains(resolver));
   requests_.erase(resolver);
 
-  if (result_code == ml::mojom::blink::NO_ERROR) {
+  if (result_code == ml::mojom::blink::NOT_ERROR) {
     resolver->Resolve(result_code);
   } else {
     String msg(operation_name);

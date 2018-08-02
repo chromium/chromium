@@ -567,7 +567,7 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
   }
 
   if (success) {
-    std::move(callback).Run(mojom::NO_ERROR);
+    std::move(callback).Run(mojom::NOT_ERROR);
   } else {
     std::move(callback).Run(mojom::BAD_DATA);
   }

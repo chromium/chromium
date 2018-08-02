@@ -82,7 +82,7 @@ void Compilation::OnCreateExecution(
   DCHECK(requests_.Contains(resolver));
   requests_.erase(resolver);
 
-  if (result_code == ml::mojom::blink::NO_ERROR) {
+  if (result_code == ml::mojom::blink::NOT_ERROR) {
     resolver->Resolve(new Execution(std::move(init_params)));
   } else {
     String msg("createExecution fails: ");
@@ -103,7 +103,7 @@ void Compilation::OnResultCode(ScriptPromiseResolver* resolver,
   DCHECK(requests_.Contains(resolver));
   requests_.erase(resolver);
 
-  if (result_code == ml::mojom::blink::NO_ERROR) {
+  if (result_code == ml::mojom::blink::NOT_ERROR) {
     resolver->Resolve(result_code);
   } else {
     String msg(operation_name);

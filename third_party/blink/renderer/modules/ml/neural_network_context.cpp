@@ -54,7 +54,7 @@ void NeuralNetworkContext::OnCreateModel(
   DCHECK(requests_.Contains(resolver));
   requests_.erase(resolver);
 
-  if (result_code == ml::mojom::blink::NO_ERROR) {
+  if (result_code == ml::mojom::blink::NOT_ERROR) {
     resolver->Resolve(new Model(std::move(init_params->model)));
   } else {
     String msg("createModel fails: ");

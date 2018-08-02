@@ -56,7 +56,7 @@ void ExecutionImplLinux::startCompute(startComputeCallback callback) {
     std::unique_ptr<OperandInfo>& info = outputs_info_[i];
     PrintOperand(operand, info);
   }
-  std::move(callback).Run(mojom::NO_ERROR);
+  std::move(callback).Run(mojom::NOT_ERROR);
 }
 
 }  // namespace ml

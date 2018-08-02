@@ -75,7 +75,7 @@ void CompilationImplAndroid::createExecution(createExecutionCallback callback) {
                           mojo::MakeRequest(&ptr_info));
   init_params->execution = std::move(ptr_info);
   
-  std::move(callback).Run(mojom::NO_ERROR,
+  std::move(callback).Run(mojom::NOT_ERROR,
                           std::move(init_params));
 }
 

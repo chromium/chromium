@@ -17,7 +17,7 @@ CompilationImplLinux::~CompilationImplLinux() {}
 void CompilationImplLinux::finish(int32_t preference, finishCallback callback) {
   DLOG(INFO) << "CompilationImplLinux::finish";
   DLOG(INFO) << "  " << "preference: " << preference;
-  std::move(callback).Run(mojom::NO_ERROR);
+  std::move(callback).Run(mojom::NOT_ERROR);
 }
 
 void CompilationImplLinux::createExecution(createExecutionCallback callback) {
@@ -55,7 +55,7 @@ void CompilationImplLinux::createExecution(createExecutionCallback callback) {
                           mojo::MakeRequest(&ptr_info));
   init_params->execution = std::move(ptr_info);
   
-  std::move(callback).Run(mojom::NO_ERROR,
+  std::move(callback).Run(mojom::NOT_ERROR,
                           std::move(init_params));
 }
 

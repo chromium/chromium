@@ -67,7 +67,7 @@ void ExecutionImplAndroid::startCompute(startComputeCallback callback) {
   LOG(INFO) << "ANeuralNetworksEvent_wait: " << result;
   ANeuralNetworksEvent_free(nn_event);
 
-  std::move(callback).Run(mojom::NO_ERROR);
+  std::move(callback).Run(mojom::NOT_ERROR);
 }
 
 }  // namespace ml

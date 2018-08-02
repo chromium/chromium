@@ -23,7 +23,7 @@ int32_t ModelImplMac::AddOperand(int32_t type, const std::vector<uint32_t>& dime
   operand.scale = scale;
   operand.zeroPoint = zeroPoint;
   operands_.push_back(operand);
-  return mojom::NO_ERROR;
+  return mojom::NOT_ERROR;
 }
 
 int32_t ModelImplMac::SetOperandValue(uint32_t index, const void* buffer, uint32_t length) {
@@ -55,7 +55,7 @@ int32_t ModelImplMac::SetOperandValue(uint32_t index, const void* buffer, uint32
     DLOG(ERROR) << "Invalid operand type: " << operand.type;
     return mojom::BAD_DATA;
   }
-  return mojom::NO_ERROR;
+  return mojom::NOT_ERROR;
 }
 
 int32_t ModelImplMac::AddOperation(int32_t type, const std::vector<uint32_t>& inputs, const std::vector<uint32_t>& outputs) {
@@ -68,7 +68,7 @@ int32_t ModelImplMac::AddOperation(int32_t type, const std::vector<uint32_t>& in
   operation.inputs = inputs;
   operation.outputs = outputs;
   operations_.push_back(operation);
-  return mojom::NO_ERROR;
+  return mojom::NOT_ERROR;
 }
 
 int32_t ModelImplMac::IdentifyInputsAndOutputs(const std::vector<uint32_t>& inputs, const std::vector<uint32_t>& outputs) {
@@ -77,7 +77,7 @@ int32_t ModelImplMac::IdentifyInputsAndOutputs(const std::vector<uint32_t>& inpu
   DLOG(INFO) << "    " << "outputs(" << outputs.size() << "): " << VectorToString(outputs.data(), outputs.size());
   inputs_ = inputs;
   outputs_ = outputs;
-  return mojom::NO_ERROR;
+  return mojom::NOT_ERROR;
 }
 
 void ModelImplMac::finish(mojom::ModelInfoPtr model_info, finishCallback callback) {
@@ -120,7 +120,7 @@ void ModelImplMac::finish(mojom::ModelInfoPtr model_info, finishCallback callbac
   DLOG(INFO) << "outputs(" << model_info->outputs.size() << ")";
   IdentifyInputsAndOutputs(model_info->inputs, model_info->outputs);
 
-  std::move(callback).Run(mojom::NO_ERROR);
+  std::move(callback).Run(mojom::NOT_ERROR);
 }
 
 void ModelImplMac::createCompilation(createCompilationCallback callback) {
@@ -134,7 +134,7 @@ void ModelImplMac::createCompilation(createCompilationCallback callback) {
                           mojo::MakeRequest(&ptr_info));
   init_params->compilation = std::move(ptr_info);
   
-  std::move(callback).Run(mojom::NO_ERROR,
+  std::move(callback).Run(mojom::NOT_ERROR,
                           std::move(init_params));
 }
 

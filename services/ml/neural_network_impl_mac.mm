@@ -30,7 +30,7 @@ void NeuralNetworkImplMac::createModel(createModelCallback callback) {
                           mojo::MakeRequest(&model_ptr_info));
   init_params->model = std::move(model_ptr_info);
   
-  std::move(callback).Run(mojom::NO_ERROR,
+  std::move(callback).Run(mojom::NOT_ERROR,
                           std::move(init_params));
 }
 

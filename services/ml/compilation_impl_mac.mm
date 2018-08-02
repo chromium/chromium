@@ -336,7 +336,7 @@ namespace ml {
     }
 
     if (success) {
-      std::move(callback).Run(mojom::NO_ERROR);
+      std::move(callback).Run(mojom::NOT_ERROR);
     } else {
       std::move(callback).Run(mojom::BAD_DATA);
     }
@@ -1063,7 +1063,7 @@ namespace ml {
     mojo::MakeStrongBinding(std::move(impl), mojo::MakeRequest(&ptr_info));
     init_params->execution = std::move(ptr_info);
 
-    std::move(callback).Run(mojom::NO_ERROR, std::move(init_params));
+    std::move(callback).Run(mojom::NOT_ERROR, std::move(init_params));
   }
 
 }  // namespace ml
