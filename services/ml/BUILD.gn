@@ -77,8 +77,23 @@ source_set("lib") {
     libs = [
       "Accelerate.framework",
       "Metal.framework",
-      "MetalPerformanceShaders.framework"
+      "MetalPerformanceShaders.framework",
     ]
+  } else if (is_win) {
+    sources += [
+      "compilation_impl_win.cc",
+      "compilation_impl_win.h",
+      "execution_impl_win.cc",
+      "execution_impl_win.h",
+      "model_impl_win.cc",
+      "model_impl_win.h",
+      "neural_network_impl_win.cc",
+      "neural_network_impl_win.h",
+    ]
+
+    lib_dirs = [ "//third_party/clDNN/build/out/Windows64/Release" ]
+
+    libs = [ "clDNN64.lib" ]
   } else {
     sources += [
       "neural_network_impl.cc",
@@ -90,11 +105,28 @@ source_set("lib") {
     "//mojo/public/cpp/bindings",
   ]
 
+  if (is_win) {
+    deps += [ ":copy_cldnn_dll" ]
+  }
+
   public_deps = [
     "//base",
     "//services/ml/public/interfaces",
     "//services/service_manager/public/cpp",
   ]
+}
+
+if (is_win) {
+  dll_path = "//third_party/clDNN/build/out/Windows64/Release"
+  copy("copy_cldnn_dll") {
+    sources = [
+      "$dll_path/clDNN64.dll",
+      "$dll_path/clDNN64.pdb",
+    ]
+    outputs = [
+      "$root_out_dir/{{source_file_part}}",
+    ]
+  }
 }
 
 service_manifest("manifest") {

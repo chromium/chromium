@@ -13,6 +13,8 @@
 #include "services/ml/neural_network_impl_android.h"
 #elif defined(OS_MACOSX)
 #include "services/ml/neural_network_impl_mac.h"
+#elif defined(OS_WIN)
+#include "services/ml/neural_network_impl_win.h"
 #else
 #include "services/ml/neural_network_impl.h"
 #endif
@@ -37,6 +39,8 @@ void MLService::OnStart() {
   registry_.AddInterface(base::Bind(&NeuralNetworkImplAndroid::Create));
 #elif defined(OS_MACOSX)
   registry_.AddInterface(base::Bind(&NeuralNetworkImplMac::Create));
+#elif defined(OS_WIN)
+  registry_.AddInterface(base::Bind(&NeuralNetworkImplWin::Create));
 #else
   registry_.AddInterface(base::Bind(&NeuralNetworkImpl::Create));
 #endif
