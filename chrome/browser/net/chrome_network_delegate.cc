@@ -393,7 +393,11 @@ int ChromeNetworkDelegate::OnBeforeStartTransaction(
       LOG(WARNING) << "Adblock: No referer";
     }
 
-    if (info && info->IsMainFrame() && resource_type == content::RESOURCE_TYPE_MAIN_FRAME) {
+    if (info && info->IsMainFrame()
+        && resource_type == content::RESOURCE_TYPE_MAIN_FRAME
+        && documentUrls.size() == 0) {
+      // pop-ups have also `content::RESOURCE_TYPE_MAIN_FRAME` resource type
+      // but have referrer in contrast to truly main frames
       LOG(WARNING) << "Adblock: " << url << " is main frame, allow loading";
     } else {
       LOG(WARNING) << "Adblock: invoking IsDocumentWhitelisted(" << url << ")";
@@ -403,6 +407,10 @@ int ChromeNetworkDelegate::OnBeforeStartTransaction(
         AdblockPlus::FilterEngine::ContentType adblock_content_type;
 
         switch (resource_type) {
+          case content::RESOURCE_TYPE_MAIN_FRAME:
+            adblock_content_type = AdblockPlus::FilterEngine::ContentType::CONTENT_TYPE_GENERICBLOCK;
+            break;
+
           case content::RESOURCE_TYPE_IMAGE:
           case content::RESOURCE_TYPE_FAVICON:
             adblock_content_type = AdblockPlus::FilterEngine::ContentType::CONTENT_TYPE_IMAGE;
