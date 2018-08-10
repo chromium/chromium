@@ -118,25 +118,29 @@ ExecutionImplMac::ExecutionImplMac(CompilationImplMac* compilation,
   }
   for (size_t i = 0; i < inputs_size; ++i) {
     OperandMac& operand = compilation_->operands_[compilation_->inputs_[i]];
-    uint32_t offset = total_length;
     uint32_t length = operand.requiredSize();
-    mojo::ScopedSharedBufferMapping mapping =
-        memory_->MapAtOffset(length, offset);
-    std::unique_ptr<OperandInfo> info(
-        new OperandInfo(offset, length, std::move(mapping)));
-    inputs_info_.push_back(std::move(info));
-    total_length += length;
     if (@available(macOS 10.13, *)) {
       if (compilation_->is_bnns_ == false) {
+        MPSImageDescriptor* descriptor = CreateMPSImageDescriptor(operand);
+        if (!descriptor) {
+          return;
+        }
         MPSImage* mps_img =
             [[MPSImage alloc] initWithDevice:GetMPSCNNContext().device
-                             imageDescriptor:CreateMPSImageDescriptor(operand)];
+                             imageDescriptor:descriptor];
         input_mpsimages_[i].reset(mps_img);
         input_mtlbuffers_[i] = [GetMPSCNNContext().device
             newBufferWithLength:length
                         options:MTLResourceOptionCPUCacheModeWriteCombined];
       }
     }
+    uint32_t offset = total_length;
+    mojo::ScopedSharedBufferMapping mapping =
+        memory_->MapAtOffset(length, offset);
+    std::unique_ptr<OperandInfo> info(
+        new OperandInfo(offset, length, std::move(mapping)));
+    inputs_info_.push_back(std::move(info));
+    total_length += length;
   }
   uint32_t outputs_size = compilation_->outputs_.size();
   if (@available(macOS 10.13, *)) {
@@ -147,25 +151,29 @@ ExecutionImplMac::ExecutionImplMac(CompilationImplMac* compilation,
   }
   for (size_t i = 0; i < outputs_size; ++i) {
     OperandMac& operand = compilation_->operands_[compilation_->outputs_[i]];
-    uint32_t offset = total_length;
     uint32_t length = operand.requiredSize();
-    mojo::ScopedSharedBufferMapping mapping =
-        memory_->MapAtOffset(length, offset);
-    std::unique_ptr<OperandInfo> info(
-        new OperandInfo(offset, length, std::move(mapping)));
-    outputs_info_.push_back(std::move(info));
-    total_length += length;
     if (@available(macOS 10.13, *)) {
       if (compilation_->is_bnns_ == false) {
+        MPSImageDescriptor* descriptor = CreateMPSImageDescriptor(operand);
+        if (!descriptor) {
+          return;
+        }
         MPSImage* mps_img =
             [[MPSImage alloc] initWithDevice:GetMPSCNNContext().device
-                             imageDescriptor:CreateMPSImageDescriptor(operand)];
+                             imageDescriptor:descriptor];
         output_mpsimages_[i].reset(mps_img);
         output_mtlbuffers_[i] = [GetMPSCNNContext().device
             newBufferWithLength:length
                         options:MTLResourceOptionCPUCacheModeWriteCombined];
       }
     }
+    uint32_t offset = total_length;
+    mojo::ScopedSharedBufferMapping mapping =
+        memory_->MapAtOffset(length, offset);
+    std::unique_ptr<OperandInfo> info(
+        new OperandInfo(offset, length, std::move(mapping)));
+    outputs_info_.push_back(std::move(info));
+    total_length += length;
   }
   // prepare memory for other operands
   if (compilation_->is_bnns_) {
@@ -444,10 +452,14 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
             if (!src_img) {
               if (tmp_mpsimage_cache.find(operation_input_idx) ==
                   tmp_mpsimage_cache.end()) {
+                MPSImageDescriptor* descriptor = CreateMPSImageDescriptor(operation_input);
+                if (!descriptor) {
+                  success = false;
+                  break;
+                }
                 MPSTemporaryImage* temp_image = [MPSTemporaryImage
                     temporaryImageWithCommandBuffer:command_buffer
-                                    imageDescriptor:CreateMPSImageDescriptor(
-                                                        operation_input)];
+                                    imageDescriptor:descriptor];
                 LOG(INFO) << "Set readCount as " << operation_input.read_count;
                 temp_image.readCount = operation_input.read_count;
                 tmp_mpsimage_cache[operation_input_idx] = temp_image;
@@ -457,10 +469,14 @@ void ExecutionImplMac::startCompute(startComputeCallback callback) {
             if (!dst_img) {
               if (tmp_mpsimage_cache.find(operation_output_idx) ==
                   tmp_mpsimage_cache.end()) {
+                MPSImageDescriptor* descriptor = CreateMPSImageDescriptor(operation_input);
+                if (!descriptor) {
+                  success = false;
+                  break;
+                }
                 MPSTemporaryImage* temp_image = [MPSTemporaryImage
                     temporaryImageWithCommandBuffer:command_buffer
-                                    imageDescriptor:CreateMPSImageDescriptor(
-                                                        operation_output)];
+                                    imageDescriptor:descriptor];
                 LOG(INFO) << "Set readCount as " << operation_output.read_count;
                 temp_image.readCount = operation_output.read_count;
                 tmp_mpsimage_cache[operation_output_idx] = temp_image;

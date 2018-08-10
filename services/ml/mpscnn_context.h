@@ -25,6 +25,10 @@ struct API_AVAILABLE(macosx(10.13)) MPSCNNContext {
   id<MTLLibrary> library;
   bool initialized;
 
+  bool IsValid() const {
+    return initialized && device != nil && library != nil;
+  }
+
   id<MTLComputePipelineState> GetPipelineState(NSString* kernel);
   id<MTLComputePipelineState> GetSpecializedPipelineState(NSString* kernel,
                                                           const std::vector<ushort>& constants);

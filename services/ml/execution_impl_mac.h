@@ -32,6 +32,12 @@ class ExecutionImplMac : public mojom::Execution {
   void startCompute(startComputeCallback callback) override;
   void PrepareBnnsOperandsMemory();
 
+  bool IsValid() const {
+    return compilation_ != nil &&
+           inputs_info_.size() == compilation_->inputs_.size() &&
+           outputs_info_.size() == compilation_->outputs_.size();
+  }
+
  private:
   CompilationImplMac* compilation_;
 
@@ -40,9 +46,9 @@ class ExecutionImplMac : public mojom::Execution {
   std::map<size_t, float*> bnns_operands_memory_map_;
   mojo::ScopedSharedBufferHandle memory_;
 
-  std::vector<base::scoped_nsobject<MPSImage>> input_mpsimages_;
+  API_AVAILABLE(macos(10_13)) std::vector<base::scoped_nsobject<MPSImage> > input_mpsimages_;
   API_AVAILABLE(macos(10_13)) std::vector<id<MTLBuffer>> input_mtlbuffers_;
-  std::vector<base::scoped_nsobject<MPSImage>> output_mpsimages_;
+  API_AVAILABLE(macos(10_13)) std::vector<base::scoped_nsobject<MPSImage> > output_mpsimages_;
   API_AVAILABLE(macos(10_13)) std::vector<id<MTLBuffer>> output_mtlbuffers_;
 
   DISALLOW_COPY_AND_ASSIGN(ExecutionImplMac);

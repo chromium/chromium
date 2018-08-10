@@ -30,7 +30,7 @@ int32_t ModelImplMac::SetOperandValue(uint32_t index, const void* buffer, uint32
   DLOG(INFO) << "  ModelImplMac::SetOperandValue";
   DLOG(INFO) << "    " << "index: " << index;
   DLOG(INFO) << "    " << "length: " << length;
-  if (index > operands_.size()) {
+  if (index >= operands_.size()) {
     return mojom::BAD_DATA;
   }
   auto operand = operands_[index];
@@ -50,6 +50,10 @@ int32_t ModelImplMac::SetOperandValue(uint32_t index, const void* buffer, uint32
     const uint32_t* value = static_cast<const uint32_t*>(buffer);
     uint32_t size = length;
     DLOG(INFO) << "    " << "buffer(" << size << "): " << VectorToString(value, size);
+  } else {
+    // TODO: change the date type of operand type to enum
+    DLOG(ERROR) << "Invalid operand type: " << operand.type;
+    return mojom::BAD_DATA;
   }
   return mojom::NO_ERROR;
 }
@@ -99,9 +103,13 @@ void ModelImplMac::finish(mojom::ModelInfoPtr model_info, finishCallback callbac
   for (size_t i = 0; i < model_info->values.size(); ++i ) {
     DLOG(INFO) << "  values[" << i << "]";
     const mojom::OperandValueInfoPtr& value_info = model_info->values[i];
-    SetOperandValue(value_info->index,
-                    static_cast<const void*>(memory_.get() + value_info->offset),
-                    value_info->length);
+    int32_t result = SetOperandValue(value_info->index,
+                                     static_cast<const void*>(memory_.get() + value_info->offset),
+                                     value_info->length);
+    if (result != mojom::NO_ERROR) {
+      std::move(callback).Run(result);
+      return;
+    }
     ValueInfo value;
     value.index = value_info->index;
     value.offset = value_info->offset;

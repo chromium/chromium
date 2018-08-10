@@ -4,6 +4,7 @@
 
 #include "services/ml/compilation_impl_mac.h"
 #include "services/ml/mpscnn_context.h"
+#include "services/ml/execution_impl_mac.h"
 
 #import <Accelerate/Accelerate.h>
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
@@ -265,15 +266,9 @@ namespace ml {
 
     if (@available(macOS 10.13, *)) {
       if (is_bnns_ == false) {
-        id<MTLDevice> device = GetMPSCNNContext().device;
-        DLOG(INFO) << "  "
-                   << "**********GetMPSCNNContext******* ";
-        if (device == nil) {
-          DLOG(ERROR) << "Cannot create MTLDevice";
+        if (!GetMPSCNNContext().IsValid()) {
           std::move(callback).Run(mojom::BAD_STATE);
           return;
-        } else {
-          DLOG(INFO) << "Created MTLDevice: " << device.name.UTF8String;
         }
       }
     }
@@ -1060,6 +1055,10 @@ namespace ml {
 
     auto impl =
         std::make_unique<ExecutionImplMac>(this, std::move(memory_handle));
+    if (!impl->IsValid()) {
+      std::move(callback).Run(mojom::BAD_DATA, std::move(init_params));
+      return;
+    }
     mojom::ExecutionPtrInfo ptr_info;
     mojo::MakeStrongBinding(std::move(impl), mojo::MakeRequest(&ptr_info));
     init_params->execution = std::move(ptr_info);

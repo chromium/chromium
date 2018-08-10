@@ -11,7 +11,6 @@
 #include "services/ml/public/interfaces/constants.mojom.h"
 
 #include "services/ml/common.h"
-#include "services/ml/execution_impl_mac.h"
 #include "services/ml/model_impl_mac.h"
 
 #include "base/mac/scoped_nsobject.h"
@@ -21,6 +20,8 @@
 @class MPSCNNKernel;
 
 namespace ml {
+
+class ExecutionImplMac;
 
 typedef enum LocalOperation {
   KBNNSFilter = 1,

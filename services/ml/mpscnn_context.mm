@@ -174,17 +174,27 @@ MPSCNNContext::~MPSCNNContext() = default;
 
 MPSCNNContext& GetMPSCNNContext() {
   static MPSCNNContext ctx;
-  if (ctx.initialized == false) {
-    NSError* compileError = nil;
+  if (!ctx.initialized) {
+    ctx.initialized = true;
+
   	ctx.device = MTLCreateSystemDefaultDevice();
+    if (ctx.device == nil) {
+      DLOG(ERROR) << "Cannot create MTLDevice";
+      return ctx;
+    } else {
+      DLOG(INFO) << "Created MTLDevice: " << ctx.device.name.UTF8String;
+    }
+
+    NSError* compileError = nil;
     ctx.library = [ctx.device newLibraryWithSource:[NSString stringWithUTF8String:MPSCNN_KERNELS]
         options:nil
         error:&compileError];
     if (compileError != nil || ctx.library == nil) {
       DLOG(ERROR) << "Failed to load kernels: " << [[compileError localizedDescription] UTF8String];
+      return ctx;
     }
+
   	ctx.command_queue = [ctx.device newCommandQueue];
-  	ctx.initialized = true;
   };
   return ctx;
 }
