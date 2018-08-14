@@ -71,15 +71,17 @@ Execution::~Execution() {
 void Execution::setInput(uint32_t index,
                          MaybeShared<DOMArrayBufferView> data,
                          ExceptionState& exception_state) {
-  if (index > inputs_.size()) {
+  if (index >= inputs_.size()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid index");
+    return;
   }
   std::unique_ptr<OperandInfo>& info = inputs_.at(index);
   uint32_t length = data.View()->byteLength();
   if (info->length != length) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid data");
+    return;
   }
   memcpy(static_cast<void*>(info->mapping.get()), data.View()->BaseAddress(), length);
 }
@@ -87,15 +89,17 @@ void Execution::setInput(uint32_t index,
 void Execution::setOutput(uint32_t index,
                           MaybeShared<DOMArrayBufferView> data,
                           ExceptionState& exception_state) {
-  if (index > output_buffer_views_.size()) {
+  if (index >= output_buffer_views_.size()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid index");
+    return;
   }
   std::unique_ptr<OperandInfo>& info = outputs_.at(index);
   uint32_t length = data.View()->byteLength();
   if (info->length != length) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid data");
+    return;
   }                                   
 
   output_buffer_views_[index] = data.View();

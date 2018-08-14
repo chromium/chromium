@@ -27,10 +27,12 @@ void Model::addOperand(const OperandOptions& options, ExceptionState& exception_
   if (is_finished_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Model is finished.");
+    return;
   }
   if (!options.hasType()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Operand type is missing.");
+    return;
   }
   int32_t type = options.type();
 
@@ -60,11 +62,13 @@ void Model::setOperandValue(uint32_t index,
   if (is_finished_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Model is finished.");
+    return;
   }
 
-  if (index > model_info_->operands.size()) {
+  if (index >= model_info_->operands.size()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Index is invalid.");
+    return;
   }
 
   const ml::mojom::blink::OperandPtr& operand =
@@ -76,6 +80,7 @@ void Model::setOperandValue(uint32_t index,
         operand->type == NeuralNetworkContext::kTensorFloat32)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Data type is invalid.");
+    return;
   }
 
   if (view_type == WTF::ArrayBufferView::kTypeInt32 &&
@@ -83,18 +88,21 @@ void Model::setOperandValue(uint32_t index,
         operand->type == NeuralNetworkContext::kTensorInt32)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Data type is invalid.");
+    return;
   }
 
   if (view_type == WTF::ArrayBufferView::kTypeUint32 &&
       (operand->type != NeuralNetworkContext::kUint32)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Data type is invalid.");
+    return;
   }
 
   if (view_type == WTF::ArrayBufferView::kTypeUint8 &&
       (operand->type != NeuralNetworkContext::kTensorQuant8Asymm)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Data type is invalid.");
+    return;
   }
 
   model_info_->values.push_back(ml::mojom::blink::OperandValueInfo::New(index, 0, 0));
@@ -108,17 +116,20 @@ void Model::addOperation(int32_t type,
   if (is_finished_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Model is finished.");
+    return;
   }
   for (size_t i = 0; i < inputs.size(); ++i) {
     if (inputs[i] > model_info_->operands.size()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Inputs is invalid.");
+      return;
     }
   }
   for (size_t i = 0; i < outputs.size(); ++i) {
     if (outputs[i] > model_info_->operands.size()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Outputs is invalid.");
+      return;
     }
   }
   model_info_->operations.push_back(
@@ -131,17 +142,20 @@ void Model::identifyInputsAndOutputs(Vector<uint32_t>& inputs,
   if (is_finished_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Model is finished.");
+    return;
   }
   for (size_t i = 0; i < inputs.size(); ++i) {
     if (inputs[i] > model_info_->operands.size()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Inputs is invalid.");
+      return;
     }
   }
   for (size_t i = 0; i < outputs.size(); ++i) {
     if (outputs[i] > model_info_->operands.size()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Outputs is invalid.");
+      return;
     }
   }
   model_info_->inputs = inputs;

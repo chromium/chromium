@@ -26,6 +26,7 @@ void Compilation::setPreference(int32_t preference, ExceptionState& exception_st
   if (is_finished_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Compilation is finished.");
+    return;
   }
   preference_ = preference;
 }
