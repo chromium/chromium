@@ -5,11 +5,10 @@
 #ifndef SERVICES_ML_EXECUTION_IMPL_ANDROID_H_
 #define SERVICES_ML_EXECUTION_IMPL_ANDROID_H_
 
-#include "base/macros.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
-#include "services/ml/public/interfaces/execution.mojom.h"
-#include "services/ml/public/interfaces/constants.mojom.h"
+#include <vector>
 
+#include "base/macros.h"
+#include "services/ml/public/interfaces/execution.mojom.h"
 #include "services/ml/common.h"
 #include "services/ml/model_impl_android.h"
 #include "services/ml/compilation_impl_android.h"
@@ -25,7 +24,8 @@ namespace ml {
 
 class ExecutionImplAndroid : public mojom::Execution {
  public:
-  ExecutionImplAndroid(CompilationImplAndroid*, mojo::ScopedSharedBufferHandle);
+  ExecutionImplAndroid(const CompilationImplAndroid*,
+                       mojo::ScopedSharedBufferHandle);
   ~ExecutionImplAndroid() override;
 
   void StartCompute(StartComputeCallback callback) override;

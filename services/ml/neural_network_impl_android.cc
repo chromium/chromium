@@ -3,31 +3,36 @@
 // found in the LICENSE file.
 
 #include "services/ml/neural_network_impl_android.h"
+
+#include <memory>
+#include <utility>
+
+#include "base/logging.h"
+#include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/ml/model_impl_android.h"
+#include "services/ml/public/interfaces/constants.mojom.h"
 
 namespace ml {
 
+// static
 void NeuralNetworkImplAndroid::Create(
     ml::mojom::NeuralNetworkRequest request) {
-  auto impl = std::make_unique<NeuralNetworkImplAndroid>();
-  auto* impl_ptr = impl.get();
-  impl_ptr->binding_ =
-      mojo::MakeStrongBinding(std::move(impl), std::move(request));
+  mojo::MakeStrongBinding(std::make_unique<NeuralNetworkImplAndroid>(),
+                          std::move(request));
 }
 
-NeuralNetworkImplAndroid::NeuralNetworkImplAndroid() {}
+NeuralNetworkImplAndroid::NeuralNetworkImplAndroid() = default;
 
-NeuralNetworkImplAndroid::~NeuralNetworkImplAndroid() {}
+NeuralNetworkImplAndroid::~NeuralNetworkImplAndroid() = default;
 
 void NeuralNetworkImplAndroid::CreateModel(CreateModelCallback callback) {
   LOG(INFO) << "CreateModel";
-  auto init_params = mojom::ModelInitParams::New();
-
-  auto model_impl = std::make_unique<ModelImplAndroid>();
 
   mojom::ModelPtrInfo model_ptr_info;
-  mojo::MakeStrongBinding(std::move(model_impl),
+  mojo::MakeStrongBinding(std::make_unique<ModelImplAndroid>(),
                           mojo::MakeRequest(&model_ptr_info));
+
+  auto init_params = mojom::ModelInitParams::New();
   init_params->model = std::move(model_ptr_info);
   
   std::move(callback).Run(mojom::NOT_ERROR,

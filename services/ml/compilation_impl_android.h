@@ -5,11 +5,10 @@
 #ifndef SERVICES_ML_COMPILATION_IMPL_ANDROID_H_
 #define SERVICES_ML_COMPILATION_IMPL_ANDROID_H_
 
-#include "base/macros.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
-#include "services/ml/public/interfaces/compilation.mojom.h"
-#include "services/ml/public/interfaces/constants.mojom.h"
+#include <vector>
 
+#include "base/macros.h"
+#include "services/ml/public/interfaces/compilation.mojom.h"
 #include "services/ml/common.h"
 #include "services/ml/model_impl_android.h"
 #include "services/ml/execution_impl_android.h"
@@ -25,7 +24,7 @@ namespace ml {
 
 class CompilationImplAndroid : public mojom::Compilation {
  public:
-  CompilationImplAndroid(ModelImplAndroid*);
+  explicit CompilationImplAndroid(const ModelImplAndroid*);
   ~CompilationImplAndroid() override;
 
   void Finish(int32_t preference, FinishCallback callback) override;
@@ -43,6 +42,6 @@ class CompilationImplAndroid : public mojom::Compilation {
   DISALLOW_COPY_AND_ASSIGN(CompilationImplAndroid);
 };
 
-}  // namespace  
+}  // namespace
 
 #endif  // SERVICES_ML_COMPILATION_IMPL_ANDROID_H_
