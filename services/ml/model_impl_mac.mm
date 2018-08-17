@@ -80,8 +80,9 @@ int32_t ModelImplMac::IdentifyInputsAndOutputs(const std::vector<uint32_t>& inpu
   return mojom::NOT_ERROR;
 }
 
-void ModelImplMac::finish(mojom::ModelInfoPtr model_info, finishCallback callback) {
-  DLOG(INFO) << "ModelImplMac::finish";
+void ModelImplMac::Finish(mojom::ModelInfoPtr model_info,
+                          FinishCallback callback) {
+  DLOG(INFO) << "ModelImplMac::Finish";
   DLOG(INFO) << "operands(" << model_info->operands.size() << ")";
   for (size_t i = 0; i < model_info->operands.size(); ++i ) {
     DLOG(INFO) << "  operand[" << i << "]";
@@ -123,8 +124,8 @@ void ModelImplMac::finish(mojom::ModelInfoPtr model_info, finishCallback callbac
   std::move(callback).Run(mojom::NOT_ERROR);
 }
 
-void ModelImplMac::createCompilation(createCompilationCallback callback) {
-  DLOG(INFO) << "ModelImplMac::createCompilation";
+void ModelImplMac::CreateCompilation(CreateCompilationCallback callback) {
+  DLOG(INFO) << "ModelImplMac::CreateCompilation";
   auto init_params = mojom::CompilationInitParams::New();
 
   auto impl = std::make_unique<CompilationImplMac>(this);

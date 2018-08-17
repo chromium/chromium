@@ -27,11 +27,11 @@ class ModelImplAndroid : public mojom::Model {
   ModelImplAndroid();
   ~ModelImplAndroid() override;
 
-  void finish(mojom::ModelInfoPtr model_info, finishCallback callback) override;
+  void Finish(mojom::ModelInfoPtr model_info, FinishCallback callback) override;
 
-  void createCompilation(createCompilationCallback callback) override;
+  void CreateCompilation(CreateCompilationCallback callback) override;
 
-private:
+ private:
   int32_t AddOperand(int32_t type, const std::vector<uint32_t>& dimensions, float scale, int32_t zeroPoint);
   int32_t SetOperandValue(uint32_t index, const void* buffer, uint32_t length);
   int32_t AddOperation(int32_t type, const std::vector<uint32_t>& inputs, const std::vector<uint32_t>& outputs);

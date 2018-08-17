@@ -21,7 +21,8 @@ CompilationImplAndroid::~CompilationImplAndroid() {
   DLOG(INFO) << "ANeuralNetworksCompilation_free";
 }
 
-void CompilationImplAndroid::finish(int32_t preference, finishCallback callback) {
+void CompilationImplAndroid::Finish(int32_t preference,
+                                    FinishCallback callback) {
   DLOG(INFO) << "CompilationImplAndroid::finish";
   DLOG(INFO) << "  " << "preference: " << preference;
 
@@ -39,8 +40,8 @@ void CompilationImplAndroid::finish(int32_t preference, finishCallback callback)
   std::move(callback).Run(result);
 }
 
-void CompilationImplAndroid::createExecution(createExecutionCallback callback) {
-  DLOG(INFO) << "CompilationImplAndroid::createExecution";
+void CompilationImplAndroid::CreateExecution(CreateExecutionCallback callback) {
+  DLOG(INFO) << "CompilationImplAndroid::CreateExecution";
   auto init_params = mojom::ExecutionInitParams::New();
 
   uint32_t input_memory_size = 0;

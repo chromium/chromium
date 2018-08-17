@@ -42,10 +42,9 @@ ScriptPromise NeuralNetworkContext::createModel(ScriptState* script_state) {
   }
   requests_.insert(resolver);
 
-  neural_network_->createModel(
-      WTF::Bind(&NeuralNetworkContext::OnCreateModel,
-                WrapPersistent(this),
-                WrapPersistent(resolver)));
+  neural_network_->CreateModel(WTF::Bind(&NeuralNetworkContext::OnCreateModel,
+                                         WrapPersistent(this),
+                                         WrapPersistent(resolver)));
   return promise;
 }
 

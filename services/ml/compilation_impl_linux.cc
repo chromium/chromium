@@ -14,14 +14,14 @@ CompilationImplLinux::CompilationImplLinux(ModelImplLinux* model) {
 }
 CompilationImplLinux::~CompilationImplLinux() {}
 
-void CompilationImplLinux::finish(int32_t preference, finishCallback callback) {
-  DLOG(INFO) << "CompilationImplLinux::finish";
+void CompilationImplLinux::Finish(int32_t preference, FinishCallback callback) {
+  DLOG(INFO) << "CompilationImplLinux::Finish";
   DLOG(INFO) << "  " << "preference: " << preference;
   std::move(callback).Run(mojom::NOT_ERROR);
 }
 
-void CompilationImplLinux::createExecution(createExecutionCallback callback) {
-  DLOG(INFO) << "CompilationImplLinux::createExecution";
+void CompilationImplLinux::CreateExecution(CreateExecutionCallback callback) {
+  DLOG(INFO) << "CompilationImplLinux::CreateExecution";
   auto init_params = mojom::ExecutionInitParams::New();
 
   uint32_t input_memory_size = 0;

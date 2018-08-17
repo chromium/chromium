@@ -28,7 +28,7 @@ class ExecutionImplAndroid : public mojom::Execution {
   ExecutionImplAndroid(CompilationImplAndroid*, mojo::ScopedSharedBufferHandle);
   ~ExecutionImplAndroid() override;
 
-  void startCompute(startComputeCallback callback) override;
+  void StartCompute(StartComputeCallback callback) override;
 
  private:
   std::vector<Operand> operands_;

@@ -19,8 +19,8 @@ NeuralNetworkImplMac::NeuralNetworkImplMac() {}
 
 NeuralNetworkImplMac::~NeuralNetworkImplMac() {}
 
-void NeuralNetworkImplMac::createModel(createModelCallback callback) {
-  LOG(INFO) << "createModel";
+void NeuralNetworkImplMac::CreateModel(CreateModelCallback callback) {
+  LOG(INFO) << "CreateModel";
   auto init_params = mojom::ModelInitParams::New();
 
   auto model_impl = std::make_unique<ModelImplMac>();

@@ -40,8 +40,8 @@ struct ModelInfo {
 };
 
 interface Model {
-  finish(ModelInfo model)
+  Finish(ModelInfo model)
     => (int32 resultCode);
-  createCompilation()
+  CreateCompilation()
     => (int32 resultCode, CompilationInitParams init_params);
 };

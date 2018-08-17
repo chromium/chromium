@@ -116,8 +116,9 @@ ScriptPromise Execution::startCompute(ScriptState* script_state) {
   }
   requests_.insert(resolver);
 
-  execution_->startCompute(
-      WTF::Bind(&Execution::OnStartCompute, WrapPersistent(this), WrapPersistent(resolver)));
+  execution_->StartCompute(WTF::Bind(&Execution::OnStartCompute,
+                                     WrapPersistent(this),
+                                     WrapPersistent(resolver)));
   return promise;
 }
 

@@ -46,10 +46,9 @@ ScriptPromise Compilation::finish(ScriptState* script_state) {
   }
   requests_.insert(resolver);
 
-  compilation_->finish(
-      preference_,
-      WTF::Bind(&Compilation::OnResultCode, WrapPersistent(this),
-                WrapPersistent(resolver), String("finish")));
+  compilation_->Finish(
+      preference_, WTF::Bind(&Compilation::OnResultCode, WrapPersistent(this),
+                             WrapPersistent(resolver), String("finish")));
   is_finished_ = true;
   return promise;
 }
@@ -69,10 +68,9 @@ ScriptPromise Compilation::createExecution(ScriptState* script_state) {
   }
   requests_.insert(resolver);
 
-  compilation_->createExecution(
-      WTF::Bind(&Compilation::OnCreateExecution,
-                WrapPersistent(this),
-                WrapPersistent(resolver)));
+  compilation_->CreateExecution(WTF::Bind(&Compilation::OnCreateExecution,
+                                          WrapPersistent(this),
+                                          WrapPersistent(resolver)));
   return promise;
 }
 

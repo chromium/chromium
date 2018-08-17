@@ -11,6 +11,6 @@ struct ModelInitParams {
 };
 
 interface NeuralNetwork {
-  createModel()
+  CreateModel()
     => (int32 result_code, ModelInitParams init_params);
 };

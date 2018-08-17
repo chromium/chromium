@@ -117,8 +117,9 @@ int32_t ModelImplAndroid::IdentifyInputsAndOutputs(const std::vector<uint32_t>& 
   return result;
 }
 
-void ModelImplAndroid::finish(mojom::ModelInfoPtr model_info, finishCallback callback) {
-  DLOG(INFO) << "ModelImplAndroid::finish";
+void ModelImplAndroid::Finish(mojom::ModelInfoPtr model_info,
+                              FinishCallback callback) {
+  DLOG(INFO) << "ModelImplAndroid::Finish";
   DLOG(INFO) << "operands(" << model_info->operands.size() << ")";
   int32_t result;
   for (size_t i = 0; i < model_info->operands.size(); ++i ) {
@@ -164,8 +165,8 @@ void ModelImplAndroid::finish(mojom::ModelInfoPtr model_info, finishCallback cal
   std::move(callback).Run(result);
 }
 
-void ModelImplAndroid::createCompilation(createCompilationCallback callback) {
-  DLOG(INFO) << "ModelImplAndroid::createCompilation";
+void ModelImplAndroid::CreateCompilation(CreateCompilationCallback callback) {
+  DLOG(INFO) << "ModelImplAndroid::CreateCompilation";
   auto init_params = mojom::CompilationInitParams::New();
 
   auto impl = std::make_unique<CompilationImplAndroid>(this);

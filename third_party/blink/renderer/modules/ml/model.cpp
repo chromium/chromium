@@ -200,7 +200,7 @@ ScriptPromise Model::finish(ScriptState* script_state) {
 
   model_info_->memory = memory->Clone(mojo::SharedBufferHandle::AccessMode::READ_ONLY);
   model_info_->memory_size = total_byte_length;
-  model_->finish(std::move(model_info_),
+  model_->Finish(std::move(model_info_),
                  WTF::Bind(&Model::OnResultCode, WrapPersistent(this),
                            WrapPersistent(resolver), String("finish")));
   is_finished_ = true;
@@ -222,10 +222,9 @@ ScriptPromise Model::createCompilation(ScriptState* script_state) {
   }
   requests_.insert(resolver);
 
-  model_->createCompilation(
-      WTF::Bind(&Model::OnCreateCompilation,
-                WrapPersistent(this),
-                WrapPersistent(resolver)));
+  model_->CreateCompilation(WTF::Bind(&Model::OnCreateCompilation,
+                                      WrapPersistent(this),
+                                      WrapPersistent(resolver)));
   return promise;
 }
 

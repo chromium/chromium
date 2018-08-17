@@ -21,7 +21,7 @@ class ExecutionImplLinux : public mojom::Execution {
   ExecutionImplLinux(CompilationImplLinux*, mojo::ScopedSharedBufferHandle);
   ~ExecutionImplLinux() override;
 
-  void startCompute(startComputeCallback callback) override;
+  void StartCompute(StartComputeCallback callback) override;
 
  private:
   std::vector<Operand> operands_;

@@ -21,8 +21,8 @@ class CompilationImplLinux : public mojom::Compilation {
   CompilationImplLinux(ModelImplLinux*);
   ~CompilationImplLinux() override;
 
-  void finish(int32_t preference, finishCallback callback) override;
-  void createExecution(createExecutionCallback callback) override;
+  void Finish(int32_t preference, FinishCallback callback) override;
+  void CreateExecution(CreateExecutionCallback callback) override;
 
  private:
   friend class ExecutionImplLinux;

@@ -29,7 +29,7 @@ class ExecutionImplMac : public mojom::Execution {
   ExecutionImplMac(CompilationImplMac*, mojo::ScopedSharedBufferHandle);
   ~ExecutionImplMac() override;
 
-  void startCompute(startComputeCallback callback) override;
+  void StartCompute(StartComputeCallback callback) override;
   void PrepareBnnsOperandsMemory();
 
   bool IsValid() const {

@@ -19,8 +19,8 @@ NeuralNetworkImplAndroid::NeuralNetworkImplAndroid() {}
 
 NeuralNetworkImplAndroid::~NeuralNetworkImplAndroid() {}
 
-void NeuralNetworkImplAndroid::createModel(createModelCallback callback) {
-  LOG(INFO) << "createModel";
+void NeuralNetworkImplAndroid::CreateModel(CreateModelCallback callback) {
+  LOG(INFO) << "CreateModel";
   auto init_params = mojom::ModelInitParams::New();
 
   auto model_impl = std::make_unique<ModelImplAndroid>();

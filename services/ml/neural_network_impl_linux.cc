@@ -19,8 +19,8 @@ NeuralNetworkImplLinux::NeuralNetworkImplLinux() {}
 
 NeuralNetworkImplLinux::~NeuralNetworkImplLinux() {}
 
-void NeuralNetworkImplLinux::createModel(createModelCallback callback) {
-  LOG(INFO) << "createModel";
+void NeuralNetworkImplLinux::CreateModel(CreateModelCallback callback) {
+  LOG(INFO) << "CreateModel";
   auto init_params = mojom::ModelInitParams::New();
 
   auto model_impl = std::make_unique<ModelImplLinux>();

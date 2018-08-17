@@ -225,8 +225,8 @@ void ExecutionImplMac::PrepareBnnsOperandsMemory() {
   }
 }
 
-void ExecutionImplMac::startCompute(startComputeCallback callback) {
-  DLOG(INFO) << "ExecutionImplMac::startCompute";
+void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
+  DLOG(INFO) << "ExecutionImplMac::StartCompute";
   bool success = true;
   if (@available(macOS 10.13, *)) {
     do {

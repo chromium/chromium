@@ -255,8 +255,8 @@ namespace ml {
 
   CompilationImplMac::~CompilationImplMac() {}
 
-  void CompilationImplMac::finish(int32_t preference, finishCallback callback) {
-    DLOG(INFO) << "CompilationImplMac::finish";
+  void CompilationImplMac::Finish(int32_t preference, FinishCallback callback) {
+    DLOG(INFO) << "CompilationImplMac::Finish";
     DLOG(INFO) << "  "
                 << "preference: " << preference;
 
@@ -1023,8 +1023,8 @@ namespace ml {
     return true;
   }
 
-  void CompilationImplMac::createExecution(createExecutionCallback callback) {
-    DLOG(INFO) << "CompilationImplMac::createExecution";
+  void CompilationImplMac::CreateExecution(CreateExecutionCallback callback) {
+    DLOG(INFO) << "CompilationImplMac::CreateExecution";
     auto init_params = mojom::ExecutionInitParams::New();
 
     uint32_t input_memory_size = 0;

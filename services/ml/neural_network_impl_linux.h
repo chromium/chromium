@@ -18,7 +18,7 @@ class NeuralNetworkImplLinux
   NeuralNetworkImplLinux();
   ~NeuralNetworkImplLinux() override;
 
-  void createModel(createModelCallback callback) override;
+  void CreateModel(CreateModelCallback callback) override;
 
   static void Create(mojom::NeuralNetworkRequest request);
  private:

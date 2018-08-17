@@ -36,8 +36,8 @@ ExecutionImplLinux::ExecutionImplLinux(CompilationImplLinux* compilation, mojo::
 
 ExecutionImplLinux::~ExecutionImplLinux() {}
 
-void ExecutionImplLinux::startCompute(startComputeCallback callback) {
-  DLOG(INFO) << "ExecutionImplLinux::startCompute";
+void ExecutionImplLinux::StartCompute(StartComputeCallback callback) {
+  DLOG(INFO) << "ExecutionImplLinux::StartCompute";
 
   for (size_t i = 0; i < inputs_.size(); ++i) {
     DLOG(INFO) << "inputs[" << i << "]:";

@@ -57,8 +57,8 @@ ExecutionImplAndroid::~ExecutionImplAndroid() {
   DLOG(INFO) << "ANeuralNetworksExecution_free";
 }
 
-void ExecutionImplAndroid::startCompute(startComputeCallback callback) {
-  DLOG(INFO) << "ExecutionImplAndroid::startCompute";
+void ExecutionImplAndroid::StartCompute(StartComputeCallback callback) {
+  DLOG(INFO) << "ExecutionImplAndroid::StartCompute";
 
   ANeuralNetworksEvent* nn_event;
   int32_t result = ANeuralNetworksExecution_startCompute(nn_execution_, &nn_event);

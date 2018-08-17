@@ -76,8 +76,9 @@ int32_t ModelImplLinux::IdentifyInputsAndOutputs(const std::vector<uint32_t>& in
   return mojom::NOT_ERROR;
 }
 
-void ModelImplLinux::finish(mojom::ModelInfoPtr model_info, finishCallback callback) {
-  DLOG(INFO) << "ModelImplLinux::finish";
+void ModelImplLinux::Finish(mojom::ModelInfoPtr model_info,
+                            FinishCallback callback) {
+  DLOG(INFO) << "ModelImplLinux::Finish";
   DLOG(INFO) << "operands(" << model_info->operands.size() << ")";
   for (size_t i = 0; i < model_info->operands.size(); ++i ) {
     DLOG(INFO) << "  operand[" << i << "]";
@@ -107,8 +108,8 @@ void ModelImplLinux::finish(mojom::ModelInfoPtr model_info, finishCallback callb
   std::move(callback).Run(mojom::NOT_ERROR);
 }
 
-void ModelImplLinux::createCompilation(createCompilationCallback callback) {
-  DLOG(INFO) << "ModelImplLinux::createCompilation";
+void ModelImplLinux::CreateCompilation(CreateCompilationCallback callback) {
+  DLOG(INFO) << "ModelImplLinux::CreateCompilation";
   auto init_params = mojom::CompilationInitParams::New();
 
   auto impl = std::make_unique<CompilationImplLinux>(this);
