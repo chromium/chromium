@@ -107,7 +107,7 @@ void ModelImplMac::Finish(mojom::ModelInfoPtr model_info,
     int32_t result = SetOperandValue(value_info->index,
                                      static_cast<const void*>(memory_.get() + value_info->offset),
                                      value_info->length);
-    if (result != mojom::NO_ERROR) {
+    if (result != mojom::NOT_ERROR) {
       std::move(callback).Run(result);
       return;
     }

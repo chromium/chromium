@@ -245,6 +245,8 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
             const uint32_t operation_output_idx = operation.outputs[0];
             const OperandMac& operation_input =
                 compilation_->operands_[operation_input_idx];
+            const OperandMac& operation_output =
+                compilation_->operands_[operation_output_idx];
 
             bool is_outer_input = false;
             for (size_t j = 0; j < compilation_->inputs_.size(); j++) {
@@ -341,7 +343,16 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
             }
 
             if (operation.local_operation == KBNNSFilter) {
-              int result = BNNSFilterApply(operation.filter, src, des);
+              int32_t input_batch_size = operation_input.dimensions[0];
+              int result;
+              if (input_batch_size == 1) {
+                result = BNNSFilterApply(operation.filter, src, des);
+              } else {
+                result = BNNSFilterApplyBatch(operation.filter, input_batch_size, src, 
+                    operation_input.dimensions[1] * operation_input.dimensions[2] * 
+                    operation_input.dimensions[3], des, operation_output.dimensions[1] *
+                    operation_output.dimensions[2] * operation_output.dimensions[3]);
+              }
               if (result == -1) {
                 success = false;
               }

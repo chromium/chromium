@@ -480,6 +480,10 @@ namespace ml {
       out_desc.data_type = BNNSDataTypeFloat32;
       operation.filter = BNNSFilterCreateConvolutionLayer(
           &in_desc, &out_desc, &conv_params, &filter_params);
+      if (operation.filter == nullptr) {
+        DLOG(ERROR) << "BNNS Fail to Create ConvolutionLayer";
+        return false;
+      }
     }
     return true;
   }
@@ -743,6 +747,10 @@ namespace ml {
 
       operation.filter = BNNSFilterCreatePoolingLayer(&in_desc, &out_desc,
                                                       &pool, &filter_params);
+      if (operation.filter == nullptr) {
+        DLOG(ERROR) << "BNNS Fail to Create PoolingLayer";
+        return false;
+      }
     }
     return true;
   }
@@ -910,8 +918,11 @@ namespace ml {
       BNNSFilterParameters filter_params;
       bzero(&filter_params, sizeof(filter_params));
       operation.filter = BNNSFilterCreateVectorActivationLayer(&in_desc, &out_desc, &activation, &filter_params);
+      if (operation.filter == nullptr) {
+        DLOG(ERROR) << "BNNS Fail to Create SoftmaxLayer";
+        return false;
+      }
     }
-
     return true;
   }
 
