@@ -663,7 +663,6 @@ namespace ml {
     filter_width = getScalarInt32(values_[inputs[i++]], memory_.get());
     filter_height = getScalarInt32(values_[inputs[i++]], memory_.get());
     fuse_code = getScalarInt32(values_[inputs[i++]], memory_.get());
-    LOG(ERROR) << "********FUSE_CODE POOL*********" << fuse_code;
 
     operation.offset_x = 0;
     operation.offset_y = 0;
@@ -954,7 +953,7 @@ namespace ml {
   }
  
   bool CompilationImplMac::CompileConcatenationBNNS(OperationMac& concat) {
-    LOG(ERROR) << "CompilationImplMac::CompileConcatenation";
+    DLOG(INFO) << "CompilationImplMac::CompileConcatenation";
     DLOG_IF(FATAL, concat.type != mojom::CONCATENATION);
     concat.local_operation = KConcatenation;
     concat.offset_x = 0;
