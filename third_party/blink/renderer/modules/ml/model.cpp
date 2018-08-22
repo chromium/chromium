@@ -19,33 +19,94 @@ namespace blink {
 
 namespace {
 
-constexpr char kModelFinishedError[] = "Model is finished.";
-
 bool InvalidState(const String& message, ExceptionState& exception_state) {
-  if (message.IsEmpty())
-    return false;
-
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                     message);
-
   return true;
 }
 
-bool InValidParameters(size_t operands,
-                       const Vector<uint32_t>& inputs,
-                       const Vector<uint32_t>& outputs,
-                       ExceptionState& exception_state) {
-  if (operands == 0)
-    return InvalidState(kModelFinishedError, exception_state);
+bool InvalidAction(bool is_finished, ExceptionState& exception_state) {
+  return is_finished ? 
+      InvalidState("Model is finished", exception_state) : false;
+}
 
+bool InvalidInputOutput(size_t operands,
+                        const Vector<uint32_t>& inputs,
+                        const Vector<uint32_t>& outputs,
+                        ExceptionState& exception_state) {
   for (size_t i = 0; i < inputs.size(); ++i) {
-    if (inputs[i] > operands)
+    if (inputs[i] >= operands)
       return InvalidState("Inputs is invalid.", exception_state);
   }
 
   for (size_t i = 0; i < outputs.size(); ++i) {
-    if (outputs[i] > operands)
+    if (outputs[i] >= operands)
       return InvalidState("Outputs is invalid.", exception_state);
+  }
+
+  return false;
+}
+
+bool InvalidOperand(const OperandOptions& options,
+                    ExceptionState& exception_state) {
+  if (!options.hasType())
+    return InvalidState("Data type is invalid.", exception_state);
+
+  switch (options.type()) {
+    case NeuralNetworkContext::kFloat32:
+    case NeuralNetworkContext::kInt32:
+    case NeuralNetworkContext::kUint32:
+      if (options.hasDimensions())
+        return InvalidState("Data type is invalid.", exception_state);
+      break;
+    case NeuralNetworkContext::kTensorFloat32:
+    case NeuralNetworkContext::kTensorInt32:
+      if (!options.hasDimensions())
+        return InvalidState("Data type is invalid.", exception_state);
+      break;
+    case NeuralNetworkContext::kTensorQuant8Asymm:
+      if (!options.hasDimensions() || !options.hasScale()
+          || !options.hasZeroPoint() || options.scale() < 0
+          || options.zeroPoint() < 0 || options.zeroPoint() > 255)
+        return InvalidState("Data type is invalid.", exception_state);
+      break;
+    default:
+      NOTREACHED();
+  }
+  return false;
+}
+
+bool InvalidOperandValue(size_t index,
+                         const WTF::Vector<ml::mojom::blink::OperandPtr>& operands,
+                         const DOMArrayBufferView* data,
+                         ExceptionState& exception_state) {
+  if (index >= operands.size())
+    return InvalidState("Data type is invalid.", exception_state);
+
+  int32_t operand_type = operands[index]->type;
+  WTF::ArrayBufferView::ViewType data_type = data->GetType();
+
+  switch (operand_type) {
+    case NeuralNetworkContext::kFloat32:
+    case NeuralNetworkContext::kTensorFloat32:
+      if (data_type != WTF::ArrayBufferView::kTypeFloat32)
+        return InvalidState("Data type is invalid.", exception_state);
+      break;
+    case NeuralNetworkContext::kInt32:
+    case NeuralNetworkContext::kTensorInt32:
+      if (data_type != WTF::ArrayBufferView::kTypeInt32)
+        return InvalidState("Data type is invalid.", exception_state);
+      break;
+    case NeuralNetworkContext::kUint32:
+      if (data_type != WTF::ArrayBufferView::kTypeUint32)
+        return InvalidState("Data type is invalid.", exception_state);
+      break;
+    case NeuralNetworkContext::kTensorQuant8Asymm:
+      if (data_type != WTF::ArrayBufferView::kTypeUint8)
+        return InvalidState("Data type is invalid.", exception_state);
+      break;
+    default:
+      NOTREACHED();
   }
 
   return false;
@@ -64,10 +125,8 @@ Model::~Model() = default;
 
 void Model::addOperand(const OperandOptions& options,
                        ExceptionState& exception_state) {
-  if (InvalidState(is_finished_
-                       ? kModelFinishedError
-                       : !options.hasType() ? "Operand type is missing." : "",
-                   exception_state))
+  if (InvalidAction(is_finished_, exception_state)
+      || InvalidOperand(options, exception_state))
     return;
 
   model_info_->operands.push_back(ml::mojom::blink::Operand::New(
@@ -80,46 +139,10 @@ void Model::addOperand(const OperandOptions& options,
 void Model::setOperandValue(uint32_t index,
                             MaybeShared<DOMArrayBufferView> data,
                             ExceptionState& exception_state) {
-  if (InvalidState(is_finished_ ? kModelFinishedError
-                                : index >= model_info_->operands.size()
-                                      ? "Index is invalid."
-                                      : "",
-                   exception_state))
-    return;
-
-  const ml::mojom::blink::OperandPtr& operand =
-      model_info_->operands[index];
-
-  WTF::ArrayBufferView::ViewType view_type = data.View()->GetType();
-  if (view_type == WTF::ArrayBufferView::kTypeFloat32 &&
-      !(operand->type == NeuralNetworkContext::kFloat32 ||
-        operand->type == NeuralNetworkContext::kTensorFloat32)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Data type is invalid.");
-    return;
-  }
-
-  if (view_type == WTF::ArrayBufferView::kTypeInt32 &&
-      !(operand->type == NeuralNetworkContext::kInt32 ||
-        operand->type == NeuralNetworkContext::kTensorInt32)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Data type is invalid.");
-    return;
-  }
-
-  if (view_type == WTF::ArrayBufferView::kTypeUint32 &&
-      (operand->type != NeuralNetworkContext::kUint32)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Data type is invalid.");
-    return;
-  }
-
-  if (view_type == WTF::ArrayBufferView::kTypeUint8 &&
-      (operand->type != NeuralNetworkContext::kTensorQuant8Asymm)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Data type is invalid.");
-    return;
-  }
+  if (InvalidAction(is_finished_, exception_state)
+      || InvalidOperandValue(index, model_info_->operands, 
+                             data.View(), exception_state))
+      return;
 
   model_info_->values.push_back(
       ml::mojom::blink::OperandValueInfo::New(index, 0, 0));
@@ -130,8 +153,9 @@ void Model::addOperation(int32_t type,
                          Vector<uint32_t>& inputs,
                          Vector<uint32_t>& outputs,
                          ExceptionState& exception_state) {
-  if (InValidParameters(is_finished_ ? 0 : model_info_->operands.size(), inputs,
-                        outputs, exception_state))
+  if (InvalidAction(is_finished_, exception_state)
+      || InvalidInputOutput(model_info_->operands.size(), inputs, outputs,
+                            exception_state))
     return;
 
   model_info_->operations.push_back(
@@ -141,8 +165,9 @@ void Model::addOperation(int32_t type,
 void Model::identifyInputsAndOutputs(Vector<uint32_t>& inputs,
                                      Vector<uint32_t>& outputs,
                                      ExceptionState& exception_state) {
-  if (InValidParameters(is_finished_ ? 0 : model_info_->operands.size(), inputs,
-                        outputs, exception_state))
+  if (InvalidAction(is_finished_, exception_state)
+      || InvalidInputOutput(model_info_->operands.size(), inputs, outputs,
+                            exception_state))
     return;
 
   model_info_->inputs = inputs;
