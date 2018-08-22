@@ -364,6 +364,10 @@ namespace ml {
       padding_code, fuse_code, depth_out, filter_height, filter_width, 
       depth_in, i, depthwise_multiplier);
 
+    DLOG(INFO) << "FILTER_HEIGHT: " << filter_height;
+    DLOG(INFO) << "FILTER_WIDTH: " << filter_width;
+    DLOG(INFO) << "IMPLICIT_PADDING: " << implicit_padding;
+    DLOG(INFO) << "I: " << i;
     BNNSActivation activation;
     bzero(&activation, sizeof(activation));
     if (fuse_code == mojom::FUSED_RELU6) {
@@ -446,6 +450,8 @@ namespace ml {
             filter_height, input_height, output_width, stride_width, 
             filter_width, input_width);
       }
+      DLOG(INFO) << "PADDING_LEFT: " << padding_left;
+      DLOG(INFO) << "PADDING_TOP:" << padding_top;
 
       conv_params.x_stride = stride_width;
       conv_params.y_stride = stride_height;
@@ -466,6 +472,8 @@ namespace ml {
 
       size_t fix_input_width = input_width + operation.offset_x;
       size_t fix_input_height = input_height + operation.offset_y;
+      DLOG(INFO) << "FIX_INPUT_WIDTH: " << fix_input_width;
+      DLOG(INFO) << "FIX_INPUT_HEIGHT: " << fix_input_height;
       in_desc.width = fix_input_width;
       in_desc.height = fix_input_height;
       in_desc.channels = depth_in;
@@ -880,22 +888,25 @@ namespace ml {
   }
 
   bool CompilationImplMac::CompileSoftmaxBNNS(OperationMac & operation) {
-    LOG(INFO) << "CompilationImplMac::CompileSoftmax";
+    DLOG(INFO) << "CompilationImplMac::CompileSoftmaxBNNS";
     DLOG_IF(FATAL, operation.type != mojom::SOFTMAX);
-  
+
     std::vector<uint32_t> inputs = operation.inputs;
     std::vector<uint32_t> outputs = operation.outputs;
     OperandMac& input = operands_[inputs[0]];
     OperandMac& output = operands_[outputs[0]];
     uint32_t beta = getScalarFloat(values_[inputs[1]], memory_.get());
-    // operation.beta_softmax = beta;
+    if (beta != 1.0) {
+      DLOG(ERROR) << "  beta " << beta << " is not supported.";
+      return false;
+    }
     operation.offset_x = 0;
     operation.offset_y = 0;
 
     if (@available(macOS 10.13, *)) {
       BNNSVectorDescriptor in_desc, out_desc;
       int32_t size = 1;
-      for (size_t i = 0; i < input.dimensions.size(); i++) {
+      for (size_t i = 1; i < input.dimensions.size(); i++) {
         size = size * input.dimensions[i];
       }
       in_desc.size = size;
@@ -903,7 +914,7 @@ namespace ml {
       in_desc.data_scale = 0;
       in_desc.data_bias = 0;
       size = 1;
-      for (size_t i = 0; i < output.dimensions.size(); i++) {
+      for (size_t i = 1; i < output.dimensions.size(); i++) {
         size = size * output.dimensions[i];
       }
       out_desc.size = size;
@@ -913,7 +924,6 @@ namespace ml {
       BNNSActivation activation;
       bzero(&activation, sizeof(activation));
       activation.function = BNNSActivationFunctionSoftmax;
-      activation.beta = beta;
       BNNSFilterParameters filter_params;
       bzero(&filter_params, sizeof(filter_params));
       operation.filter = BNNSFilterCreateVectorActivationLayer(&in_desc, &out_desc, &activation, &filter_params);
@@ -926,7 +936,7 @@ namespace ml {
   }
 
   bool CompilationImplMac::CompileReshapeBNNS(OperationMac & reshape) {
-    DLOG(INFO) << "CompilationImplMac::CompileReshape";
+    DLOG(INFO) << "CompilationImplMac::CompileReshapeBNNS";
     DLOG_IF(FATAL, reshape.type != mojom::RESHAPE);
 
     reshape.local_operation = KReshape;
@@ -953,7 +963,7 @@ namespace ml {
   }
  
   bool CompilationImplMac::CompileConcatenationBNNS(OperationMac& concat) {
-    DLOG(INFO) << "CompilationImplMac::CompileConcatenation";
+    DLOG(INFO) << "CompilationImplMac::CompileConcatenationBNNS";
     DLOG_IF(FATAL, concat.type != mojom::CONCATENATION);
     concat.local_operation = KConcatenation;
     concat.offset_x = 0;
@@ -979,7 +989,7 @@ namespace ml {
 
     uint32_t axis =
         getScalarInt32(values_[inputs[inputs.size() - 1]], memory_.get());
-    LOG(ERROR) << "*****axis******: " << axis;
+    DLOG(INFO) << "axis: " << axis;
 
     if (axis != 3) {
       DLOG(ERROR) << "Only axis == 3 is supported";
@@ -1014,9 +1024,10 @@ namespace ml {
                        << channelOffset;
             [kernel setDestinationFeatureChannelOffset:channelOffset];
             OperandMac& operand = operands_[concat_input_idx];
-            LOG(ERROR) << "OPERATION.DIMENSIONS.SIZE: " << operand.dimensions.size();
+            DLOG(INFO) << "OPERATION.DIMENSIONS.SIZE: "
+                       << operand.dimensions.size();
             for (size_t i = 0; i < operand.dimensions.size(); ++i ) {
-              LOG(ERROR) << "OPERAND[" << i << "]: " << operand.dimensions[i];
+              DLOG(INFO) << "OPERAND[" << i << "]: " << operand.dimensions[i];
             } 
             if (operand.dimensions.size() < 4) {
               DLOG(ERROR) << "Invalid dimensions of operand "
@@ -1061,7 +1072,6 @@ namespace ml {
 
     init_params->memory =
         memory_handle->Clone(mojo::SharedBufferHandle::AccessMode::READ_WRITE);
-    DLOG(INFO) << "*******init_params->memory******";
 
     auto impl =
         std::make_unique<ExecutionImplMac>(this, std::move(memory_handle));

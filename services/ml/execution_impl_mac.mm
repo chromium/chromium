@@ -280,7 +280,8 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
               if (is_outer_input == false) {
                 raw_input = bnns_operands_memory_map_[operation_input_idx];
               }
-              if (operation.local_operation == KBNNSFilter) {
+              if (operation.local_operation == KBNNSFilter &&
+                  operation_input.dimensions.size() == 4) {
                 int32_t input_batch = operation_input.dimensions[0];
                 int32_t ori_input_height = operation_input.dimensions[1];
                 int32_t input_height =
@@ -348,16 +349,22 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
               if (input_batch_size == 1) {
                 result = BNNSFilterApply(operation.filter, src, des);
               } else {
-                result = BNNSFilterApplyBatch(operation.filter, input_batch_size, src, 
-                    operation_input.dimensions[1] * operation_input.dimensions[2] * 
-                    operation_input.dimensions[3], des, operation_output.dimensions[1] *
-                    operation_output.dimensions[2] * operation_output.dimensions[3]);
+                int in_stride = 1, out_stride = 1;
+                for (size_t i = 1; i < operation_input.dimensions.size(); i++) {
+                  in_stride = in_stride * operation_input.dimensions[i];
+                }
+                for (size_t i = 1; i < operation_output.dimensions.size();
+                     i++) {
+                  out_stride = out_stride * operation_output.dimensions[i];
+                }
+                result =
+                    BNNSFilterApplyBatch(operation.filter, input_batch_size,
+                                         src, in_stride, des, out_stride);
               }
               if (result == -1) {
                 success = false;
+                DLOG(ERROR) << "Fail to apply a filter";
               }
-              DLOG(ERROR) << "Fail to apply a filter";
-
             } else if (operation.local_operation == KReshape) {
               size_t input_size = operation_input.requiredSize() / 4;
               for (size_t j = 0; j < input_size; j++) {
@@ -380,19 +387,6 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
               }
             }
 
-            /*
-            size_t input_size = operation_input.requiredSize();
-            size_t input_check_cnt = 4;
-            for (size_t t = 0; t < input_check_cnt; t++) {
-              size_t cur_idx = (input_size / 4) * t / input_check_cnt;
-            }
-            size_t output_size = operation_output.requiredSize();
-            size_t output_check_cnt = 4;
-            for (size_t t = 0; t < output_check_cnt; t++) {
-              size_t cur_idx = (output_size / 4) * t / output_check_cnt;
-            }
-            */
-
             if (is_outer_input && src != nullptr && tmp_src_malloc) {
               free(src);
             }
@@ -406,14 +400,6 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
           id<MTLBuffer> input_buffer = input_mtlbuffers_[0];
 
           {
-            size_t input_size = input_data->length;
-            size_t input_check_cnt = 50;
-            for (size_t t = 0; t < input_check_cnt; t++) {
-              size_t cur_idx = (input_size / 4) * t / input_check_cnt;
-              DLOG(INFO) << "***MpscnnTotalInput[" << cur_idx << "]\t"
-                         << ((float*)input_data->mapping.get())[cur_idx]
-                         << "***";
-            }
             memcpy([input_buffer contents], input_data->mapping.get(),
                    input_data->length);
             id<MTLComputeCommandEncoder> encoder =
