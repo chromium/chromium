@@ -3,16 +3,57 @@
 // found in the LICENSE file.
 #include "third_party/blink/renderer/modules/ml/model.h"
 
-#include "services/service_manager/public/cpp/interface_provider.h"
+#include <utility>
+
+#include "mojo/public/cpp/bindings/interface_ptr.h"
+#include "services/ml/public/interfaces/constants.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/platform/bindings/exception_code.h"
-
 #include "third_party/blink/renderer/modules/ml/compilation.h"
 #include "third_party/blink/renderer/modules/ml/neural_network_context.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+namespace {
+bool InvalidState(bool is_finished,
+                  const String& message,
+                  ExceptionState& exception_state) {
+  String error_message = is_finished ? "Model is finished." : "";
+  if (message.IsEmpty() && error_message.IsEmpty())
+    return false;
+
+  exception_state.ThrowDOMException(
+      DOMExceptionCode::kInvalidStateError,
+      error_message.IsEmpty() ? message : error_message);
+
+  return true;
+}
+
+bool InValidParameters(bool is_finished,
+                       const Vector<uint32_t>& inputs,
+                       const Vector<uint32_t>& outputs,
+                       size_t operands,
+                       ExceptionState& exception_state) {
+  if (InvalidState(is_finished, "", exception_state))
+    return true;
+
+  for (size_t i = 0; i < inputs.size(); ++i) {
+    if (inputs[i] > operands)
+      return InvalidState(false, "Inputs is invalid.", exception_state);
+  }
+
+  for (size_t i = 0; i < outputs.size(); ++i) {
+    if (outputs[i] > operands)
+      return InvalidState(false, "Outputs is invalid.", exception_state);
+  }
+
+  return false;
+}
+
+}  // namespace
 
 Model::Model(ml::mojom::blink::ModelPtrInfo info) : is_finished_(false) {
   model_.Bind(std::move(info));
@@ -21,55 +62,30 @@ Model::Model(ml::mojom::blink::ModelPtrInfo info) : is_finished_(false) {
   model_info_ = ml::mojom::blink::ModelInfo::New();
 }
 
-Model::~Model() {}
+Model::~Model() = default;
 
-void Model::addOperand(const OperandOptions& options, ExceptionState& exception_state) {
-  if (is_finished_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Model is finished.");
+void Model::addOperand(const OperandOptions& options,
+                       ExceptionState& exception_state) {
+  if (InvalidState(is_finished_,
+                   !options.hasType() ? "Operand type is missing." : "",
+                   exception_state))
     return;
-  }
-  if (!options.hasType()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Operand type is missing.");
-    return;
-  }
-  int32_t type = options.type();
 
-  WTF::Vector<uint32_t> dimensions;
-  float scale = 0;
-  int32_t zeroPoint = 0;
-
-  if (options.hasDimensions()) {
-    dimensions = options.dimensions();
-  }
-
-  if (options.hasScale()) {
-    scale = options.scale();
-  }
-
-  if (options.hasZeroPoint()) {
-    zeroPoint = options.zeroPoint();
-  }
-
-  model_info_->operands.push_back(
-      ml::mojom::blink::Operand::New(type, dimensions, scale, zeroPoint));
+  model_info_->operands.push_back(ml::mojom::blink::Operand::New(
+      options.type(),
+      options.hasDimensions() ? options.dimensions() : WTF::Vector<uint32_t>(),
+      options.hasScale() ? options.scale() : 0,
+      options.hasZeroPoint() ? options.zeroPoint() : 0));
 }
 
 void Model::setOperandValue(uint32_t index,
                             MaybeShared<DOMArrayBufferView> data,
                             ExceptionState& exception_state) {
-  if (is_finished_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Model is finished.");
+  if (InvalidState(
+          is_finished_,
+          index >= model_info_->operands.size() ? "Index is invalid." : "",
+          exception_state))
     return;
-  }
-
-  if (index >= model_info_->operands.size()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Index is invalid.");
-    return;
-  }
 
   const ml::mojom::blink::OperandPtr& operand =
       model_info_->operands[index];
@@ -105,7 +121,8 @@ void Model::setOperandValue(uint32_t index,
     return;
   }
 
-  model_info_->values.push_back(ml::mojom::blink::OperandValueInfo::New(index, 0, 0));
+  model_info_->values.push_back(
+      ml::mojom::blink::OperandValueInfo::New(index, 0, 0));
   buffer_views_.push_back(data.View());
 }
 
@@ -113,25 +130,10 @@ void Model::addOperation(int32_t type,
                          Vector<uint32_t>& inputs,
                          Vector<uint32_t>& outputs,
                          ExceptionState& exception_state) {
-  if (is_finished_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Model is finished.");
+  if (InValidParameters(is_finished_, inputs, outputs,
+                        model_info_->operands.size(), exception_state))
     return;
-  }
-  for (size_t i = 0; i < inputs.size(); ++i) {
-    if (inputs[i] > model_info_->operands.size()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "Inputs is invalid.");
-      return;
-    }
-  }
-  for (size_t i = 0; i < outputs.size(); ++i) {
-    if (outputs[i] > model_info_->operands.size()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "Outputs is invalid.");
-      return;
-    }
-  }
+
   model_info_->operations.push_back(
       ml::mojom::blink::Operation::New(type, inputs, outputs));
 }
@@ -139,25 +141,10 @@ void Model::addOperation(int32_t type,
 void Model::identifyInputsAndOutputs(Vector<uint32_t>& inputs,
                                      Vector<uint32_t>& outputs,
                                      ExceptionState& exception_state) {
-  if (is_finished_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Model is finished.");
+  if (InValidParameters(is_finished_, inputs, outputs,
+                        model_info_->operands.size(), exception_state))
     return;
-  }
-  for (size_t i = 0; i < inputs.size(); ++i) {
-    if (inputs[i] > model_info_->operands.size()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "Inputs is invalid.");
-      return;
-    }
-  }
-  for (size_t i = 0; i < outputs.size(); ++i) {
-    if (outputs[i] > model_info_->operands.size()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "Outputs is invalid.");
-      return;
-    }
-  }
+
   model_info_->inputs = inputs;
   model_info_->outputs = outputs;
 }
@@ -175,20 +162,21 @@ ScriptPromise Model::finish(ScriptState* script_state) {
                                           "Model service unavailable."));
     return promise;
   }
+
   requests_.insert(resolver);
 
   uint32_t total_byte_length = 0;
-  for (size_t i = 0; i < model_info_->values.size(); ++i) {
-    DOMArrayBufferView* view = buffer_views_[i];
-    total_byte_length += view->byteLength();
-  }
+  for (size_t i = 0; i < model_info_->values.size(); ++i)
+    total_byte_length += buffer_views_[i]->byteLength();
 
-  mojo::ScopedSharedBufferHandle memory = mojo::SharedBufferHandle::Create(total_byte_length);
+  mojo::ScopedSharedBufferHandle memory =
+      mojo::SharedBufferHandle::Create(total_byte_length);
   mojo::ScopedSharedBufferMapping mapping = memory->Map(total_byte_length);
 
   uint32_t offset = 0;
   for (size_t i = 0; i < model_info_->values.size(); ++i) {
-    const ml::mojom::blink::OperandValueInfoPtr& value_info =  model_info_->values[i];
+    const ml::mojom::blink::OperandValueInfoPtr& value_info =
+        model_info_->values[i];
     DOMArrayBufferView* view = buffer_views_[i];
     uint32_t length = view->byteLength();
     value_info->offset = offset;
@@ -198,7 +186,8 @@ ScriptPromise Model::finish(ScriptState* script_state) {
     offset += length;
   }
 
-  model_info_->memory = memory->Clone(mojo::SharedBufferHandle::AccessMode::READ_ONLY);
+  model_info_->memory =
+      memory->Clone(mojo::SharedBufferHandle::AccessMode::READ_ONLY);
   model_info_->memory_size = total_byte_length;
   model_->Finish(std::move(model_info_),
                  WTF::Bind(&Model::OnResultCode, WrapPersistent(this),
@@ -237,25 +226,24 @@ void Model::OnCreateCompilation(
   if (result_code == ml::mojom::blink::NOT_ERROR) {
     resolver->Resolve(new Compilation(std::move(init_params->compilation)));
   } else {
-    String msg("createCompilation fails: ");
-    msg.append(String::Number(result_code));
-    resolver->Reject(
-        DOMException::Create(DOMExceptionCode::kInvalidStateError, msg));
+    resolver->Reject(DOMException::Create(
+        DOMExceptionCode::kInvalidStateError,
+        "createCompilation fails: " + String::Number(result_code)));
   }
 }
 
-void Model::OnResultCode(ScriptPromiseResolver* resolver, const String& operation_name, int32_t result_code) {
+void Model::OnResultCode(ScriptPromiseResolver* resolver,
+                         const String& operation_name,
+                         int32_t result_code) {
   DCHECK(requests_.Contains(resolver));
   requests_.erase(resolver);
 
   if (result_code == ml::mojom::blink::NOT_ERROR) {
     resolver->Resolve(result_code);
   } else {
-    String msg(operation_name);
-    msg.append("fails: ");
-    msg.append(String::Number(result_code));
     resolver->Reject(
-        DOMException::Create(DOMExceptionCode::kInvalidStateError, msg));
+        DOMException::Create(DOMExceptionCode::kInvalidStateError,
+                             "fails: " + String::Number(result_code)));
   }
 }
 

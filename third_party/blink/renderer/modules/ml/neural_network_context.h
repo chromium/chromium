@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NeuralNetworkContext_h
-#define NeuralNetworkContext_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_NEURAL_NETWORK_CONTEXT_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_NEURAL_NETWORK_CONTEXT_H_
 
+#include "services/ml/public/interfaces/neuralnetwork.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-
-#include "services/ml/public/interfaces/neuralnetwork.mojom-blink.h"
-#include "services/ml/public/interfaces/constants.mojom-blink.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 
 namespace blink {
 
 class Model;
-
 class NavigatorML;
 
 class NeuralNetworkContext final
@@ -82,21 +83,23 @@ class NeuralNetworkContext final
   static const unsigned long kPreferSustainedSpeed = 2;
 
  public:
-  NeuralNetworkContext(NavigatorML*);
+  explicit NeuralNetworkContext(NavigatorML*);
   ~NeuralNetworkContext() override;
 
   ScriptPromise createModel(ScriptState*);
 
   // ContextLifecycleObserver overrides.
   void ContextDestroyed(ExecutionContext*) override;
-  void Dispose();
 
   // Interface required by garbage collection.
   void Trace(blink::Visitor*) override;
 
  private:
-  void OnCreateModel(ScriptPromiseResolver*, int32_t, ml::mojom::blink::ModelInitParamsPtr);
+  void OnCreateModel(ScriptPromiseResolver*,
+                     int32_t,
+                     ml::mojom::blink::ModelInitParamsPtr);
   void OnConnectionError();
+  void Dispose();
 
  private:
   ml::mojom::blink::NeuralNetworkPtr neural_network_;
@@ -105,4 +108,4 @@ class NeuralNetworkContext final
 
 }  // namespace blink
 
-#endif  // NFC_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ML_NEURAL_NETWORK_CONTEXT_H_

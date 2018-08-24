@@ -4,17 +4,21 @@
 
 #include "third_party/blink/renderer/modules/ml/compilation.h"
 
+#include <utility>
+
+#include "mojo/public/cpp/bindings/interface_ptr.h"
+#include "services/ml/public/interfaces/constants.mojom-blink.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/platform/bindings/exception_code.h"
-
 #include "third_party/blink/renderer/modules/ml/execution.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
-Compilation::Compilation(ml::mojom::blink::CompilationPtrInfo info) : is_finished_(false) {
+Compilation::Compilation(ml::mojom::blink::CompilationPtrInfo info)
+    : is_finished_(false) {
   compilation_.Bind(std::move(info));
   compilation_.set_connection_error_handler(
       WTF::Bind(&Compilation::OnConnectionError, WrapWeakPersistent(this)));
@@ -22,12 +26,14 @@ Compilation::Compilation(ml::mojom::blink::CompilationPtrInfo info) : is_finishe
 
 Compilation::~Compilation() = default;
 
-void Compilation::setPreference(int32_t preference, ExceptionState& exception_state) {
+void Compilation::setPreference(int32_t preference,
+                                ExceptionState& exception_state) {
   if (is_finished_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Compilation is finished.");
     return;
   }
+
   preference_ = preference;
 }
 
@@ -44,6 +50,7 @@ ScriptPromise Compilation::finish(ScriptState* script_state) {
                                           "Compilation service unavailable."));
     return promise;
   }
+
   requests_.insert(resolver);
 
   compilation_->Finish(
@@ -66,28 +73,13 @@ ScriptPromise Compilation::createExecution(ScriptState* script_state) {
                                           "Compilation service unavailable."));
     return promise;
   }
+
   requests_.insert(resolver);
 
   compilation_->CreateExecution(WTF::Bind(&Compilation::OnCreateExecution,
                                           WrapPersistent(this),
                                           WrapPersistent(resolver)));
   return promise;
-}
-
-void Compilation::OnCreateExecution(
-    ScriptPromiseResolver* resolver, int32_t result_code,
-    ml::mojom::blink::ExecutionInitParamsPtr init_params) {
-  DCHECK(requests_.Contains(resolver));
-  requests_.erase(resolver);
-
-  if (result_code == ml::mojom::blink::NOT_ERROR) {
-    resolver->Resolve(new Execution(std::move(init_params)));
-  } else {
-    String msg("createExecution fails: ");
-    msg.append(String::Number(result_code));
-    resolver->Reject(
-        DOMException::Create(DOMExceptionCode::kInvalidStateError, msg));
-  }
 }
 
 void Compilation::Trace(blink::Visitor* visitor) {
@@ -104,11 +96,25 @@ void Compilation::OnResultCode(ScriptPromiseResolver* resolver,
   if (result_code == ml::mojom::blink::NOT_ERROR) {
     resolver->Resolve(result_code);
   } else {
-    String msg(operation_name);
-    msg.append("fails: ");
-    msg.append(String::Number(result_code));
-    resolver->Reject(
-        DOMException::Create(DOMExceptionCode::kInvalidStateError, msg));
+    resolver->Reject(DOMException::Create(
+        DOMExceptionCode::kInvalidStateError,
+        operation_name + "fails: " + String::Number(result_code)));
+  }
+}
+
+void Compilation::OnCreateExecution(
+    ScriptPromiseResolver* resolver,
+    int32_t result_code,
+    ml::mojom::blink::ExecutionInitParamsPtr init_params) {
+  DCHECK(requests_.Contains(resolver));
+  requests_.erase(resolver);
+
+  if (result_code == ml::mojom::blink::NOT_ERROR) {
+    resolver->Resolve(new Execution(std::move(init_params)));
+  } else {
+    resolver->Reject(DOMException::Create(
+        DOMExceptionCode::kInvalidStateError,
+        "createExecution fails: " + String::Number(result_code)));
   }
 }
 
@@ -117,6 +123,7 @@ void Compilation::OnConnectionError() {
     request->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
                                          "Compilation is not implemented."));
   }
+
   requests_.clear();
   compilation_.reset();
 }

@@ -5,10 +5,9 @@
 #ifndef ML_h
 #define ML_h
 
-#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/dom/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-
+#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 namespace blink {
 
 class NavigatorML;
@@ -21,19 +20,20 @@ class ML final : public ScriptWrappable,
   USING_PRE_FINALIZER(ML, Dispose);
 
  public:
-  ML(NavigatorML*);
+  explicit ML(NavigatorML&);
   ~ML() override;
 
   NeuralNetworkContext* getNeuralNetworkContext();
 
   // ContextLifecycleObserver overrides.
   void ContextDestroyed(ExecutionContext*) override;
-  void Dispose();
 
   // Interface required by garbage collection.
   void Trace(blink::Visitor*) override;
 
  private:
+  void Dispose();
+
   TraceWrapperMember<NavigatorML> navigator_ml_;
   TraceWrapperMember<NeuralNetworkContext> nn_;
 };

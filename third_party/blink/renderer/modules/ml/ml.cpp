@@ -4,35 +4,27 @@
 
 #include "third_party/blink/renderer/modules/ml/ml.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/platform/bindings/exception_code.h"
-
 #include "third_party/blink/renderer/modules/ml/navigator_ml.h"
 #include "third_party/blink/renderer/modules/ml/neural_network_context.h"
 
 namespace blink {
 
-ML::ML(NavigatorML* navigator_ml)
-    : ContextLifecycleObserver(navigator_ml->GetDocument()),
-      navigator_ml_(navigator_ml) {}
+ML::ML(NavigatorML& navigator_ml)
+    : ContextLifecycleObserver(navigator_ml.GetDocument()),
+      navigator_ml_(&navigator_ml) {}
 
-ML::~ML() {}
+ML::~ML() = default;
 
-void ML::Dispose() {}
+NeuralNetworkContext* ML::getNeuralNetworkContext() {
+  if (!nn_)
+    nn_ = new NeuralNetworkContext(navigator_ml_.Get());
+
+  return nn_.Get();
+}
 
 void ML::ContextDestroyed(ExecutionContext*) {
   Dispose();
-}
-
-NeuralNetworkContext* ML::getNeuralNetworkContext() {
-  if (!nn_) {
-    nn_ = new NeuralNetworkContext(navigator_ml_.Get());
-  }
-  return nn_.Get();
 }
 
 void ML::Trace(blink::Visitor* visitor) {
@@ -41,5 +33,7 @@ void ML::Trace(blink::Visitor* visitor) {
   ScriptWrappable::Trace(visitor);
   ContextLifecycleObserver::Trace(visitor);
 }
+
+void ML::Dispose() {}
 
 }  // namespace blink

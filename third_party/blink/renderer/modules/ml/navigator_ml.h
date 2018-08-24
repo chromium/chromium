@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NavigatorML_h
-#define NavigatorML_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_NAVIGATOR_ML_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_NAVIGATOR_ML_H_
 
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
@@ -21,7 +22,7 @@ class NavigatorML final : public GarbageCollected<NavigatorML>,
  public:
   static const char kSupplementName[];
 
-  // Gets, or creates, NavigatorML supplement on Navigator.
+  // Gets or creates NavigatorML supplement on Navigator.
   static NavigatorML& From(Navigator&);
 
   static ML* ml(Navigator&);
@@ -38,4 +39,4 @@ class NavigatorML final : public GarbageCollected<NavigatorML>,
 
 }  // namespace blink
 
-#endif  // NavigatorML_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ML_NAVIGATOR_ML_H_

@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 
 namespace blink {
@@ -16,6 +17,7 @@ NavigatorML::NavigatorML(Navigator& navigator)
 // static
 const char NavigatorML::kSupplementName[] = "NavigatorML";
 
+// static
 NavigatorML& NavigatorML::From(Navigator& navigator) {
   NavigatorML* supplement = Supplement<Navigator>::From<NavigatorML>(navigator);
   if (!supplement) {
@@ -25,21 +27,23 @@ NavigatorML& NavigatorML::From(Navigator& navigator) {
   return *supplement;
 }
 
+// static
+ML* NavigatorML::ml(Navigator& navigator) {
+  if (!navigator.GetFrame())
+    return nullptr;
+
+  NavigatorML& self = NavigatorML::From(navigator);
+  if (!self.ml_)
+    self.ml_ = new ML(self);
+
+  return self.ml_.Get();
+}
+
 Document* NavigatorML::GetDocument() {
   if (!GetSupplementable() || !GetSupplementable()->GetFrame())
     return nullptr;
 
   return GetSupplementable()->GetFrame()->GetDocument();
-}
-
-ML* NavigatorML::ml(Navigator& navigator) {
-  NavigatorML& self = NavigatorML::From(navigator);
-  if (!self.ml_) {
-    if (!navigator.GetFrame())
-      return nullptr;
-    self.ml_ = new ML(&self);
-  }
-  return self.ml_.Get();
 }
 
 void NavigatorML::Trace(blink::Visitor* visitor) {
