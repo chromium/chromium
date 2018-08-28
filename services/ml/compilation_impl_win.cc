@@ -40,6 +40,9 @@ void CompilationImplWin::Finish(int32_t preference, FinishCallback callback) {
 
   cldnn_status status;
   std::vector<cldnn_build_option> build_options;
+  bool optimize_data = true;
+  build_options.push_back(
+      {.type = cldnn_build_option_optimize_data, .data = &optimize_data});
   program_ =
       cldnn_build_program(model_->engine_, model_->topology_,
                           build_options.data(), build_options.size(), &status);
