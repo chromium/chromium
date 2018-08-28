@@ -9,6 +9,57 @@
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "services/ml/mpscnn_context.h"
 
+namespace {
+void TransposeForInput(const ml::OperationMac& operation,
+                       const ml::OperandMac& operation_input,
+                       float*& src,
+                       float*& raw_input,
+                       bool is_outer_input) {
+  const int32_t input_batch = operation_input.dimensions[0];
+  const int32_t ori_input_height = operation_input.dimensions[1];
+  const int32_t input_height =
+      operation_input.dimensions[1] + operation.offset_y;
+  const int32_t ori_input_width = operation_input.dimensions[2];
+  const int32_t input_width =
+      operation_input.dimensions[2] + operation.offset_x;
+  const int32_t ori_input_depth = operation_input.dimensions[3];
+  const int32_t input_depth = operation_input.dimensions[3];
+  const int32_t ori_input_row_stride = ori_input_width;
+  const int32_t input_row_stride = input_width;
+  const int32_t ori_input_image_stride = ori_input_width * ori_input_height;
+  const int32_t input_image_stride = input_width * input_height;
+  float* bnns_input = (float*)malloc(sizeof(float) * input_batch *
+                                     input_image_stride * input_depth);
+
+  for (int b = 0; b < input_batch; b++) {
+    for (int h = 0; h < input_height; h++) {
+      for (int w = 0; w < input_width; w++) {
+        for (int d = 0; d < input_depth; d++) {
+          int new_batch_offset = b * input_height * input_width * input_depth;
+          int new_index = new_batch_offset + w + h * input_row_stride +
+                          d * input_image_stride;
+          if (h >= ori_input_height || w >= ori_input_width) {
+            *(bnns_input + new_index) = 0;
+          } else {
+            int ori_batch_offset =
+                b * ori_input_height * ori_input_width * ori_input_depth;
+            int ori_index = ori_batch_offset + w + h * ori_input_row_stride +
+                            d * ori_input_image_stride;
+            if (is_outer_input) {
+              ori_index = ori_batch_offset +
+                          h * ori_input_width * ori_input_depth +
+                          w * ori_input_depth + d;
+            }
+            *(bnns_input + new_index) = *(raw_input + ori_index);
+          }
+        }
+      }
+    }
+  }
+  src = bnns_input;
+}
+}
+
 namespace ml {
 
 namespace {
@@ -91,7 +142,7 @@ MPSImageDescriptor* API_AVAILABLE(macosx(10.13))
   int32_t type = operand.type;
   MPSImageDescriptor* mpsimage_desc = nullptr;
   if (type != mojom::TENSOR_FLOAT32) {
-    LOG(ERROR) << "type " << type << " is not supported";
+    DLOG(ERROR) << "type " << type << " is not supported";
     return mpsimage_desc;
   }
   uint32_t n, width, height, channels;
@@ -286,53 +337,10 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
               }
               if (operation.local_operation == KBNNSFilter &&
                   operation_input.dimensions.size() == 4) {
-                const int32_t input_batch = operation_input.dimensions[0];
-                const int32_t ori_input_height = operation_input.dimensions[1];
-                const int32_t input_height =
-                    operation_input.dimensions[1] + operation.offset_y;
-                const int32_t ori_input_width = operation_input.dimensions[2];
-                const int32_t input_width =
-                    operation_input.dimensions[2] + operation.offset_x;
-                const int32_t ori_input_depth = operation_input.dimensions[3];
-                const int32_t input_depth = operation_input.dimensions[3];
-                const int32_t ori_input_row_stride = ori_input_width;
-                const int32_t input_row_stride = input_width;
-                const int32_t ori_input_image_stride =
-                    ori_input_width * ori_input_height;
-                const int32_t input_image_stride = input_width * input_height;
 
-                float* bnns_input = (float*)malloc(sizeof(float) * input_batch *
-                    input_image_stride * input_depth);
+                TransposeForInput(operation, operation_input, src, raw_input,
+                                  is_outer_input);
                 tmp_src_malloc = true;
-
-                for (int b = 0; b < input_batch; b++) {
-                  for (int h = 0; h < input_height; h++) {
-                    for (int w = 0; w < input_width; w++) {
-                      for (int d = 0; d < input_depth; d++) {
-                        int new_batch_offset =
-                            b * input_height * input_width * input_depth;
-                        int new_index = new_batch_offset + w +
-                            h * input_row_stride + d * input_image_stride;
-                        if (h >= ori_input_height or w >= ori_input_width) {
-                          *(bnns_input + new_index) = 0;
-                        } else {
-                          int ori_batch_offset = b * ori_input_height *
-                              ori_input_width * ori_input_depth;
-                          int ori_index = ori_batch_offset + w +
-                              h * ori_input_row_stride +
-                              d * ori_input_image_stride;
-                          if (is_outer_input) {
-                            ori_index = ori_batch_offset +
-                                h * ori_input_width * ori_input_depth +
-                                w * ori_input_depth + d;
-                          }
-                          *(bnns_input + new_index) = *(raw_input + ori_index);
-                        }
-                      } /* end for */
-                    }   /* end for */
-                  }     /* end for */
-                }       /* end for */
-                src = bnns_input;
               } else {
                 src = raw_input;
               }
@@ -375,24 +383,71 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
                 des[j] = src[j];
               }
             } else if (operation.local_operation == KConcatenation) {
-              for (size_t i = 0; i < operation.inputs.size() - 1; ++i) {
-                uint32_t concat_input_idx = operation.inputs[i];
+              for (size_t index = 0; index < operation.inputs.size() - 1;
+                   ++index) {
+                uint32_t concat_input_idx = operation.inputs[index];
                 OperandMac& operand = compilation_->operands_[concat_input_idx];
-                float* src = bnns_operands_memory_map_[concat_input_idx];
+                const int32_t batch = operand.dimensions[0];
                 const int32_t width = operand.dimensions[1];
                 const int32_t height = operand.dimensions[2];
                 const int32_t channels = operand.dimensions[3];
                 const int32_t channel_offset = width * height;
-                for (int32_t c = 0; c < channels; c++) {
-                  float* temp_des = des + c * channel_offset + i * channel_offset * channels;
-                  float* temp_src = src + c * channel_offset;
-                  memcpy(temp_des, temp_src, channel_offset * sizeof(float));
+                const int32_t batch_offset = width * height * channels;
+                if (i == 0) {
+                  float* input;
+                  if (is_outer_input) {
+                    input = (float*)inputs_info_[0]->mapping.get();
+                    is_outer_input = false;
+                  } else {
+                    input = operation.concatenations[index - 1];
+                  }
+                  TransposeForInput(operation, operand, src, input, true);
+                  tmp_src_malloc = true;
+                } else {
+                  src = bnns_operands_memory_map_[concat_input_idx];
+                }
+                for (int b = 0; b < batch; b++) {
+                  for (int c = 0; c < channels; c++) {
+                    float* temp_des = des + c * channel_offset +
+                                      b * batch_offset * batch +
+                                      index * batch_offset;
+                    float* temp_src =
+                        src + c * channel_offset + b * batch_offset;
+                    memcpy(temp_des, temp_src, channel_offset * sizeof(float));
+                  }
                 }
               }
             }
 
             if (is_outer_input && src != nullptr && tmp_src_malloc) {
               free(src);
+            }
+            if (is_outer_output && operation_output.dimensions.size() == 4) {
+              const int32_t batch = operation_output.dimensions[0];
+              const int32_t width = operation_output.dimensions[1];
+              const int32_t height = operation_output.dimensions[2];
+              const int32_t channels = operation_output.dimensions[3];
+              float* output = (float*)malloc(sizeof(float) * batch * width *
+                                             height * channels);
+              memcpy(output, des,
+                     batch * width * height * channels * sizeof(float));
+              for (int b = 0; b < batch; b++) {
+                for (int h = 0; h < height; h++) {
+                  for (int w = 0; w < width; w++) {
+                    for (int c = 0; c < channels; c++) {
+                      const int new_batch_offset =
+                          b * height * width * channels;
+                      const int bnns_index =
+                          new_batch_offset + w + h * width + c * width * height;
+                      const int ori_index = new_batch_offset +
+                                            h * width * channels +
+                                            w * channels + c;
+                      *(des + ori_index) = *(output + bnns_index);
+                    }
+                  }
+                }
+              }
+              free(output);
             }
           }
         } else {

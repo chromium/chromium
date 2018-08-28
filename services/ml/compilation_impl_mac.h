@@ -52,6 +52,7 @@ struct OperationMac : public Operation {
   int fuse_code;
   uint32_t offset_x;
   uint32_t offset_y;
+  std::vector<float*> concatenations;
 };
 
 class CompilationImplMac : public mojom::Compilation {
@@ -96,7 +97,8 @@ class CompilationImplMac : public mojom::Compilation {
   bool CompileAverageOrMaxPool2DBNNS(OperationMac&);
   bool CompileSoftmaxBNNS(OperationMac&);
   bool CompileReshapeBNNS(OperationMac&);
-  bool CompileConcatenationBNNS(OperationMac&);
+  bool CompileConcatenationBNNS(OperationMac& operation,
+                                bool is_concatenation_first);
 
  private:
   friend class ExecutionImplMac;

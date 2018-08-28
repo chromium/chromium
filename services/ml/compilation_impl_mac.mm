@@ -367,7 +367,7 @@ namespace ml {
         }
       } else if (type == mojom::CONCATENATION) {
         if (is_bnns_) {
-          success = CompileConcatenationBNNS(operation);
+          success = CompileConcatenationBNNS(operation, i == 0 ? true : false);
         } else {
           success = CompileConcatenation(operation);
         }
@@ -755,6 +755,7 @@ namespace ml {
 
     return true;
   }
+
   bool CompilationImplMac::CompileConv2DBNNS(OperationMac& operation) {
     DLOG(INFO) << "CompilationImplMac::CompileConv2DOrDepthwiseConv2D";
     DLOG_IF(FATAL, operation.type != mojom::CONV_2D &&
@@ -1119,7 +1120,9 @@ namespace ml {
     return true;
   }
 
-  bool CompilationImplMac::CompileConcatenationBNNS(OperationMac& concat) {
+  bool CompilationImplMac::CompileConcatenationBNNS(
+      OperationMac& concat,
+      bool is_concatenation_first) {
     DLOG(INFO) << "CompilationImplMac::CompileConcatenationBNNS";
     DLOG_IF(FATAL, concat.type != mojom::CONCATENATION);
     concat.local_operation = KConcatenation;
@@ -1129,8 +1132,15 @@ namespace ml {
     std::vector<uint32_t> inputs = concat.inputs;
     std::vector<uint32_t> outputs = concat.outputs;
 
-    const uint32_t axis =
-        getScalarInt32(values_[inputs[inputs.size() - 1]], memory_.get());
+    if (inputs.size() > 2 && is_concatenation_first) {
+      for (size_t i = 1; i < inputs.size() - 1; ++i) {
+        float* input_value = reinterpret_cast<float*>(
+            memory_.get() + values_.at(inputs[i]).offset);
+        concat.concatenations.push_back(input_value);
+      }
+    }
+
+    uint32_t axis = getScalarInt32(values_[inputs[inputs.size() - 1]], memory_.get());
     if (axis != 3) {
       DLOG(ERROR) << "Only axis == 3 is supported";
       return false;
