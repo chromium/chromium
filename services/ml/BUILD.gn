@@ -56,9 +56,6 @@ source_set("lib") {
       assert(false, "Need android neuralnetworks support for your target arch.")
     }
     lib_dirs = [
-      # TODO(junwei.fu): https://github.com/otcshare/webml-polyfill/issues/83
-      # ${android_sdk_platform_version} current is 28 the library in android ndk
-      # isn't ported.
       "${android_ndk_root}/platforms/android-27/${libdir}",
     ]
 
