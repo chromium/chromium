@@ -1076,7 +1076,7 @@ namespace ml {
     auto impl =
         std::make_unique<ExecutionImplMac>(this, std::move(memory_handle));
     if (!impl->IsValid()) {
-      std::move(callback).Run(mojom::BAD_DATA, std::move(init_params));
+      std::move(callback).Run(mojom::BAD_DATA, nullptr);
       return;
     }
     mojom::ExecutionPtrInfo ptr_info;

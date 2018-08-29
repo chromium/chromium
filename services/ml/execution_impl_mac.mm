@@ -466,7 +466,7 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
             if (!dst_img) {
               if (tmp_mpsimage_cache.find(operation_output_idx) ==
                   tmp_mpsimage_cache.end()) {
-                MPSImageDescriptor* descriptor = CreateMPSImageDescriptor(operation_input);
+                MPSImageDescriptor* descriptor = CreateMPSImageDescriptor(operation_output);
                 if (!descriptor) {
                   success = false;
                   break;
