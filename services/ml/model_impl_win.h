@@ -40,7 +40,9 @@ class ModelImplWin : public mojom::Model {
   int32_t IdentifyInputsAndOutputs(const std::vector<uint32_t>& inputs,
                                    const std::vector<uint32_t>& outputs);
 
-  int32_t CldnnGetLayout(const Operand& operand, cldnn_layout& layout);
+  int32_t CldnnGetLayout(const Operand& operand,
+                         cldnn_layout& layout,
+                         int32_t format = cldnn_format_bfyx);
   int32_t CldnnAddInputLayout(uint32_t index);
   int32_t CldnnAddData(uint32_t index);
   int32_t CldnnAddActivationByFusedCode(const std::string& input,

@@ -336,12 +336,13 @@ int32_t ModelImplWin::IdentifyInputsAndOutputs(
 }
 
 int32_t ModelImplWin::CldnnGetLayout(const Operand& operand,
-                                     cldnn_layout& layout) {
+                                     cldnn_layout& layout,
+                                     int32_t format) {
   if (operand.type != mojom::TENSOR_FLOAT32) {
     DLOG(ERROR) << "Only TENSOR_FLOAT32 operand type is supported";
     return mojom::BAD_DATA;
   }
-  layout = {.data_type = cldnn_f32, .format = cldnn_format_byxf, .padding = {}};
+  layout = {.data_type = cldnn_f32, .format = format, .padding = {}};
   if (operand.dimensions.size() == 1) {
     layout.size = {1, 1, 2, {1, 1, operand.dimensions[0], 1, 1, 1, 1, 1}};
   } else if (operand.dimensions.size() == 2) {
@@ -377,7 +378,7 @@ int32_t ModelImplWin::CldnnAddInputLayout(uint32_t index) {
   cldnn_status status;
   const Operand operand = operands_[index];
   cldnn_layout layout;
-  int32_t result = CldnnGetLayout(operand, layout);
+  int32_t result = CldnnGetLayout(operand, layout, cldnn_format_byxf);
   if (result != mojom::NOT_ERROR) {
     return result;
   }
@@ -429,7 +430,37 @@ int32_t ModelImplWin::CldnnAddData(uint32_t index) {
   ValueInfo value_info = values_.at(index);
   const void* value_ptr =
       reinterpret_cast<const void*>(memory_.get() + value_info.offset);
-  memcpy(memory_ptr, value_ptr, value_info.length);
+  if (operand.dimensions.size() == 1 || operand.dimensions.size() == 2) {
+    memcpy(memory_ptr, value_ptr, value_info.length);
+  } else if (operand.dimensions.size() == 3 || operand.dimensions.size() == 4) {
+    // NHWC -> bfyx
+    const bool rank3 = operand.dimensions.size() == 3;
+    const uint32_t batches = rank3 ? 1 : operand.dimensions[0];
+    const uint32_t channels =
+        rank3 ? operand.dimensions[2] : operand.dimensions[3];
+    const uint32_t height =
+        rank3 ? operand.dimensions[0] : operand.dimensions[1];
+    const uint32_t width =
+        rank3 ? operand.dimensions[1] : operand.dimensions[2];
+    float* dst = reinterpret_cast<float*>(memory_ptr);
+    const float* src = reinterpret_cast<const float*>(value_ptr);
+    for (uint32_t b = 0; b < batches; ++b) {
+      for (uint32_t c = 0; c < channels; ++c) {
+        for (uint32_t y = 0; y < height; ++y) {
+          for (uint32_t x = 0; x < width; ++x) {
+            dst[b * channels * height * width + c * height * width + y * width +
+                x] = src[b * height * width * channels + y * width * channels +
+                         x * channels + c];
+          }
+        }
+      }
+    }
+  } else {
+    DLOG(ERROR) << "Operand dimensions size " << operand.dimensions.size()
+                << " is not supported.";
+    return mojom::BAD_DATA;
+  }
+
   cldnn_unlock_memory(memory, &status);
   if (status != CLDNN_SUCCESS) {
     DLOG(ERROR) << "[clDNN] failed to unlock memory " << status << " "
@@ -713,7 +744,7 @@ int32_t ModelImplWin::CldnnAddConvolution(
         reinterpret_cast<const float*>(memory_.get() + weights_info.offset);
     const cldnn_layout weights_layout = {
         .data_type = cldnn_f32,
-        .format = cldnn_format_byxf,
+        .format = cldnn_format_bfyx,
         .size = {1, 1, 2, {1, 1, filter_width, filter_height, 1, 1, 1, 1}},
         .padding = {}};
     weight_ids_array.resize(depth_out);
@@ -724,7 +755,7 @@ int32_t ModelImplWin::CldnnAddConvolution(
         reinterpret_cast<const float*>(memory_.get() + bias_info.offset);
     const cldnn_layout bias_layout = {
         .data_type = cldnn_f32,
-        .format = cldnn_format_byxf,
+        .format = cldnn_format_bfyx,
         .size = {1, 1, 2, {1, 1, 1, 1, 1, 1, 1, 1}},
         .padding = {}};
     bias_ids_array.resize(depth_out);
