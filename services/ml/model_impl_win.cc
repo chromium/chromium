@@ -599,6 +599,10 @@ int32_t ModelImplWin::CldnnAddElementwise(
     return mojom::BAD_DATA;
   }
 
+  // Setup output quanitization factors
+  std::string empty("");
+  eltwise_desc.output_calibration_factors = empty.c_str();
+
   // Add primitive into topology.
   eltwise_desc.id = id_str.c_str();
   cldnn_add_primitive(
