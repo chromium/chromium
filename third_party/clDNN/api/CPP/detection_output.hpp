@@ -39,7 +39,7 @@ enum class prior_box_code_type : int32_t
 
 /// @brief Generates a list of detections based on location and confidence predictions by doing non maximum suppression.
 /// @details Each row is a 7 dimension vector, which stores: [image_id, label, confidence, xmin, ymin, xmax, ymax].
-/// If number of detections per image is lower than keep_top_k, will write dummy results at the end with image_id=-1.
+/// If number of detections per image is lower than keep_top_k, will write dummy results at the end with image_id=-1. 
 struct detection_output : public primitive_base<detection_output, CLDNN_PRIMITIVE_DESC(detection_output)>
 {
     CLDNN_DECLARE_PRIMITIVE(detection_output)
@@ -79,6 +79,8 @@ struct detection_output : public primitive_base<detection_output, CLDNN_PRIMITIV
         const bool prior_is_normalized = true,
         const int32_t input_width = -1,
         const int32_t input_height = -1,
+        const bool decrease_label_id = false,
+        const bool clip = false,
         const padding& output_padding = padding()
         )
         : primitive_base(id, { input_location, input_confidence, input_prior_box }, output_padding)
@@ -97,7 +99,12 @@ struct detection_output : public primitive_base<detection_output, CLDNN_PRIMITIV
         , prior_is_normalized(prior_is_normalized)
         , input_width(input_width)
         , input_height(input_height)
-    {}
+        , decrease_label_id(decrease_label_id)
+        , clip(clip)
+    {
+        if (decrease_label_id && background_label_id != 0)
+            throw std::invalid_argument("Cannot use decrease_label_id and background_label_id parameter simultaneously.");
+    }
 
     /// @brief Constructs a copy from C API @CLDNN_PRIMITIVE_DESC{detection_output}
     detection_output(const dto* dto)
@@ -117,7 +124,12 @@ struct detection_output : public primitive_base<detection_output, CLDNN_PRIMITIV
         , prior_is_normalized(dto->prior_is_normalized != 0)
         , input_width(dto->input_width)
         , input_height(dto->input_height)
-    {}
+        , decrease_label_id(dto->decrease_label_id != 0)
+        , clip(dto->clip != 0)
+    {
+        if (decrease_label_id && background_label_id != 0)
+            throw std::invalid_argument("Cannot use decrease_label_id and background_label_id parameter simultaneously.");
+    }
 
     /// @brief Number of classes to be predicted.
     const uint32_t num_classes;
@@ -149,6 +161,10 @@ struct detection_output : public primitive_base<detection_output, CLDNN_PRIMITIV
     const int32_t input_width;
     /// @brief Height of input image.
     const int32_t input_height;
+    /// @brief Decrease label id to skip background label equal to 0. Can't be used simultaneously with background_label_id.
+    const bool decrease_label_id;
+    /// @brief Clip decoded boxes
+    const bool clip;
 
 protected:
     void update_dto(dto& dto) const override
@@ -168,6 +184,8 @@ protected:
         dto.prior_is_normalized = prior_is_normalized;
         dto.input_width = input_width;
         dto.input_height = input_height;
+        dto.decrease_label_id = decrease_label_id;
+        dto.clip = clip;
     }
 };
 /// @}

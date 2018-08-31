@@ -64,7 +64,7 @@ struct engine_configuration
     const std::string sources_dumps_dir;        ///< Specifies a directory where sources of cldnn::program objects should be dumped. Empty by default (means no dumping).
     const priority_mode_types priority_mode;    ///< Priority mode (support of priority hints in command queue). If cl_khr_priority_hints extension is not supported by current OpenCL implementation, the value must be set to cldnn_priority_disabled.
     const throttle_mode_types throttle_mode;    ///< Placeholder for throttle mode (support of throttle hints in command queue). It has no effect for now and should be set to cldnn_throttle_disabled.
-    const bool enable_memory_pool;              ///< Enables memory usage optimization. memory objects will be reused when possible (switched off for older drivers then NEO).
+    bool enable_memory_pool;              ///< Enables memory usage optimization. memory objects will be reused when possible (switched off for older drivers then NEO).
 
     /// @brief Constructs engine configuration with specified options.
     /// @param profiling Enable per-primitive profiling.

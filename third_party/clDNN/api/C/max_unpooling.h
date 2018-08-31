@@ -57,3 +57,4 @@ CLDNN_DECLARE_PRIMITIVE_TYPE_ID(max_unpooling);
 /// @}
 /// @}
 #endif /* MAX_UNPOOLING_H */
+

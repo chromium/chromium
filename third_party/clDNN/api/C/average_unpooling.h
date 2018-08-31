@@ -1,5 +1,5 @@
 /*
-// Copyright (c) 2017 Intel Corporation
+// Copyright (c) 2018 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 */
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-#ifndef PROPOSAL_H
-#define PROPOSAL_H
+#ifndef AVERAGE_UNPOOLING_H
+#define AVERAGE_UNPOOLING_H
 
 #include "cldnn.h"
 /// @addtogroup c_api C API
@@ -30,20 +30,19 @@
 extern "C" {
 #endif
 
-#define CLDNN_ROI_VECTOR_SIZE 5
+/// @brief Performs "average_unpooling" operation.
+/// @details Reverse operation of average pooling.
+/// Each element in every pooling window is filled with output / window size value. In case of window overlap the elements are added.
+CLDNN_BEGIN_PRIMITIVE_DESC(average_unpooling)
+/// @brief Defines shift in output buffer.
+cldnn_tensor stride;
+/// @brief Pooling kernel size.
+cldnn_tensor size;
+/// @brief Output size of this primitive.
+cldnn_tensor output_size;
+CLDNN_END_PRIMITIVE_DESC(average_unpooling)
 
-CLDNN_BEGIN_PRIMITIVE_DESC(proposal)
-    int max_proposals;
-    float iou_threshold;
-    int min_bbox_size;
-    int feature_stride;
-    int pre_nms_topn;
-    int post_nms_topn;
-    cldnn_float_arr ratios;
-    cldnn_float_arr scales;
-CLDNN_END_PRIMITIVE_DESC(proposal)
-
-CLDNN_DECLARE_PRIMITIVE_TYPE_ID(proposal);
+CLDNN_DECLARE_PRIMITIVE_TYPE_ID(average_unpooling);
 
 #ifdef __cplusplus
 }
@@ -52,5 +51,5 @@ CLDNN_DECLARE_PRIMITIVE_TYPE_ID(proposal);
 /// @}
 /// @}
 /// @}
-#endif /* PROPOSAL_H */
+#endif /* AVERAGE_UNPOOLING_H */
 

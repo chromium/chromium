@@ -40,7 +40,7 @@ typedef enum /*:int32_t*/
 
 /// @brief Generates a list of detections based on location and confidence predictions by doing non maximum suppression.
 /// @details Each row is a 7 dimension vector, which stores: [image_id, label, confidence, xmin, ymin, xmax, ymax].
-/// If number of detections per image is lower than keep_top_k, will write dummy results at the end with image_id=-1.
+/// If number of detections per image is lower than keep_top_k, will write dummy results at the end with image_id=-1. 
 CLDNN_BEGIN_PRIMITIVE_DESC(detection_output)
 /// @brief Number of classes to be predicted.
 uint32_t num_classes;
@@ -72,6 +72,10 @@ uint32_t prior_is_normalized;
 int32_t input_width;
 /// @brief Height of input image.
 int32_t input_height;
+/// @brief Decrease label id to skip background label equal to 0. Can't be used simultaneously with background_label_id.
+int32_t decrease_label_id;
+/// @brief Clip decoded boxes
+int32_t clip;
 CLDNN_END_PRIMITIVE_DESC(detection_output)
 
 CLDNN_DECLARE_PRIMITIVE_TYPE_ID(detection_output);

@@ -30,6 +30,13 @@
 extern "C" {
 #endif
 
+/// @brief Enum type to specify function for weights filling.
+typedef enum
+{
+    zero,
+    xavier
+} cldnn_filler_type;
+
 /// @brief Provides mutable data.
 /// @details This primitive allows to pass data which can be written to during training.
 /// For example, weights and biases for scoring networks.
@@ -39,6 +46,8 @@ CLDNN_BEGIN_PRIMITIVE_DESC(mutable_data)
 /// @note If memory is attached by ::cldnn_attach_memory(),
 /// attached buffer should be valid on ::cldnn_build_network() call.
 cldnn_memory mem;
+/// @brief Specifies function which will be used to fill data.
+cldnn_filler_type fill_type;
 CLDNN_END_PRIMITIVE_DESC(mutable_data)
 
 CLDNN_DECLARE_PRIMITIVE_TYPE_ID(mutable_data);
@@ -51,3 +60,4 @@ CLDNN_DECLARE_PRIMITIVE_TYPE_ID(mutable_data);
 /// @}
 /// @}
 #endif /* MUTABLE_DATA_H */
+

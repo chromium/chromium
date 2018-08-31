@@ -51,3 +51,4 @@ CLDNN_DECLARE_PRIMITIVE_TYPE_ID(data);
 /// @}
 /// @}
 #endif /* DATA_H */
+

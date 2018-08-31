@@ -293,6 +293,10 @@ struct layout
     tensor get_pitches() const
     {
         auto sizes = get_buffer_size().sizes(format);
+        if (format == format::byxf_af32)
+        {
+            sizes[3] = align_to(sizes[3], 32);
+        }
         std::vector<tensor::value_type> pitches(sizes.size(), tensor::value_type(1));
         std::partial_sum(sizes.rbegin(), sizes.rend() - 1, pitches.rbegin() + 1, std::multiplies<tensor::value_type>());
         return{ format, pitches };
@@ -352,6 +356,15 @@ struct layout
             sizes[1] = align_to(sizes[1], 8);
             sizes[3] = align_to(sizes[2]*sizes[3], 16);
             sizes[2] = 1;
+        }
+        else if (this->format == cldnn::format::byxf_af32 && !(is_aligned_to(sizes[1], 32)))
+        {
+            sizes[1] = align_to(sizes[1], 32);
+        }
+        else if (this->format == cldnn::format::os_is_yx_isa8_osv8_isv4 && !(is_aligned_to(sizes[0], 8)) && !(is_aligned_to(sizes[1], 32)))
+        {
+            sizes[0] = align_to(sizes[0], 8);
+            sizes[1] = align_to(sizes[1], 32);
         }
         return std::accumulate(
             sizes.begin(),

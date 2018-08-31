@@ -40,7 +40,7 @@ extern "C" {
 /// norm(i,x,y) = sqrt( &Sigma;( in(f,x,y)^2 ) + epsilon ) where f in range (0,num_of_features).<br>
 /// The summation is performed over this (x,y) position on all the features.<br>
 /// @par Algorithm:
-///   out(i,x,y) = ( in(i,x,y) / norm(i,x,y) ) * scale(i)
+///   out(i,x,y) = ( in(i,x,y) / norm(i,x,y) ) * scale(i) 
 /// @par Where:
 ///   @li out(i,x,y) : value at x, y from i-th feature map after normalization.
 ///   @li in(i,x,y) : value at x, y from i-th feature map before normalization.
@@ -67,3 +67,4 @@ CLDNN_DECLARE_PRIMITIVE_TYPE_ID(normalize);
 /// @}
 /// @}
 #endif /* NORMALIZE_H */
+

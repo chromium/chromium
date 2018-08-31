@@ -29,10 +29,10 @@ namespace cldnn
 /// @{
 
 /// @details Concatenation is used to concatenate multiple sources into one destination along specified dimension.
-/// @notes
+/// @notes 
 /// - all other dimensions (except the one along which concatenation take place) must have the same value in each source.
-/// - order of arguments in primitive creation has impact on order of feature maps in output primitive.
-///
+/// - order of arguments in primitive creation has impact on order of feature maps in output primitive. 
+/// 
 /// @par Alogrithm:
 /// \code
 ///     int outputIdx = 0
@@ -45,11 +45,11 @@ namespace cldnn
 ///         }
 ///     }
 /// \endcode
-/// @par Where:
+/// @par Where: 
 ///   @li input : data structure holding all source inputs for this primitive
 ///   @li output : data structure holding output data for this primitive
 ///   @li i.features : number of features in currently processed input
-///   @li outputIdx : index of destination feature
+///   @li outputIdx : index of destination feature 
 struct concatenation : public primitive_base<concatenation, CLDNN_PRIMITIVE_DESC(concatenation)>
 {
     CLDNN_DECLARE_PRIMITIVE(concatenation)

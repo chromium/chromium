@@ -57,8 +57,14 @@ typedef enum /*:int32_t*/
 /// - both inputs have to have equal sizes in all dimensions
 /// - format of both inputs has to be the same
 CLDNN_BEGIN_PRIMITIVE_DESC(eltwise)
+/// @brief Primitive id containing output quanitization factors per output feature map.
+cldnn_primitive_id output_calibration_factors;
+/// @brief Output quantization factor
+float output_quantization_factor;
 /// @brief Eltwise mode. See #cldnn_eltwise_mode.
 int32_t mode; /*cldnn_eltwise_mode*/
+/// @brief Blob-wise coefficient for SUM operation
+cldnn_float_arr coefficients;
 /// @brief Enables Relu activation.
 uint32_t with_activation;
 /// @brief Relu activation slope.
@@ -75,3 +81,4 @@ CLDNN_DECLARE_PRIMITIVE_TYPE_ID(eltwise);
 /// @}
 /// @}
 #endif /* ELTWISE_H */
+

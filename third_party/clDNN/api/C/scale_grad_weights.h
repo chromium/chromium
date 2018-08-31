@@ -1,5 +1,5 @@
 /*
-// Copyright (c) 2017 Intel Corporation
+// Copyright (c) 2018 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 */
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-#ifndef PROPOSAL_H
-#define PROPOSAL_H
+#ifndef SCALE_GRAD_WEIGHTS_H
+#define SCALE_GRAD_WEIGHTS_H
 
 #include "cldnn.h"
 /// @addtogroup c_api C API
@@ -30,20 +30,21 @@
 extern "C" {
 #endif
 
-#define CLDNN_ROI_VECTOR_SIZE 5
+/// @brief Performs scale layer backward for scale_input and biases. 
+CLDNN_BEGIN_PRIMITIVE_DESC(scale_grad_weights)
+/// @brief Scale input primitive id.
+cldnn_primitive_id scale_input;
+/// @brief Primitive id containing bias data.
+cldnn_primitive_id bias;
+/// @brief Primitive id containing scale gradient data calculated in previous iteration.
+cldnn_primitive_id prev_scale_grad;
+/// @brief Primitive id containing bias gradient data calculated in previous iteration. 
+cldnn_primitive_id prev_bias_grad;
+/// @brief Primitive id which uses weights and biases updated in this primitive.
+cldnn_primitive_id scale_grad;
+CLDNN_END_PRIMITIVE_DESC(scale_grad_weights)
 
-CLDNN_BEGIN_PRIMITIVE_DESC(proposal)
-    int max_proposals;
-    float iou_threshold;
-    int min_bbox_size;
-    int feature_stride;
-    int pre_nms_topn;
-    int post_nms_topn;
-    cldnn_float_arr ratios;
-    cldnn_float_arr scales;
-CLDNN_END_PRIMITIVE_DESC(proposal)
-
-CLDNN_DECLARE_PRIMITIVE_TYPE_ID(proposal);
+CLDNN_DECLARE_PRIMITIVE_TYPE_ID(scale_grad_weights);
 
 #ifdef __cplusplus
 }
@@ -52,5 +53,5 @@ CLDNN_DECLARE_PRIMITIVE_TYPE_ID(proposal);
 /// @}
 /// @}
 /// @}
-#endif /* PROPOSAL_H */
+#endif /* SCALE_GRAD_WEIGHTS_H */
 

@@ -52,3 +52,4 @@ CLDNN_DECLARE_PRIMITIVE_TYPE_ID(mvn);
 /// @}
 /// @}
 #endif /* MVN_H */
+

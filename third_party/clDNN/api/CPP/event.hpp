@@ -39,7 +39,7 @@ struct event
     {
         return check_status<cldnn_event>("create user event failed", [&](status_t* status) { return cldnn_create_user_event(engine.get(), status); });
     }
-
+    
     /// @brief Construct from C API handler @ref ::cldnn_event.
     event(cldnn_event impl) : _impl(impl)
     {
@@ -50,7 +50,7 @@ struct event
     {
         retain();
     }
-
+    
     event& operator=(const event& other)
     {
         if (_impl == other._impl) return *this;
@@ -88,7 +88,7 @@ struct event
         size_t size_ret = 0;
         status_t err_invalid_arg = CLDNN_SUCCESS;
         cldnn_get_event_profiling_info(_impl, nullptr, 0, &size_ret, &err_invalid_arg);
-
+        
         if (size_ret == 0)
         {
             return{};

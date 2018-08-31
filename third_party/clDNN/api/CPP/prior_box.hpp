@@ -33,7 +33,7 @@ namespace cldnn
 
 /// @brief Generates a set of default bounding boxes with different sizes and aspect ratios.
 /// @details The prior-boxes are shared across all the images in a batch (since they have the same width and height).
-/// First feature stores the mean of each prior coordinate.
+/// First feature stores the mean of each prior coordinate. 
 /// Second feature stores the variance of each prior coordinate.
 struct prior_box : public primitive_base<prior_box, CLDNN_PRIMITIVE_DESC(prior_box)>
 {
@@ -65,6 +65,7 @@ struct prior_box : public primitive_base<prior_box, CLDNN_PRIMITIVE_DESC(prior_b
         const float step_width = 0.f,
         const float step_height = 0.f,
         const float offset = 0.5f,
+        const bool scale_all_sizes = true,
         const padding& output_padding = padding()
         )
         : primitive_base(id, {input}, output_padding)
@@ -76,6 +77,7 @@ struct prior_box : public primitive_base<prior_box, CLDNN_PRIMITIVE_DESC(prior_b
         , step_width(step_width)
         , step_height(step_height)
         , offset(offset)
+        , scale_all_sizes(scale_all_sizes)
     {
         this->aspect_ratios.push_back(1.f);
         for (auto new_aspect_ratio : aspect_ratios) {
@@ -120,6 +122,7 @@ struct prior_box : public primitive_base<prior_box, CLDNN_PRIMITIVE_DESC(prior_b
         , step_width(dto->step_width)
         , step_height(dto->step_height)
         , offset(dto->offset)
+        , scale_all_sizes(dto->scale_all_sizes != 0)
     {}
 
     /// @brief Image width and height.
@@ -142,6 +145,8 @@ struct prior_box : public primitive_base<prior_box, CLDNN_PRIMITIVE_DESC(prior_b
     float step_height;
     /// @brief Offset to the top left corner of each cell.
     float offset;
+    /// @broef If false, only first min_size is scaled by aspect_ratios
+    bool scale_all_sizes;
 
 private:
     void update_dto(dto& dto) const override
@@ -156,6 +161,7 @@ private:
         dto.step_width = step_width;
         dto.step_height = step_height;
         dto.offset = offset;
+        dto.scale_all_sizes = scale_all_sizes;
     }
 
     static cldnn_float_arr float_vector_to_arr(const std::vector<float>& stor)

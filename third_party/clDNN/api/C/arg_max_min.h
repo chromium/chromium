@@ -69,3 +69,4 @@ CLDNN_DECLARE_PRIMITIVE_TYPE_ID(arg_max_min);
 /// @}
 /// @}
 #endif /* ARG_MAX_MIN.H */
+

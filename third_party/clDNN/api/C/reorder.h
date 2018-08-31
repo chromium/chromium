@@ -57,3 +57,4 @@ CLDNN_DECLARE_PRIMITIVE_TYPE_ID(reorder);
 /// @}
 /// @}
 #endif /* REORDER_H */
+

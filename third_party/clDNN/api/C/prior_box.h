@@ -32,9 +32,9 @@ extern "C" {
 
 /// @brief Generates a set of default bounding boxes with different sizes and aspect ratios.
 /// @details The prior-boxes are shared across all the images in a batch (since they have the same width and height).
-/// First feature stores the mean of each prior coordinate.
+/// First feature stores the mean of each prior coordinate. 
 /// Second feature stores the variance of each prior coordinate.
-CLDNN_BEGIN_PRIMITIVE_DESC(prior_box)
+CLDNN_BEGIN_PRIMITIVE_DESC(prior_box) 
 /// @brief Image width and height.
 cldnn_tensor img_size;
 /// @brief Minimum box sizes in pixels.
@@ -55,6 +55,8 @@ float step_width;
 float step_height;
 /// @brief Offset to the top left corner of each cell.
 float offset;
+/// @broef If false, only first min_size is scaled by aspect_ratios
+uint32_t scale_all_sizes;
 CLDNN_END_PRIMITIVE_DESC(prior_box)
 
 CLDNN_DECLARE_PRIMITIVE_TYPE_ID(prior_box);
@@ -67,3 +69,4 @@ CLDNN_DECLARE_PRIMITIVE_TYPE_ID(prior_box);
 /// @}
 /// @}
 #endif /* PRIOR_BOX_H */
+

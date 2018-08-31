@@ -41,6 +41,15 @@ float activation_negative_slope;
 cldnn_primitive_id weights;
 /// @brief Primitive id containing bias data.
 cldnn_primitive_id bias;
+/// @brief Primitive id containing weights quanitization factors per output feature map.
+cldnn_primitive_id weights_quantization_factors;
+/// @brief Primitive id containing output quanitization factors per output feature map.
+cldnn_primitive_id output_calibration_factors;
+/// @brief Input quantization factor
+float input_quantization_factor;
+/// @brief Output quantization factor
+float output_quantization_factor;
+
 CLDNN_END_PRIMITIVE_DESC(fully_connected)
 
 CLDNN_DECLARE_PRIMITIVE_TYPE_ID(fully_connected);
@@ -53,3 +62,4 @@ CLDNN_DECLARE_PRIMITIVE_TYPE_ID(fully_connected);
 /// @}
 /// @}
 #endif /* FULLY_CONNECTED_H */
+

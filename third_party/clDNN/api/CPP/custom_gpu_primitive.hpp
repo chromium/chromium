@@ -97,7 +97,7 @@ namespace cldnn
     const std::vector<size_t> gws;
     /// @brief The local working sizes
     const std::vector<size_t> lws;
-
+    
 
 protected:
     primitive_id_arr _kernels_code;

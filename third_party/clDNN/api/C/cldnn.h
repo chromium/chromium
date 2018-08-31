@@ -150,7 +150,7 @@ typedef struct
 {
     uint32_t enable_profiling;                          ///< Enable per-primitive profiling.
     uint32_t meaningful_kernels_names;                  ///< Generate meaniful names fo OpenCL kernels.
-    uint32_t dump_custom_program;                       ///< dump the custom generated program to files
+    uint32_t dump_custom_program;                       ///< dump the custom generated program to files 
     const char* compiler_options;                       ///< OpenCL compiler options string.
     const char* single_kernel_name;                     ///< If provided, runs specific layer.
     uint32_t enable_parallelisation;                    ///< Enables parallel execution of primitives which don't depend on each other. Disabled by default.
@@ -158,7 +158,7 @@ typedef struct
     const char* sources_dumps_dir;                      ///< Specifies a directory where sources of cldnn::program objects should be dumped. Null/empty values means no loggins.
     /*cldnn_priority_mode_type*/ int16_t priority_mode; ///< Priority mode (support of OpenCL priority hints in command queue).
     /*cldnn_throttle_mode_type*/ int16_t throttle_mode; ///< Placeholder for throttle mode (support of throttle hints in command queue). It has no effect for now and should be set to cldnn_throttle_disabled.
-    uint32_t enable_memory_pool;                        ///< Enables memory usage optimization. memory objects will be reused when possible.
+    uint32_t enable_memory_pool;                        ///< Enables memory usage optimization. memory objects will be reused when possible. 
 }  cldnn_engine_configuration;
 
 /// @brief Information about the engine returned by cldnn_get_engine_info().
@@ -205,8 +205,11 @@ typedef enum /*:int32_t*/
     cldnn_build_option_optimize_data,           ///< Enable implicit reordering for user input.
     cldnn_build_option_debug,                   ///< Enable debug mode.
     cldnn_build_option_outputs,                 ///< User selected list of network outputs.
+	cldnn_build_option_learning_config,         ///< User defined learning parameters.
     cldnn_build_option_tuning_config,           ///< Tuning config.
-    cldnn_build_option_graph_dumps_dir          ///< Specifies a directory to which stages of network compilation should be dumped.
+    cldnn_build_option_graph_dumps_dir,         ///< Specifies a directory to which stages of network compilation should be dumped.
+    cldnn_build_option_serialization,           ///< Specifies a name of files to which serialization should be dumped.
+    cldnn_build_option_load_program             ///< Specifies a name of load_program process.
 } cldnn_build_option_type;
 
 /// @brief Tuning modes.
@@ -222,6 +225,13 @@ struct cldnn_tuning_config
 {
     const int32_t mode;             ///< #cldnn_tuning_mode_type.
     const char* cache_file_path;    ///< A path to the tuning cache file.
+};
+
+/// @brief Learning params.
+struct cldnn_learning_params
+{
+	const float momentum;
+	const float weights_decay;
 };
 
 /// @brief Represents network build option.
@@ -274,6 +284,8 @@ typedef enum /*:int32_t*/
                                       ///< \n \image html image_2d_weights_c4_fyx_b.jpg
     cldnn_format_image_2d_weights_c1_b_fyx, ///< image format for weights, image 2d, single channel, width size is b, height is f*y*x
                                       ///< \n \image html image_2d_weights_c1_b_fyx.jpg
+    cldnn_format_byxf_af32,           /// < \n format for input for primitives using MMAD
+    cldnn_format_os_is_yx_isa8_osv8_isv4, /// < \n format for weights for MMAD convolutions, stored as ((aligned_to_8(O)/8) * (aligned_to_32(I)/32) * Y * X * ( 8 ) * ( 8 ) * ( 4 )
     cldnn_format_format_num,    ///< number of format types
     cldnn_format_any = -1
 } cldnn_format_type;
@@ -603,6 +615,13 @@ CLDNN_API                 void cldnn_release_network(cldnn_network network, cldn
 /// @details User should set the input data for every @p input_layout primitive defined in @p topology
 /// by calling this function before call to cldnn_execute_network().
 CLDNN_API                 void cldnn_set_network_input(cldnn_network network, cldnn_primitive_id id, cldnn_memory mem, cldnn_status* status);
+
+/// @brief Sets learning rate for training primitives in network.
+/// @param[in] lr Learning rate.
+CLDNN_API void cldnn_set_learning_rate(cldnn_network network, float lr, cldnn_status* status);
+
+/// @brief Returns learning rate value.
+CLDNN_API float cldnn_get_learning_rate(cldnn_network network, cldnn_status* status);
 
 /// @brief Returns information about particular primitive.
 /// @details Function fills user provided buffer by primitive description.

@@ -53,11 +53,11 @@ typedef enum
 ///         }
 ///     }
 /// \endcode
-/// @par Where:
+/// @par Where: 
 ///   @li input : data structure holding all source inputs for this primitive
 ///   @li output : data structure holding output data for this primitive
 ///   @li i.features : number of features in currently processed input
-///   @li outputIdx : index of destination feature
+///   @li outputIdx : index of destination feature 
 CLDNN_BEGIN_PRIMITIVE_DESC(concatenation)
 /// @brief Dimension along which concatenation should take place.
 cldnn_concatenation_axis axis;
@@ -73,3 +73,4 @@ CLDNN_DECLARE_PRIMITIVE_TYPE_ID(concatenation);
 /// @}
 /// @}
 #endif /* CONCATENATION_H */
+

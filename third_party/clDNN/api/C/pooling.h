@@ -72,3 +72,4 @@ CLDNN_DECLARE_PRIMITIVE_TYPE_ID(pooling);
 /// @}
 /// @}
 #endif /* POOLING_H */
+

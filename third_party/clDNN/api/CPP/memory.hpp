@@ -71,7 +71,7 @@ struct memory
             std::string err_str("buffer size mismatch - input size " + std::to_string(data_size) + " layout size " + std::to_string(layout.bytes_count()));
             throw std::invalid_argument(err_str);
         }
-
+        
         return check_status<cldnn_memory>("memory attach failed", [&](status_t* status)
         {
             return cldnn_attach_memory(layout, ptr, data_size, status);

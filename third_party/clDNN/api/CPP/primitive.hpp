@@ -114,7 +114,7 @@ public:
     {
         std::vector<std::reference_wrapper<primitive_id>> result;
         auto&& deps = get_dependencies();
-
+        
         result.reserve(_input.size() + deps.size());
         for (auto& pid : _input.cpp_ids)
             result.push_back(std::ref(pid));
@@ -215,7 +215,7 @@ protected:
     primitive_base(const DTO* dto)
         : primitive(reinterpret_cast<const CLDNN_PRIMITIVE_DESC(primitive)*>(dto))
     {
-        if (dto->type != PType::type_id())
+        if (dto->type != PType::type_id()) 
             throw std::invalid_argument("DTO type mismatch");
     }
 

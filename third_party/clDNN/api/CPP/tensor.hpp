@@ -100,6 +100,8 @@ struct format
         winograd_6x3_s1_fused_weights,    ///< format used for weights for winograd fused convolution, F(6,3) -- filter 3x3 with stride 1
         image_2d_weights_winograd_6x3_s1_fbxyb,      ///< image format used for weights for winograd fused convolution, F(6,3) -- filter 3x3 with stride 1
         image_2d_weights_winograd_6x3_s1_xfbyb,      ///< image format used for weights for winograd fused convolution, F(6,3) -- filter 3x3 with stride 1
+        os_is_yx_isa8_osv8_isv4,                        /// format for weights for MMAD convolution
+        byxf_af32,           /// < \n format for input for primitives using MMAD
         format_num = cldnn_format_format_num, ///< number of format types
         any = cldnn_format_any
     };
@@ -125,7 +127,10 @@ struct format
             { winograd_2x3_s1_fused_weights, { 1, 1, 2, "xyfb", "bfxy" } },
             { winograd_6x3_s1_fused_weights,{ 1, 1, 2, "xyfb", "bfxy" } },
             { image_2d_weights_winograd_6x3_s1_fbxyb,{ 1, 1, 2, "xyfb", "bfxy" } },
-            { image_2d_weights_winograd_6x3_s1_xfbyb,{ 1, 1, 2, "xyfb", "bfxy" } } };
+            { image_2d_weights_winograd_6x3_s1_xfbyb,{ 1, 1, 2, "xyfb", "bfxy" } },
+            { os_is_yx_isa8_osv8_isv4, { 1, 1, 2, "bfyx", "bfxy" } },
+            { byxf_af32, { 1, 1, 2, "byxf", "bfxy" } }
+        };
         return traits.at(fmt);
     }
 
@@ -318,7 +323,7 @@ public:
     /// @brief Constructs @p tensor.
     /// @details Example:
     /*! @code
-     *
+     * 
        tensor my_tensor( 2, 3, 4, 5 );   // b=2, f=3, x=4, y=5
        cout << my_tensor.batch[0] << endl;           // 2
        cout << my_tensor.feature[0] << endl;         // 3
@@ -326,7 +331,7 @@ public:
        cout << "y=" << my_tensor.spatial[1] << endl; // y=5
      *
      * @endcode
-     */
+     */ 
     tensor(value_type batch_num, value_type feature_num, value_type width, value_type height)
         : tensor(1)
     {
@@ -341,7 +346,7 @@ public:
     /// @param[in] default_size default_size for tensor dimensions.
     /// @details Example:
     /*! @code
-     *
+     * 
        tensor my_tensor = { 2, 3, 4, 5 };   // b=2, f=3, x=4, y=5
        cout << my_tensor.batch[0] << endl;           // 2
        cout << my_tensor.feature[0] << endl;         // 3
@@ -349,7 +354,7 @@ public:
        cout << "y=" << my_tensor.spatial[1] << endl; // y=5
      *
      * @endcode
-     */
+     */ 
     tensor(const std::vector<value_type>& sizes, value_type default_size = 1)
         : tensor(default_size)
     {
@@ -372,7 +377,7 @@ public:
             auto channel = out_order[out_idx];
             if (channel == '?')
                 continue;
-
+            
             auto in_idx = in_order.find(channel);
             if (in_idx == in_order.npos)
                 throw std::runtime_error("Internal order of a format contains channel which does not appear in external order.");
@@ -555,7 +560,7 @@ public:
             auto pos = internal_order.find(c);
             if (pos == internal_order.npos)
                 throw std::domain_error(std::string("Unknown coord type: ") + c);
-
+            
             sizes[i] = _sizes[pos];
         }
 
@@ -571,10 +576,10 @@ public:
     }
 
     /// @brief Returns tensor elements count calculated as multiplication of all elements.
-    size_t count() const {
+    size_t count() const { 
         return std::accumulate(
             raw.begin(),
-            raw.end(),
+            raw.end(), 
             static_cast<size_t>(1),
             std::multiplies<size_t>()
         );
@@ -626,7 +631,7 @@ public:
                 throw std::invalid_argument("cannot convert to new format");
             new_sizes[new_pos] = old_sizes[i];
         }
-
+        
         //in case of formats with smaller number of dimensions than input, flatten is performed below
         if (tmp != 1)
         {
@@ -682,6 +687,18 @@ public:
             adjusted_coords[1] = align_to(adjusted_coords[1], 8);
             adjusted_coords[3] = align_to(adjusted_coords[3], 16);
             adjusted_coords[2] = 1;
+        }
+        else if (fmt == cldnn::format::os_is_yx_isa8_osv8_isv4 && !(is_aligned_to(my_sizes[0], 8)) && !(is_aligned_to(my_sizes[1], 32)))
+        {
+            my_sizes[0] = align_to(my_sizes[0], 8);
+            my_sizes[1] = align_to(my_sizes[1], 32);
+            adjusted_coords[0] = align_to(adjusted_coords[0], 8);
+            adjusted_coords[1] = align_to(adjusted_coords[1], 32);
+        }
+        else if (fmt == cldnn::format::byxf_af32 && !(is_aligned_to(my_sizes[1], 32)))
+        {
+            my_sizes[1] = align_to(my_sizes[1], 32);
+            adjusted_coords[1] = align_to(adjusted_coords[1], 32);
         }
 
         assert(my_sizes.size() == adjusted_coords.size());

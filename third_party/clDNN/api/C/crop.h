@@ -39,7 +39,7 @@ extern "C" {
 /// @n Crop with offset example:
 /// \image html crop_w_offset.jpg
 /// @n
-/// @n\b Requirements
+/// @n\b Requirements 
 /// @n - Input, reference and offset layout (order) has to be the same
 /// @n - Input size cannot be greater than reference size in any dimension
 /// @n - All sizes have to have positive numbers
@@ -63,3 +63,4 @@ CLDNN_DECLARE_PRIMITIVE_TYPE_ID(crop);
 /// @}
 /// @}
 #endif /* CROP_H */
+

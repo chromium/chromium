@@ -432,7 +432,7 @@ struct convolution : public primitive_base<convolution, CLDNN_PRIMITIVE_DESC(con
     /// @brief Defines shift in input buffer between adjacent calculations of output values.
     tensor stride;
     /// @brief Defines gaps in the input - dilation rate k=1 is normal convolution, k=2 means skipping one pixel per input, k=4 means skipping 3 pixels.
-    /// As an example in one dimension, a filter w of size 3 would compute over input x the following: w[0]*x[0] + w[1]*x[1] + w[2]*x[2] for dilation of 1.
+    /// As an example in one dimension, a filter w of size 3 would compute over input x the following: w[0]*x[0] + w[1]*x[1] + w[2]*x[2] for dilation of 1. 
     /// For dilation 2 the filter would instead compute w[0]*x[0] + w[1]*x[2] + w[2]*x[4].
     tensor dilation;
     /// @brief Enable Relu activation.
@@ -484,7 +484,7 @@ protected:
         dto.dilation = dilation;
         dto.with_output_size = with_output_size;
         dto.output_size = output_size;
-
+        
     }
 };
 /// @}

@@ -58,3 +58,4 @@ CLDNN_DECLARE_PRIMITIVE_TYPE_ID(lookup_table);
 /// @}
 /// @}
 #endif /* LOOKUP_TABLE.H */
+

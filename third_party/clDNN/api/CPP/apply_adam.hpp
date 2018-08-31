@@ -33,7 +33,7 @@ namespace cldnn
 /// variable accross network. If output is not mutable_data then it will be initialized with 0.
 /// "Adam: A Method for Stochastic Optimization" by Diederik P. Kingma, Jimmy Ba
 /// @n See: https://arxiv.org/abs/1412.6980
-///
+/// 
 /// <b>Algorithm:</b>
 /// @n float lr[t] = lr * sqrt(1 - beta2^t) / (1 - beta1^t);
 /// @n float m[t] = beta1 * m[t-1] + (1 - beta1) * grad[t];

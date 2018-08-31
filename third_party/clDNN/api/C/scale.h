@@ -58,3 +58,4 @@ CLDNN_DECLARE_PRIMITIVE_TYPE_ID(scale);
 /// @}
 /// @}
 #endif /* SCALE_H */
+

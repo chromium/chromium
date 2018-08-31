@@ -37,13 +37,23 @@ struct mutable_data : public primitive_base<mutable_data, CLDNN_PRIMITIVE_DESC(m
 {
     CLDNN_DECLARE_PRIMITIVE(mutable_data)
 
+    /// @brief Enum type to specify function for data filling.
+    enum filler_type
+    {
+        no_fill,
+        zero,
+        xavier
+    };
+
     /// @brief Constructs mutable_data primitive.
     /// @param id This primitive id.
     /// @param mem @ref memory object which contains data.
+    /// @param filler_type @ref data filling function, default is zero
     /// @note If memory is attached by memory::attach(), the attached buffer should be valid till network build.
-    mutable_data(const primitive_id& id, const memory& mem)
+    mutable_data(const primitive_id& id, const memory& mem, filler_type fill_type = filler_type::no_fill)
         :primitive_base(id, {}, padding())
         , mem(mem)
+        , fill_type(fill_type)
     {}
 
     /// @brief Constructs mutable_data primitive with inputs.
@@ -51,15 +61,18 @@ struct mutable_data : public primitive_base<mutable_data, CLDNN_PRIMITIVE_DESC(m
     /// @param input Vector of input primitives ids.
     /// @param mem @ref memory object which contains data.
     /// @note If memory is attached by memory::attach(), the attached buffer should be valid till network build.
-    mutable_data(const primitive_id& id, const std::vector<primitive_id>& input, const memory& mem)
+    /// @param filler_type @ref data filling function, default is zero
+    mutable_data(const primitive_id& id, const std::vector<primitive_id>& input, const memory& mem, filler_type fill_type = filler_type::no_fill)
         :primitive_base(id, { input }, padding())
         , mem(mem)
+        , fill_type(fill_type)
     {}
 
     /// @brief Constructs a copy from C API @CLDNN_PRIMITIVE_DESC{mutable_data}
     explicit mutable_data(const dto* dto)
         :primitive_base(dto)
         , mem(dto->mem)
+        , fill_type(static_cast<filler_type>(dto->fill_type))
     {
         mem.retain();
     }
@@ -68,10 +81,14 @@ struct mutable_data : public primitive_base<mutable_data, CLDNN_PRIMITIVE_DESC(m
     /// @note If memory is attached by memory::attach(), the attached buffer should be valid till network build.
     memory mem;
 
+    /// @brief Specifies function which will be used to fill weights.
+    filler_type fill_type;
+
 protected:
     void update_dto(dto& dto) const override
     {
         dto.mem = mem.get();
+        dto.fill_type = static_cast<cldnn_filler_type>(fill_type);
     }
 };
 /// @}

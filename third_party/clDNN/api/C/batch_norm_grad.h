@@ -1,5 +1,5 @@
 /*
-// Copyright (c) 2017 Intel Corporation
+// Copyright (c) 2018 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 */
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-#ifndef PROPOSAL_H
-#define PROPOSAL_H
+#ifndef BATCH_NORM_GRAD_H
+#define BATCH_NORM_GRAD_H
 
 #include "cldnn.h"
 /// @addtogroup c_api C API
@@ -30,20 +30,15 @@
 extern "C" {
 #endif
 
-#define CLDNN_ROI_VECTOR_SIZE 5
+/// @brief Performs backward batch normalization layer.
+/// @details Calculates mean gradient and gradient * input for every feature in data, 
+/// then output is calculated as inv_variance * (input_grad - mean_grad_input * input - mean_grad)
+CLDNN_BEGIN_PRIMITIVE_DESC(batch_norm_grad)
+/// @brief Primitive id containing inverted variance from forward pass.
+cldnn_primitive_id inv_variance;
+CLDNN_END_PRIMITIVE_DESC(batch_norm_grad)
 
-CLDNN_BEGIN_PRIMITIVE_DESC(proposal)
-    int max_proposals;
-    float iou_threshold;
-    int min_bbox_size;
-    int feature_stride;
-    int pre_nms_topn;
-    int post_nms_topn;
-    cldnn_float_arr ratios;
-    cldnn_float_arr scales;
-CLDNN_END_PRIMITIVE_DESC(proposal)
-
-CLDNN_DECLARE_PRIMITIVE_TYPE_ID(proposal);
+CLDNN_DECLARE_PRIMITIVE_TYPE_ID(batch_norm_grad);
 
 #ifdef __cplusplus
 }
@@ -52,5 +47,5 @@ CLDNN_DECLARE_PRIMITIVE_TYPE_ID(proposal);
 /// @}
 /// @}
 /// @}
-#endif /* PROPOSAL_H */
+#endif /* BATCH_NORM_GRAD_H */
 

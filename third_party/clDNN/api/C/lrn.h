@@ -70,3 +70,4 @@ CLDNN_DECLARE_PRIMITIVE_TYPE_ID(lrn);
 /// @}
 /// @}
 #endif /* LRN_H */
+

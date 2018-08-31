@@ -29,6 +29,10 @@ namespace cldnn
     /// @{
 
     /// @brief Finds the index of the k max values of input.
+    /// @details Returns indices in f32, because we currently does not support int32 data type. 
+    /// We use f32, as bigger indices could not fit in smaller data types.
+    /// If you want to use output as indices outside of network (inside just use lookup table primitive), 
+    /// you will need to firstly cast it to int (look into tests for example).
     struct arg_max_min : public primitive_base<arg_max_min, CLDNN_PRIMITIVE_DESC(arg_max_min)>
     {
         CLDNN_DECLARE_PRIMITIVE(arg_max_min)
@@ -88,7 +92,7 @@ namespace cldnn
         axis_name axis;
         /// @brief Indicates that the primitive has user defined axis to maximize/minimize along;
         bool with_axis;
-
+        
 
     protected:
 
