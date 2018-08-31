@@ -121,7 +121,6 @@ if (is_win) {
   copy("copy_cldnn_dll") {
     sources = [
       "$dll_path/clDNN64.dll",
-      "$dll_path/clDNN64.pdb",
     ]
     outputs = [
       "$root_out_dir/{{source_file_part}}",
