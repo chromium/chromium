@@ -166,7 +166,9 @@ void ExecutionImplWin::StartCompute(StartComputeCallback callback) {
   DLOG(INFO) << "[clDNN] succeed to execute network";
 
   for (size_t i = 0; i < outputs_.size(); ++i) {
-    std::string output_id_str = base::NumberToString(outputs_[i]);
+    // Use the reordered outputs (byxf).
+    std::string output_id_str =
+        base::NumberToString(outputs_[i]) + std::string("-reordered");
     cldnn_memory memory = cldnn_get_network_output_memory(
         network_, output_id_str.c_str(), &status);
     if (status != CLDNN_SUCCESS) {

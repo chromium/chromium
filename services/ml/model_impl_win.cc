@@ -16,6 +16,7 @@
 #include "third_party/clDNN/api/C/eltwise.h"
 #include "third_party/clDNN/api/C/input_layout.h"
 #include "third_party/clDNN/api/C/pooling.h"
+#include "third_party/clDNN/api/C/reorder.h"
 #include "third_party/clDNN/api/C/reshape.h"
 #include "third_party/clDNN/api/C/softmax.h"
 
@@ -332,6 +333,12 @@ int32_t ModelImplWin::IdentifyInputsAndOutputs(
       return result;
     }
   }
+  for (size_t i = 0; i < outputs_.size(); ++i) {
+    result = CldnnAddReorderForOutput(outputs_[i]);
+    if (result != mojom::NOT_ERROR) {
+      return result;
+    }
+  }
   return mojom::NOT_ERROR;
 }
 
@@ -402,6 +409,46 @@ int32_t ModelImplWin::CldnnAddInputLayout(uint32_t index) {
   }
   DLOG(INFO) << "[clDNN] succeed to add input layout primitve with id "
              << id_str;
+  return mojom::NOT_ERROR;
+}
+
+int32_t ModelImplWin::CldnnAddReorderForOutput(int32_t index) {
+  cldnn_status status;
+  cldnn_primitive_type_id type_id = cldnn_reorder_type_id(&status);
+  if (status != CLDNN_SUCCESS) {
+    DLOG(ERROR) << "[clDNN] failed to get primitive type id " << status << " "
+                << std::string(cldnn_get_last_error_message());
+    return mojom::OP_FAILED;
+  }
+  const std::string output_id_str = base::NumberToString(index);
+  const std::string id_str = output_id_str + std::string("-reordered");
+  cldnn_reorder_desc reorder_desc = {
+      .type = type_id,
+      .id = id_str.c_str(),
+      .output_format = cldnn_format_byxf,
+      .output_data_type = cldnn_f32,
+  };
+  // Setup inputs.
+  std::vector<cldnn_primitive_id> input_ids_array(1);
+  input_ids_array[0] = output_id_str.c_str();
+  reorder_desc.input = {.data = input_ids_array.data(),
+                        .size = input_ids_array.size()};
+  // Setup mean mode.
+  const std::string empty("");
+  reorder_desc.mean_subtract = empty.c_str();
+  reorder_desc.subtract_per_feature = {.data = nullptr, .size = 0};
+  reorder_desc.mean_mode = mean_none;
+
+  // Add into topology.
+  cldnn_add_primitive(
+      topology_, reinterpret_cast<const cldnn_primitive_desc*>(&reorder_desc),
+      &status);
+  if (status != CLDNN_SUCCESS) {
+    DLOG(ERROR) << "[clDNN] failed to add primitive " << status << " "
+                << std::string(cldnn_get_last_error_message());
+    return mojom::OP_FAILED;
+  }
+  DLOG(INFO) << "[clDNN] succeed to add reorder primitve with id " << id_str;
   return mojom::NOT_ERROR;
 }
 
