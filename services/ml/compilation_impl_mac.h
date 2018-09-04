@@ -18,6 +18,7 @@
 #import <Accelerate/Accelerate.h>
 
 @class MPSCNNKernel;
+@class MPSCNNBinaryKernel;
 
 namespace ml {
 
@@ -43,6 +44,7 @@ struct OperationMac : public Operation {
   OperationMac(const Operation&);
   ~OperationMac();
   base::scoped_nsobject<MPSCNNKernel> mpscnn_kernel;
+  base::scoped_nsobject<MPSCNNBinaryKernel> mpscnn_binary_kernel;
   ::BNNSFilter filter;
   LocalOperation local_operation;
 
@@ -74,6 +76,7 @@ class CompilationImplMac : public mojom::Compilation {
   bool CompileSoftmax(OperationMac&);
   bool CompileReshape(OperationMac&);
   bool CompileConcatenation(OperationMac&);
+  bool CompileAdd(OperationMac&);
 
   bool CompileConv2DBNNS(OperationMac&);
   bool CompileAverageOrMaxPool2DBNNS(OperationMac&);

@@ -425,7 +425,10 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
           for (size_t i = 0; i < compilation_->operations_.size(); i++) {
             const OperationMac& operation = compilation_->operations_[i];
             MPSCNNKernel* kernel = operation.mpscnn_kernel.get();
-            if (!kernel) {
+            MPSCNNBinaryKernel* binary_kernel = operation.mpscnn_binary_kernel.get();
+            bool fuse_relu = operation.fuse_code == mojom::FUSED_RELU1
+                || operation.fuse_code == mojom::FUSED_RELU6;
+            if (!kernel && (fuse_relu || !binary_kernel)) {
               DLOG(INFO) << "No kernel compiled for operation " << i << " type "
                         << operation.type;
               continue;
@@ -480,8 +483,7 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
               }
               dst_img = tmp_mpsimage_cache[operation_output_idx];
             }
-            if (operation.fuse_code == mojom::FUSED_RELU1 ||
-                operation.fuse_code == mojom::FUSED_RELU6) {
+            if (fuse_relu) {
               // Insert relu layer
               MPSTemporaryImage* relu_input = [MPSTemporaryImage
                   temporaryImageWithCommandBuffer:command_buffer
@@ -512,6 +514,10 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
                                               .threadsPerThreadgroup];
                 [encoder endEncoding];
               }
+            } else if (binary_kernel) {
+              [binary_kernel encodeToCommandBuffer:command_buffer
+                             primaryImage:src_img
+                             secondaryImage:dst_img];
             } else {
               if (src_img.featureChannels == 3 && dst_img.featureChannels == 4) {
                 DLOG(ERROR) << @"Number of source feature channels needed by "

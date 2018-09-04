@@ -332,6 +332,13 @@ namespace ml {
         } else {
           success = CompileConcatenation(operation);
         }
+      } else if (type == mojom::ADD) {
+        if (is_bnns_) {
+          DLOG(ERROR) << "Operation is not supported";
+          success = false;
+        } else {
+          success = CompileAdd(operation);
+        }
       } else {
         DLOG(ERROR) << "Operation is not supported";
         success = false;
@@ -1051,6 +1058,18 @@ namespace ml {
           }
         }
       }
+    }
+
+    return true;
+  }
+
+  bool CompilationImplMac::CompileAdd(OperationMac& operation) {
+    DLOG(INFO) << "CompilationImplMac::CompileAdd";
+    DLOG_IF(FATAL, operation.type != mojom::ADD);
+
+    if (@available(macOS 10.13.4, *)) {
+      MPSCNNAdd* add = [[MPSCNNAdd alloc] initWithDevice:GetMPSCNNContext().device];
+      operation.mpscnn_binary_kernel.reset(add);
     }
 
     return true;
