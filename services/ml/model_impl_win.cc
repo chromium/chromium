@@ -434,7 +434,7 @@ int32_t ModelImplWin::CldnnAddReorderForOutput(int32_t index) {
   reorder_desc.input = {.data = input_ids_array.data(),
                         .size = input_ids_array.size()};
   // Setup mean mode.
-  const std::string empty("");
+  const std::string empty;
   reorder_desc.mean_subtract = empty.c_str();
   reorder_desc.subtract_per_feature = {.data = nullptr, .size = 0};
   reorder_desc.mean_mode = mean_none;
@@ -573,8 +573,8 @@ int32_t ModelImplWin::CldnnAddActivationByFusedCode(const std::string& input,
   }
 
   // Setup additional_params_input as empty.
-  std::string additional_params_input_str("");
-  activation_desc.additional_params_input = additional_params_input_str.c_str();
+  std::string empty;
+  activation_desc.additional_params_input = empty.c_str();
 
   cldnn_add_primitive(
       topology_,
@@ -647,7 +647,7 @@ int32_t ModelImplWin::CldnnAddElementwise(
   }
 
   // Setup output quanitization factors
-  std::string empty("");
+  std::string empty;
   eltwise_desc.output_calibration_factors = empty.c_str();
 
   // Add primitive into topology.
@@ -1127,7 +1127,7 @@ int32_t ModelImplWin::CldnnAddPooling(int32_t type,
       {output_batch, output_channel, output_width, output_height, 1, 1, 1, 1}};
 
   // Setup argmax.
-  std::string empty("");
+  std::string empty;
   pool_desc.argmax = empty.c_str();
 
   // Setup fuse code.
