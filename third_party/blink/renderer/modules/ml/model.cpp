@@ -18,36 +18,34 @@
 namespace blink {
 
 namespace {
-bool InvalidState(bool is_finished,
-                  const String& message,
-                  ExceptionState& exception_state) {
-  String error_message = is_finished ? "Model is finished." : "";
-  if (message.IsEmpty() && error_message.IsEmpty())
+
+constexpr char kModelFinishedError[] = "Model is finished.";
+
+bool InvalidState(const String& message, ExceptionState& exception_state) {
+  if (message.IsEmpty())
     return false;
 
-  exception_state.ThrowDOMException(
-      DOMExceptionCode::kInvalidStateError,
-      error_message.IsEmpty() ? message : error_message);
+  exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                    message);
 
   return true;
 }
 
-bool InValidParameters(bool is_finished,
+bool InValidParameters(size_t operands,
                        const Vector<uint32_t>& inputs,
                        const Vector<uint32_t>& outputs,
-                       size_t operands,
                        ExceptionState& exception_state) {
-  if (InvalidState(is_finished, "", exception_state))
-    return true;
+  if (operands == 0)
+    return InvalidState(kModelFinishedError, exception_state);
 
   for (size_t i = 0; i < inputs.size(); ++i) {
     if (inputs[i] > operands)
-      return InvalidState(false, "Inputs is invalid.", exception_state);
+      return InvalidState("Inputs is invalid.", exception_state);
   }
 
   for (size_t i = 0; i < outputs.size(); ++i) {
     if (outputs[i] > operands)
-      return InvalidState(false, "Outputs is invalid.", exception_state);
+      return InvalidState("Outputs is invalid.", exception_state);
   }
 
   return false;
@@ -66,8 +64,9 @@ Model::~Model() = default;
 
 void Model::addOperand(const OperandOptions& options,
                        ExceptionState& exception_state) {
-  if (InvalidState(is_finished_,
-                   !options.hasType() ? "Operand type is missing." : "",
+  if (InvalidState(is_finished_
+                       ? kModelFinishedError
+                       : !options.hasType() ? "Operand type is missing." : "",
                    exception_state))
     return;
 
@@ -81,10 +80,11 @@ void Model::addOperand(const OperandOptions& options,
 void Model::setOperandValue(uint32_t index,
                             MaybeShared<DOMArrayBufferView> data,
                             ExceptionState& exception_state) {
-  if (InvalidState(
-          is_finished_,
-          index >= model_info_->operands.size() ? "Index is invalid." : "",
-          exception_state))
+  if (InvalidState(is_finished_ ? kModelFinishedError
+                                : index >= model_info_->operands.size()
+                                      ? "Index is invalid."
+                                      : "",
+                   exception_state))
     return;
 
   const ml::mojom::blink::OperandPtr& operand =
@@ -130,8 +130,8 @@ void Model::addOperation(int32_t type,
                          Vector<uint32_t>& inputs,
                          Vector<uint32_t>& outputs,
                          ExceptionState& exception_state) {
-  if (InValidParameters(is_finished_, inputs, outputs,
-                        model_info_->operands.size(), exception_state))
+  if (InValidParameters(is_finished_ ? 0 : model_info_->operands.size(), inputs,
+                        outputs, exception_state))
     return;
 
   model_info_->operations.push_back(
@@ -141,8 +141,8 @@ void Model::addOperation(int32_t type,
 void Model::identifyInputsAndOutputs(Vector<uint32_t>& inputs,
                                      Vector<uint32_t>& outputs,
                                      ExceptionState& exception_state) {
-  if (InValidParameters(is_finished_, inputs, outputs,
-                        model_info_->operands.size(), exception_state))
+  if (InValidParameters(is_finished_ ? 0 : model_info_->operands.size(), inputs,
+                        outputs, exception_state))
     return;
 
   model_info_->inputs = inputs;
