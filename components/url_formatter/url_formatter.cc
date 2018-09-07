@@ -69,16 +69,6 @@ class HostComponentTransform : public AppendComponentTransform {
 
  private:
   static bool IsTrivialSubdomain(base::StringPiece subdomain) {
-    if (subdomain == "www")
-      return true;
-
-#if defined(OS_ANDROID) || defined(OS_IOS)
-    // Eliding the "m" subdomain on Desktop can be confusing, since users would
-    // generally want to know if they are unintentionally on the mobile site.
-    if (subdomain == "m")
-      return true;
-#endif
-
     return false;
   }
 
