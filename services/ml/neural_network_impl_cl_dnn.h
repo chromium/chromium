@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_ML_NEURAL_NETWORK_IMPL_WIN_H_
-#define SERVICES_ML_NEURAL_NETWORK_IMPL_WIN_H_
+#ifndef SERVICES_ML_NEURAL_NETWORK_IMPL_CL_DNN_H_
+#define SERVICES_ML_NEURAL_NETWORK_IMPL_CL_DNN_H_
 
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
@@ -11,25 +11,25 @@
 
 namespace ml {
 
-class ModelImplWin;
+class ModelImplClDnn;
 
-class NeuralNetworkImplWin : public mojom::NeuralNetwork {
+class NeuralNetworkImplClDnn : public mojom::NeuralNetwork {
  public:
-  NeuralNetworkImplWin();
-  ~NeuralNetworkImplWin() override;
+  NeuralNetworkImplClDnn();
+  ~NeuralNetworkImplClDnn() override;
 
   void CreateModel(CreateModelCallback callback) override;
 
   static void Create(mojom::NeuralNetworkRequest request);
 
  private:
-  friend class ModelImplWin;
+  friend class ModelImplClDnn;
 
   mojo::StrongBindingPtr<mojom::NeuralNetwork> binding_;
 
-  DISALLOW_COPY_AND_ASSIGN(NeuralNetworkImplWin);
+  DISALLOW_COPY_AND_ASSIGN(NeuralNetworkImplClDnn);
 };
 
 }  // namespace ml
 
-#endif  // SERVICES_ML_NEURAL_NETWORK_IMPL_WIN_H_
+#endif  // SERVICES_ML_NEURAL_NETWORK_IMPL_CL_DNN_H_

@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/ml/compilation_impl_win.h"
+#include "services/ml/compilation_impl_cl_dnn.h"
 
 #include <memory>
 #include <utility>
 
 #include "mojo/public/cpp/bindings/strong_binding.h"
-#include "services/ml/execution_impl_win.h"
-#include "services/ml/model_impl_win.h"
+#include "services/ml/execution_impl_cl_dnn.h"
+#include "services/ml/model_impl_cl_dnn.h"
 
 namespace ml {
 
-CompilationImplWin::CompilationImplWin(const ModelImplWin* model)
+CompilationImplClDnn::CompilationImplClDnn(const ModelImplClDnn* model)
     : model_(model), program_(nullptr) {
   operands_ = model->operands_;
   operations_ = model->operations_;
@@ -21,7 +21,7 @@ CompilationImplWin::CompilationImplWin(const ModelImplWin* model)
   outputs_ = model->outputs_;
 }
 
-CompilationImplWin::~CompilationImplWin() {
+CompilationImplClDnn::~CompilationImplClDnn() {
   cldnn_status status;
   if (program_) {
     cldnn_release_program(program_, &status);
@@ -33,8 +33,8 @@ CompilationImplWin::~CompilationImplWin() {
   DLOG(INFO) << "[clDNN] succeed to release program";
 }
 
-void CompilationImplWin::Finish(int32_t preference, FinishCallback callback) {
-  DLOG(INFO) << "CompilationImplWin::Finish";
+void CompilationImplClDnn::Finish(int32_t preference, FinishCallback callback) {
+  DLOG(INFO) << "CompilationImplClDnn::Finish";
   DLOG(INFO) << "  "
              << "preference: " << preference;
 
@@ -57,8 +57,8 @@ void CompilationImplWin::Finish(int32_t preference, FinishCallback callback) {
   std::move(callback).Run(mojom::NOT_ERROR);
 }
 
-void CompilationImplWin::CreateExecution(CreateExecutionCallback callback) {
-  DLOG(INFO) << "CompilationImplWin::CreateExecution";
+void CompilationImplClDnn::CreateExecution(CreateExecutionCallback callback) {
+  DLOG(INFO) << "CompilationImplClDnn::CreateExecution";
   auto init_params = mojom::ExecutionInitParams::New();
 
   uint32_t input_memory_size = 0;
@@ -88,7 +88,7 @@ void CompilationImplWin::CreateExecution(CreateExecutionCallback callback) {
 
   mojom::ExecutionPtrInfo ptr_info;
   mojo::MakeStrongBinding(
-      std::make_unique<ExecutionImplWin>(this, std::move(memory_handle)),
+      std::make_unique<ExecutionImplClDnn>(this, std::move(memory_handle)),
       mojo::MakeRequest(&ptr_info));
   init_params->execution = std::move(ptr_info);
 

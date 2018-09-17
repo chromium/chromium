@@ -8,13 +8,13 @@
 #include "build/build_config.h"
 #include "services/service_manager/public/cpp/service_context.h"
 #if defined(OS_LINUX)
-#include "services/ml/neural_network_impl_linux.h"
+#include "services/ml/neural_network_impl_cl_dnn.h"
 #elif defined(OS_ANDROID)
 #include "services/ml/neural_network_impl_android.h"
 #elif defined(OS_MACOSX)
 #include "services/ml/neural_network_impl_mac.h"
 #elif defined(OS_WIN)
-#include "services/ml/neural_network_impl_win.h"
+#include "services/ml/neural_network_impl_cl_dnn.h"
 #else
 #include "services/ml/neural_network_impl.h"
 #endif
@@ -34,13 +34,13 @@ void MLService::OnStart() {
       context()->CreateQuitClosure()));
 
 #if defined(OS_LINUX)
-  registry_.AddInterface(base::Bind(&NeuralNetworkImplLinux::Create));
+  registry_.AddInterface(base::Bind(&NeuralNetworkImplClDnn::Create));
 #elif defined(OS_ANDROID)
   registry_.AddInterface(base::Bind(&NeuralNetworkImplAndroid::Create));
 #elif defined(OS_MACOSX)
   registry_.AddInterface(base::Bind(&NeuralNetworkImplMac::Create));
 #elif defined(OS_WIN)
-  registry_.AddInterface(base::Bind(&NeuralNetworkImplWin::Create));
+  registry_.AddInterface(base::Bind(&NeuralNetworkImplClDnn::Create));
 #else
   registry_.AddInterface(base::Bind(&NeuralNetworkImpl::Create));
 #endif

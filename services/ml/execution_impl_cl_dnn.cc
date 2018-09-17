@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/ml/execution_impl_win.h"
+#include "services/ml/execution_impl_cl_dnn.h"
 
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
-#include "services/ml/compilation_impl_win.h"
+#include "services/ml/compilation_impl_cl_dnn.h"
 
 namespace ml {
 
-ExecutionImplWin::ExecutionImplWin(const CompilationImplWin* compilation,
+ExecutionImplClDnn::ExecutionImplClDnn(const CompilationImplClDnn* compilation,
                                    mojo::ScopedSharedBufferHandle memory)
     : network_(nullptr) {
   operands_ = compilation->operands_;
@@ -100,7 +100,7 @@ ExecutionImplWin::ExecutionImplWin(const CompilationImplWin* compilation,
   DLOG(INFO) << "[clDNN] succeed to allocate network";
 }
 
-ExecutionImplWin::~ExecutionImplWin() {
+ExecutionImplClDnn::~ExecutionImplClDnn() {
   cldnn_status status;
   if (network_) {
     cldnn_release_network(network_, &status);
@@ -122,8 +122,8 @@ ExecutionImplWin::~ExecutionImplWin() {
   }
 }
 
-void ExecutionImplWin::StartCompute(StartComputeCallback callback) {
-  DLOG(INFO) << "ExecutionImplWin::StartCompute";
+void ExecutionImplClDnn::StartCompute(StartComputeCallback callback) {
+  DLOG(INFO) << "ExecutionImplClDnn::StartCompute";
 
   if (network_ == nullptr) {
     DLOG(ERROR) << "Execution is not initialized successfully";

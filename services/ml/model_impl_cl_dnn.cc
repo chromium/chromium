@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/ml/model_impl_win.h"
+#include "services/ml/model_impl_cl_dnn.h"
 
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
-#include "services/ml/compilation_impl_win.h"
+#include "services/ml/compilation_impl_cl_dnn.h"
 #include "services/ml/public/interfaces/constants.mojom.h"
 #include "third_party/clDNN/api/C/activation.h"
 #include "third_party/clDNN/api/C/concatenation.h"
@@ -45,7 +45,7 @@ inline void CalculateExplicitPadding(bool padding_same,
 
 }  // namespace
 
-ModelImplWin::ModelImplWin() : engine_(nullptr), topology_(nullptr) {
+ModelImplClDnn::ModelImplClDnn() : engine_(nullptr), topology_(nullptr) {
   cldnn_status status;
   cldnn_version version = cldnn_get_version(&status);
   if (status != CLDNN_SUCCESS) {
@@ -111,7 +111,7 @@ ModelImplWin::ModelImplWin() : engine_(nullptr), topology_(nullptr) {
   DLOG(INFO) << "[clDNN] succeed to create topology";
 }
 
-ModelImplWin::~ModelImplWin() {
+ModelImplClDnn::~ModelImplClDnn() {
   cldnn_status status;
   for (size_t i = 0; i < memories_.size(); ++i) {
     cldnn_release_memory(memories_[i], &status);
@@ -137,9 +137,9 @@ ModelImplWin::~ModelImplWin() {
   DLOG(INFO) << "[clDNN] succeed to release engine";
 }
 
-void ModelImplWin::Finish(mojom::ModelInfoPtr model_info,
+void ModelImplClDnn::Finish(mojom::ModelInfoPtr model_info,
                           FinishCallback callback) {
-  DLOG(INFO) << "ModelImplWin::Finish";
+  DLOG(INFO) << "ModelImplClDnn::Finish";
   int32_t result = mojom::NOT_ERROR;
   DLOG(INFO) << "operands(" << model_info->operands.size() << ")";
   for (size_t i = 0; i < model_info->operands.size(); ++i) {
@@ -197,22 +197,22 @@ void ModelImplWin::Finish(mojom::ModelInfoPtr model_info,
   std::move(callback).Run(mojom::NOT_ERROR);
 }
 
-void ModelImplWin::CreateCompilation(CreateCompilationCallback callback) {
-  DLOG(INFO) << "ModelImplWin::CreateCompilation";
+void ModelImplClDnn::CreateCompilation(CreateCompilationCallback callback) {
+  DLOG(INFO) << "ModelImplClDnn::CreateCompilation";
   auto init_params = mojom::CompilationInitParams::New();
   mojom::CompilationPtrInfo ptr_info;
-  mojo::MakeStrongBinding(std::make_unique<CompilationImplWin>(this),
+  mojo::MakeStrongBinding(std::make_unique<CompilationImplClDnn>(this),
                           mojo::MakeRequest(&ptr_info));
   init_params->compilation = std::move(ptr_info);
 
   std::move(callback).Run(mojom::NOT_ERROR, std::move(init_params));
 }
 
-int32_t ModelImplWin::AddOperand(int32_t type,
+int32_t ModelImplClDnn::AddOperand(int32_t type,
                                  const std::vector<uint32_t>& dimensions,
                                  float scale,
                                  int32_t zeroPoint) {
-  DLOG(INFO) << "  ModelImplWin::AddOperand";
+  DLOG(INFO) << "  ModelImplClDnn::AddOperand";
   DLOG(INFO) << "    "
              << "type: " << type;
   DLOG(INFO) << "    "
@@ -232,10 +232,10 @@ int32_t ModelImplWin::AddOperand(int32_t type,
   return mojom::NOT_ERROR;
 }
 
-int32_t ModelImplWin::SetOperandValue(uint32_t index,
+int32_t ModelImplClDnn::SetOperandValue(uint32_t index,
                                       const void* buffer,
                                       uint32_t length) {
-  DLOG(INFO) << "  ModelImplWin::SetOperandValue";
+  DLOG(INFO) << "  ModelImplClDnn::SetOperandValue";
   DLOG(INFO) << "    "
              << "index: " << index;
   DLOG(INFO) << "    "
@@ -270,10 +270,10 @@ int32_t ModelImplWin::SetOperandValue(uint32_t index,
   return mojom::NOT_ERROR;
 }
 
-int32_t ModelImplWin::AddOperation(int32_t type,
+int32_t ModelImplClDnn::AddOperation(int32_t type,
                                    const std::vector<uint32_t>& inputs,
                                    const std::vector<uint32_t>& outputs) {
-  DLOG(INFO) << "  ModelImplWin::AddOperation";
+  DLOG(INFO) << "  ModelImplClDnn::AddOperation";
   DLOG(INFO) << "    "
              << "type: " << type;
   DLOG(INFO) << "    "
@@ -313,10 +313,10 @@ int32_t ModelImplWin::AddOperation(int32_t type,
   return result;
 }
 
-int32_t ModelImplWin::IdentifyInputsAndOutputs(
+int32_t ModelImplClDnn::IdentifyInputsAndOutputs(
     const std::vector<uint32_t>& inputs,
     const std::vector<uint32_t>& outputs) {
-  DLOG(INFO) << "  ModelImplWin::IdentifyInputsAndOutputs";
+  DLOG(INFO) << "  ModelImplClDnn::IdentifyInputsAndOutputs";
   DLOG(INFO) << "    "
              << "inputs(" << inputs.size()
              << "): " << VectorToString(inputs.data(), inputs.size());
@@ -342,7 +342,7 @@ int32_t ModelImplWin::IdentifyInputsAndOutputs(
   return mojom::NOT_ERROR;
 }
 
-int32_t ModelImplWin::CldnnGetLayout(const Operand& operand,
+int32_t ModelImplClDnn::CldnnGetLayout(const Operand& operand,
                                      cldnn_layout& layout,
                                      int32_t format) {
   if (operand.type != mojom::TENSOR_FLOAT32) {
@@ -381,7 +381,7 @@ int32_t ModelImplWin::CldnnGetLayout(const Operand& operand,
   return mojom::NOT_ERROR;
 }
 
-int32_t ModelImplWin::CldnnAddInputLayout(uint32_t index) {
+int32_t ModelImplClDnn::CldnnAddInputLayout(uint32_t index) {
   cldnn_status status;
   const Operand operand = operands_[index];
   cldnn_layout layout;
@@ -412,7 +412,7 @@ int32_t ModelImplWin::CldnnAddInputLayout(uint32_t index) {
   return mojom::NOT_ERROR;
 }
 
-int32_t ModelImplWin::CldnnAddReorderForOutput(int32_t index) {
+int32_t ModelImplClDnn::CldnnAddReorderForOutput(int32_t index) {
   cldnn_status status;
   cldnn_primitive_type_id type_id = cldnn_reorder_type_id(&status);
   if (status != CLDNN_SUCCESS) {
@@ -452,7 +452,7 @@ int32_t ModelImplWin::CldnnAddReorderForOutput(int32_t index) {
   return mojom::NOT_ERROR;
 }
 
-int32_t ModelImplWin::CldnnAddData(uint32_t index) {
+int32_t ModelImplClDnn::CldnnAddData(uint32_t index) {
   cldnn_status status;
   const Operand operand = operands_[index];
   cldnn_layout layout;
@@ -537,7 +537,7 @@ int32_t ModelImplWin::CldnnAddData(uint32_t index) {
   return mojom::NOT_ERROR;
 }
 
-int32_t ModelImplWin::CldnnAddActivationByFusedCode(const std::string& input,
+int32_t ModelImplClDnn::CldnnAddActivationByFusedCode(const std::string& input,
                                                     const std::string& id,
                                                     int32_t fuse_code) {
   cldnn_status status;
@@ -588,7 +588,7 @@ int32_t ModelImplWin::CldnnAddActivationByFusedCode(const std::string& input,
   return mojom::NOT_ERROR;
 }
 
-int32_t ModelImplWin::CldnnAddElementwise(
+int32_t ModelImplClDnn::CldnnAddElementwise(
     int32_t type,
     const std::vector<uint32_t>& inputs,
     const std::vector<uint32_t>& outputs) {
@@ -674,7 +674,7 @@ int32_t ModelImplWin::CldnnAddElementwise(
   return mojom::NOT_ERROR;
 }
 
-int32_t ModelImplWin::CldnnAddConvolution(
+int32_t ModelImplClDnn::CldnnAddConvolution(
     int32_t type,
     const std::vector<uint32_t>& inputs,
     const std::vector<uint32_t>& outputs) {
@@ -829,8 +829,8 @@ int32_t ModelImplWin::CldnnAddConvolution(
         return mojom::OP_FAILED;
       }
 
-      for (uint32_t y = 0; y < filter_height; ++y) {
-        for (uint32_t x = 0; x < filter_width; ++x) {
+      for (int32_t y = 0; y < filter_height; ++y) {
+        for (int32_t x = 0; x < filter_width; ++x) {
           filter_ptr[y * filter_width + x] =
               weights_value_ptr[y * filter_width * depth_out + x * depth_out +
                                 c];
@@ -1006,7 +1006,7 @@ int32_t ModelImplWin::CldnnAddConvolution(
   return mojom::NOT_ERROR;
 }
 
-int32_t ModelImplWin::CldnnAddPooling(int32_t type,
+int32_t ModelImplClDnn::CldnnAddPooling(int32_t type,
                                       const std::vector<uint32_t>& inputs,
                                       const std::vector<uint32_t>& outputs) {
   const uint32_t output_index = outputs[0];
@@ -1161,7 +1161,7 @@ int32_t ModelImplWin::CldnnAddPooling(int32_t type,
   return mojom::NOT_ERROR;
 }
 
-int32_t ModelImplWin::CldnnAddSoftmax(int32_t type,
+int32_t ModelImplClDnn::CldnnAddSoftmax(int32_t type,
                                       const std::vector<uint32_t>& inputs,
                                       const std::vector<uint32_t>& outputs) {
   cldnn_status status;
@@ -1207,7 +1207,7 @@ int32_t ModelImplWin::CldnnAddSoftmax(int32_t type,
   return mojom::NOT_ERROR;
 }
 
-int32_t ModelImplWin::CldnnAddReshape(int32_t type,
+int32_t ModelImplClDnn::CldnnAddReshape(int32_t type,
                                       const std::vector<uint32_t>& inputs,
                                       const std::vector<uint32_t>& outputs) {
   cldnn_status status;
@@ -1250,7 +1250,7 @@ int32_t ModelImplWin::CldnnAddReshape(int32_t type,
   return mojom::NOT_ERROR;
 }
 
-int32_t ModelImplWin::CldnnAddConcatenation(
+int32_t ModelImplClDnn::CldnnAddConcatenation(
     int32_t type,
     const std::vector<uint32_t>& inputs,
     const std::vector<uint32_t>& outputs) {
@@ -1267,7 +1267,7 @@ int32_t ModelImplWin::CldnnAddConcatenation(
   const int32_t inputs_count = inputs.size() - 1;
   std::vector<std::string> input_ids(inputs_count);
   std::vector<cldnn_primitive_id> input_ids_array(inputs_count);
-  for (size_t i = 0; i < inputs_count; ++i) {
+  for (int32_t i = 0; i < inputs_count; ++i) {
     input_ids[i] = base::NumberToString(inputs[i]);
     input_ids_array[i] = input_ids[i].c_str();
     // Add constants.

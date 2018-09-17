@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_ML_MODEL_IMPL_WIN_H_
-#define SERVICES_ML_MODEL_IMPL_WIN_H_
+#ifndef SERVICES_ML_MODEL_IMPL_CL_DNN_H_
+#define SERVICES_ML_MODEL_IMPL_CL_DNN_H_
 
 #include <map>
 #include <memory>
@@ -17,12 +17,12 @@
 
 namespace ml {
 
-class CompilationImplWin;
+class CompilationImplClDnn;
 
-class ModelImplWin : public mojom::Model {
+class ModelImplClDnn : public mojom::Model {
  public:
-  ModelImplWin();
-  ~ModelImplWin() override;
+  ModelImplClDnn();
+  ~ModelImplClDnn() override;
 
   void Finish(mojom::ModelInfoPtr model_info, FinishCallback callback) override;
 
@@ -69,7 +69,7 @@ class ModelImplWin : public mojom::Model {
                                 const std::vector<uint32_t>& outputs);
 
  private:
-  friend class CompilationImplWin;
+  friend class CompilationImplClDnn;
 
   std::vector<Operand> operands_;
   std::vector<Operation> operations_;
@@ -83,9 +83,9 @@ class ModelImplWin : public mojom::Model {
   cldnn_topology topology_;
   std::vector<cldnn_memory> memories_;
 
-  DISALLOW_COPY_AND_ASSIGN(ModelImplWin);
+  DISALLOW_COPY_AND_ASSIGN(ModelImplClDnn);
 };
 
 }  // namespace ml
 
-#endif  // SERVICES_ML_MODEL_IMPL_WIN_H_
+#endif  // SERVICES_ML_MODEL_IMPL_CL_DNN_H_

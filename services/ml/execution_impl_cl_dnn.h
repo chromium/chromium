@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_ML_EXECUTION_IMPL_WIN_H_
-#define SERVICES_ML_EXECUTION_IMPL_WIN_H_
+#ifndef SERVICES_ML_EXECUTION_IMPL_CL_DNN_H_
+#define SERVICES_ML_EXECUTION_IMPL_CL_DNN_H_
 
 #include <memory>
 #include <vector>
@@ -16,12 +16,12 @@
 
 namespace ml {
 
-class CompilationImplWin;
+class CompilationImplClDnn;
 
-class ExecutionImplWin : public mojom::Execution {
+class ExecutionImplClDnn : public mojom::Execution {
  public:
-  ExecutionImplWin(const CompilationImplWin*, mojo::ScopedSharedBufferHandle);
-  ~ExecutionImplWin() override;
+  ExecutionImplClDnn(const CompilationImplClDnn*, mojo::ScopedSharedBufferHandle);
+  ~ExecutionImplClDnn() override;
 
   void StartCompute(StartComputeCallback callback) override;
 
@@ -38,9 +38,9 @@ class ExecutionImplWin : public mojom::Execution {
   std::vector<cldnn_memory> input_memories_;
   cldnn_network network_;
 
-  DISALLOW_COPY_AND_ASSIGN(ExecutionImplWin);
+  DISALLOW_COPY_AND_ASSIGN(ExecutionImplClDnn);
 };
 
 }  // namespace ml
 
-#endif  // SERVICES_ML_EXECUTION_IMPL_WIN_H_
+#endif  // SERVICES_ML_EXECUTION_IMPL_CL_DNN_H_
