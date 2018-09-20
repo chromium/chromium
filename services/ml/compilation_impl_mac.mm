@@ -55,6 +55,13 @@ API_AVAILABLE(macosx(10.13))
 - (void*)weights {
   return self.weights_;
 }
+- (id)copyWithZone:(struct _NSZone *)zone {
+  ConvDataSource *source = [[ConvDataSource allocWithZone:zone] init];
+  source.weights_ = self.weights_;
+  source.bias_ = self.bias_;
+  source.desc_ = self.desc_;
+  return source;
+}
 @end
 
 namespace ml {
