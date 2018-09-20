@@ -1365,7 +1365,7 @@ const char kOverlayScrollbarsDescription[] =
 const char kOverlayScrollbarsFlashAfterAnyScrollUpdateName[] =
     "Flash Overlay Scrollbars After Any Scroll Update";
 const char kOverlayScrollbarsFlashAfterAnyScrollUpdateDescription[] =
-    "Flash Overlay Scrollbars After any scroll update happends in page. You"
+    "Flash Overlay Scrollbars After any scroll update happens in page. You"
     " must also enable Overlay Scrollbars.";
 
 const char kOverlayScrollbarsFlashWhenMouseEnterName[] =
@@ -1815,7 +1815,7 @@ const char kSyncUSSAutofillProfileDescription[] =
 const char kSyncUSSAutofillWalletDataName[] =
     "Enable USS for autofill wallet data";
 const char kSyncUSSAutofillWalletDataDescription[] =
-    "Enables the new implementation of autofill walet data sync";
+    "Enables the new implementation of autofill wallet data sync";
 
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
@@ -2958,6 +2958,10 @@ const char kContentFullscreenDescription[] =
     "Fullscreen content window detaches from main browser window and goes to "
     "a new space without moving or changing the original browser window.";
 
+const char kDialogTouchBarName[] = "Dialog Touch Bar";
+const char kDialogTouchBarDescription[] =
+    "Shows Dialog buttons on the Touch Bar.";
+
 const char kEnableWebAuthenticationTouchIdName[] =
     "Web Authentication API Touch ID support";
 const char kEnableWebAuthenticationTouchIdDescription[] =
@@ -3293,7 +3297,7 @@ const char kEnableVirtualKeyboardUkmDescription[] =
 const char kEnableZeroStateSuggestionsName[] = "Enable Zero State Suggetions";
 const char kEnableZeroStateSuggestionsDescription[] =
     "Enable Zero State Suggestions feature in Launcher, which will show "
-    "suggetions when launcher search box is active with an empty query";
+    "suggestions when launcher search box is active with an empty query";
 
 const char kEnableZipArchiverPackerName[] = "ZIP archiver - Packer";
 const char kEnableZipArchiverPackerDescription[] =
@@ -3301,7 +3305,7 @@ const char kEnableZipArchiverPackerDescription[] =
 
 const char kEolNotificationName[] = "Disable Device End of Life notification.";
 const char kEolNotificationDescription[] =
-    "Disable Notifcation when Device is End of Life.";
+    "Disable Notification when Device is End of Life.";
 
 const char kExperimentalAccessibilityFeaturesName[] =
     "Experimental accessibility features";
