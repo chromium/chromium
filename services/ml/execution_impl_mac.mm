@@ -513,11 +513,21 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
                 [encoder endEncoding];
               }
             } else {
+              if (src_img.featureChannels == 3 && dst_img.featureChannels == 4) {
+                DLOG(ERROR) << @"Number of source feature channels needed by "
+                                "convolution 4 are not available in image with"
+                                " 3 feature channels";
+                success = false;
+                break;
+              }
               [kernel encodeToCommandBuffer:command_buffer
                                 sourceImage:src_img
                            destinationImage:dst_img];
             }
           }
+
+          if (!success)
+            break;
 
           for (size_t i = 0; i < compilation_->outputs_.size(); ++i) {
             MPSImage* output_img = output_mpsimages_[i];

@@ -21,6 +21,7 @@ struct ExecutionInitParams {
 interface Compilation {
   Finish(int32 preference)
     => (int32 resultCode);
+  // init_params is nullable when failed to create execution
   CreateExecution()
-    => (int32 resultCode, ExecutionInitParams init_params);
+    => (int32 resultCode, ExecutionInitParams? init_params);
 };

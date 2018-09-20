@@ -561,6 +561,11 @@ namespace ml {
 
       MPSCNNConvolution* conv;
       if (depthwise) {
+        if (depth_in != depth_out) {
+          DLOG(ERROR) << @"for depth wise convolution, currently only channel"
+                          " multiplier of 1 is supported";
+          return false;
+        }
         // Convert from WebML weights shape [1, filter_height, filter_width,
         // depth_out] to MPSCNNConvlution weight[ outputChannels ][ kernelHeight
         // ][ kernelWidth ][ inputChannels / groups ]
