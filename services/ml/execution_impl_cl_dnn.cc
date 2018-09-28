@@ -8,11 +8,12 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "services/ml/compilation_impl_cl_dnn.h"
+#include "services/ml/model_impl_cl_dnn.h"
 
 namespace ml {
 
 ExecutionImplClDnn::ExecutionImplClDnn(const CompilationImplClDnn* compilation,
-                                   mojo::ScopedSharedBufferHandle memory)
+                                       mojo::ScopedSharedBufferHandle memory)
     : network_(nullptr) {
   operands_ = compilation->operands_;
   operations_ = compilation->operations_;
@@ -78,21 +79,21 @@ ExecutionImplClDnn::ExecutionImplClDnn(const CompilationImplClDnn* compilation,
       return;
     }
 
-    cldnn_memory memory = cldnn_attach_memory(
+    cldnn_memory memory = LATE(cldnn_attach_memory)(
         layout, static_cast<void*>(info->mapping.get()), info->length, &status);
     if (status != CLDNN_SUCCESS) {
       DLOG(ERROR) << "[clDNN] failed to attach memory " << status << " "
-                  << std::string(cldnn_get_last_error_message());
+                  << std::string(LATE(cldnn_get_last_error_message)());
       return;
     }
     DLOG(INFO) << "[clDNN] succeed to attach memory for input " << i;
     input_memories_[i] = memory;
   }
 
-  network_ = cldnn_allocate_network(compilation->program_, &status);
+  network_ = LATE(cldnn_allocate_network)(compilation->program_, &status);
   if (status != CLDNN_SUCCESS) {
     DLOG(ERROR) << "[clDNN] failed to allocate network " << status << " "
-                << std::string(cldnn_get_last_error_message());
+                << std::string(LATE(cldnn_get_last_error_message)());
     network_ = nullptr;
     return;
   }
@@ -103,19 +104,19 @@ ExecutionImplClDnn::ExecutionImplClDnn(const CompilationImplClDnn* compilation,
 ExecutionImplClDnn::~ExecutionImplClDnn() {
   cldnn_status status;
   if (network_) {
-    cldnn_release_network(network_, &status);
+    LATE(cldnn_release_network)(network_, &status);
     if (status != CLDNN_SUCCESS) {
       DLOG(ERROR) << "[clDNN] failed to release network " << status << " "
-                  << std::string(cldnn_get_last_error_message());
+                  << std::string(LATE(cldnn_get_last_error_message)());
       return;
     }
     DLOG(INFO) << "[clDNN] succeed to release network";
   }
   for (size_t i = 0; i < input_memories_.size(); ++i) {
-    cldnn_release_memory(input_memories_[i], &status);
+    LATE(cldnn_release_memory)(input_memories_[i], &status);
     if (status != CLDNN_SUCCESS) {
       DLOG(ERROR) << "[clDNN] failed to release memory " << status << " "
-                  << std::string(cldnn_get_last_error_message());
+                  << std::string(LATE(cldnn_get_last_error_message)());
       return;
     }
     DLOG(INFO) << "[clDNN] succeed to release memory for input " << i;
@@ -144,22 +145,22 @@ void ExecutionImplClDnn::StartCompute(StartComputeCallback callback) {
 
   for (size_t i = 0; i < inputs_.size(); ++i) {
     std::string input_id_str = base::NumberToString(inputs_[i]);
-    cldnn_set_network_input(network_, input_id_str.c_str(), input_memories_[i],
-                            &status);
+    LATE(cldnn_set_network_input)
+    (network_, input_id_str.c_str(), input_memories_[i], &status);
     if (status != CLDNN_SUCCESS) {
       DLOG(ERROR) << "[clDNN] failed to set network input " << i << " "
                   << status << " "
-                  << std::string(cldnn_get_last_error_message());
+                  << std::string(LATE(cldnn_get_last_error_message)());
       std::move(callback).Run(mojom::OP_FAILED);
       return;
     }
     DLOG(INFO) << "[clDNN] succeed to set network input " << i;
   }
 
-  cldnn_execute_network(network_, nullptr, 0, &status);
+  LATE(cldnn_execute_network)(network_, nullptr, 0, &status);
   if (status != CLDNN_SUCCESS) {
     DLOG(ERROR) << "[clDNN] failed to execute network " << status << " "
-                << std::string(cldnn_get_last_error_message());
+                << std::string(LATE(cldnn_get_last_error_message)());
     std::move(callback).Run(mojom::OP_FAILED);
     return;
   }
@@ -169,28 +170,28 @@ void ExecutionImplClDnn::StartCompute(StartComputeCallback callback) {
     // Use the reordered outputs (byxf).
     std::string output_id_str =
         base::NumberToString(outputs_[i]) + std::string("-reordered");
-    cldnn_memory memory = cldnn_get_network_output_memory(
+    cldnn_memory memory = LATE(cldnn_get_network_output_memory)(
         network_, output_id_str.c_str(), &status);
     if (status != CLDNN_SUCCESS) {
       DLOG(ERROR) << "[clDNN] failed to get network output " << i << " "
                   << status << " "
-                  << std::string(cldnn_get_last_error_message());
+                  << std::string(LATE(cldnn_get_last_error_message)());
       std::move(callback).Run(mojom::OP_FAILED);
       return;
     }
-    void* output_ptr = cldnn_lock_memory(memory, &status);
+    void* output_ptr = LATE(cldnn_lock_memory)(memory, &status);
     if (status != CLDNN_SUCCESS) {
       DLOG(ERROR) << "[clDNN] failed to lock memory " << status << " "
-                  << std::string(cldnn_get_last_error_message());
+                  << std::string(LATE(cldnn_get_last_error_message)());
       std::move(callback).Run(mojom::OP_FAILED);
       return;
     }
     std::unique_ptr<OperandInfo>& info = outputs_info_[i];
     memcpy(static_cast<void*>(info->mapping.get()), output_ptr, info->length);
-    cldnn_unlock_memory(memory, &status);
+    LATE(cldnn_unlock_memory)(memory, &status);
     if (status != CLDNN_SUCCESS) {
       DLOG(ERROR) << "[clDNN] failed to unlock memory " << status << " "
-                  << std::string(cldnn_get_last_error_message());
+                  << std::string(LATE(cldnn_get_last_error_message)());
       std::move(callback).Run(mojom::OP_FAILED);
       return;
     }

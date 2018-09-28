@@ -20,7 +20,8 @@ class CompilationImplClDnn;
 
 class ExecutionImplClDnn : public mojom::Execution {
  public:
-  ExecutionImplClDnn(const CompilationImplClDnn*, mojo::ScopedSharedBufferHandle);
+  ExecutionImplClDnn(const CompilationImplClDnn*,
+                     mojo::ScopedSharedBufferHandle);
   ~ExecutionImplClDnn() override;
 
   void StartCompute(StartComputeCallback callback) override;

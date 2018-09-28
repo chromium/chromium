@@ -24,10 +24,10 @@ CompilationImplClDnn::CompilationImplClDnn(const ModelImplClDnn* model)
 CompilationImplClDnn::~CompilationImplClDnn() {
   cldnn_status status;
   if (program_) {
-    cldnn_release_program(program_, &status);
+    LATE(cldnn_release_program)(program_, &status);
     if (status != CLDNN_SUCCESS) {
       DLOG(ERROR) << "[clDNN] failed to release program " << status << " "
-                  << std::string(cldnn_get_last_error_message());
+                  << std::string(LATE(cldnn_get_last_error_message)());
     }
   }
   DLOG(INFO) << "[clDNN] succeed to release program";
@@ -43,12 +43,12 @@ void CompilationImplClDnn::Finish(int32_t preference, FinishCallback callback) {
   bool optimize_data = true;
   build_options.push_back(
       {.type = cldnn_build_option_optimize_data, .data = &optimize_data});
-  program_ =
-      cldnn_build_program(model_->engine_, model_->topology_,
-                          build_options.data(), build_options.size(), &status);
+  program_ = LATE(cldnn_build_program)(model_->engine_, model_->topology_,
+                                       build_options.data(),
+                                       build_options.size(), &status);
   if (status != CLDNN_SUCCESS) {
     DLOG(ERROR) << "[clDNN] failed to build program " << status << " "
-                << std::string(cldnn_get_last_error_message());
+                << std::string(LATE(cldnn_get_last_error_message)());
     std::move(callback).Run(mojom::OP_FAILED);
     return;
   }

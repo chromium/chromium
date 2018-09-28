@@ -16,19 +16,19 @@ source_set("lib") {
 
   if (is_linux) {
     sources += [
+      "cl_dnn_symbol_table.cc",
+      "cl_dnn_symbol_table.h",
       "compilation_impl_cl_dnn.cc",
       "compilation_impl_cl_dnn.h",
       "execution_impl_cl_dnn.cc",
       "execution_impl_cl_dnn.h",
+      "late_binding_symbol_table.cc",
+      "late_binding_symbol_table.h",
       "model_impl_cl_dnn.cc",
       "model_impl_cl_dnn.h",
       "neural_network_impl_cl_dnn.cc",
       "neural_network_impl_cl_dnn.h",
     ]
-
-    lib_dirs = [ "//third_party/clDNN/build/out/Linux64/Release" ]
-
-    libs = [ "clDNN64" ]
   } else if (is_android) {
     sources += [
       "compilation_impl_android.cc",
@@ -59,9 +59,7 @@ source_set("lib") {
     } else {
       assert(false, "Need android neuralnetworks support for your target arch.")
     }
-    lib_dirs = [
-      "${android_ndk_root}/platforms/android-27/${libdir}",
-    ]
+    lib_dirs = [ "${android_ndk_root}/platforms/android-27/${libdir}" ]
 
     libs = [ "neuralnetworks" ]
   } else if (is_mac) {
@@ -113,10 +111,6 @@ source_set("lib") {
     deps += [ ":copy_cldnn_dll" ]
   }
 
-  if (is_linux) {
-    deps += [ ":copy_cldnn_so" ]
-  }
-
   public_deps = [
     "//base",
     "//services/ml/public/interfaces",
@@ -129,18 +123,6 @@ if (is_win) {
   copy("copy_cldnn_dll") {
     sources = [
       "$dll_path/clDNN64.dll",
-    ]
-    outputs = [
-      "$root_out_dir/{{source_file_part}}",
-    ]
-  }
-}
-
-if (is_linux) {
-  so_path = "//third_party/clDNN/build/out/Linux64/Release"
-  copy("copy_cldnn_so") {
-    sources = [
-      "$so_path/libclDNN64.so",
     ]
     outputs = [
       "$root_out_dir/{{source_file_part}}",
