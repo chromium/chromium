@@ -31,7 +31,7 @@ The following resources can provide background on how Git works:
 
 ## Configuring the output of "git log"
 
-By default, the date that "git log" displays is the "author date".In Chromium,
+By default, the date that "git log" displays is the "author date". In Chromium,
 this generally corresponds to the date that the committed patch was last
 uploaded. In most cases, however, the date that is of interest is the date that
 the patch was committed in the tree. To configure "git log" to instead display
