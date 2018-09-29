@@ -144,7 +144,13 @@ ModelImplClDnn::ModelImplClDnn() : engine_(nullptr), topology_(nullptr) {
   DLOG(INFO) << "[clDNN] succeed to create topology";
 }
 
+bool ModelImplClDnn::IsValid() {
+  return engine_ && topology_ ? true : false;
+}
+
 ModelImplClDnn::~ModelImplClDnn() {
+  if (!IsValid()) return;
+
   cldnn_status status;
   for (size_t i = 0; i < memories_.size(); ++i) {
     LATE(cldnn_release_memory)(memories_[i], &status);

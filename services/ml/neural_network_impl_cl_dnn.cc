@@ -23,9 +23,15 @@ NeuralNetworkImplClDnn::~NeuralNetworkImplClDnn() = default;
 
 void NeuralNetworkImplClDnn::CreateModel(CreateModelCallback callback) {
   LOG(INFO) << "createModel";
+  auto model_impl_cl_dnn = std::make_unique<ModelImplClDnn>();
+  if (!model_impl_cl_dnn->IsValid()) {
+    std::move(callback).Run(mojom::INCOMPLETE, nullptr);
+    return;
+  }
+
   auto init_params = mojom::ModelInitParams::New();
   mojom::ModelPtrInfo model_ptr_info;
-  mojo::MakeStrongBinding(std::make_unique<ModelImplClDnn>(),
+  mojo::MakeStrongBinding(std::move(model_impl_cl_dnn),
                           mojo::MakeRequest(&model_ptr_info));
   init_params->model = std::move(model_ptr_info);
 

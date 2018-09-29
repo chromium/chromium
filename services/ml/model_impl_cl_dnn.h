@@ -37,6 +37,8 @@ class ModelImplClDnn : public mojom::Model {
   ModelImplClDnn();
   ~ModelImplClDnn() override;
 
+  bool IsValid();
+
   void Finish(mojom::ModelInfoPtr model_info, FinishCallback callback) override;
 
   void CreateCompilation(CreateCompilationCallback callback) override;
