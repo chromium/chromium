@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "services/ml/model_impl_mac.h"
-#include "services/ml/compilation_impl_mac.h"
+
 #include "base/strings/string_number_conversions.h"
+#include "services/ml/compilation_impl_mac.h"
 
 namespace ml {
 
-ModelImplMac::ModelImplMac() {}
-ModelImplMac::~ModelImplMac() {}
+ModelImplMac::ModelImplMac() = default;
+ModelImplMac::~ModelImplMac() = default;
 
 int32_t ModelImplMac::AddOperand(int32_t type, const std::vector<uint32_t>& dimensions, float scale, int32_t zeroPoint) {
   DLOG(INFO) << "  ModelImplMac::AddOperand";

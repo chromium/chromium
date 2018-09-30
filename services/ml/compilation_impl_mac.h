@@ -5,17 +5,18 @@
 #ifndef SERVICES_ML_COMPILATION_IMPL_MAC_H_
 #define SERVICES_ML_COMPILATION_IMPL_MAC_H_
 
-#include "base/macros.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
-#include "services/ml/public/interfaces/compilation.mojom.h"
-#include "services/ml/public/interfaces/constants.mojom.h"
-
-#include "services/ml/common.h"
-#include "services/ml/model_impl_mac.h"
+#import <Accelerate/Accelerate.h>
+#include <map>
+#include <memory>
+#include <vector>
 
 #include "base/mac/scoped_nsobject.h"
-
-#import <Accelerate/Accelerate.h>
+#include "base/macros.h"
+#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "services/ml/common.h"
+#include "services/ml/model_impl_mac.h"
+#include "services/ml/public/interfaces/compilation.mojom.h"
+#include "services/ml/public/interfaces/constants.mojom.h"
 
 @class MPSCNNKernel;
 @class MPSCNNBinaryKernel;
@@ -32,16 +33,16 @@ typedef enum LocalOperation {
 
 struct OperandMac : public Operand {
   OperandMac();
-  OperandMac(const OperandMac&);
-  OperandMac(const Operand&);
+  explicit OperandMac(const OperandMac&);
+  explicit OperandMac(const Operand&);
   ~OperandMac();
   uint32_t read_count;
 };
 
 struct OperationMac : public Operation {
   OperationMac();
-  OperationMac(const OperationMac&);
-  OperationMac(const Operation&);
+  explicit OperationMac(const OperationMac&);
+  explicit OperationMac(const Operation&);
   ~OperationMac();
   base::scoped_nsobject<MPSCNNKernel> mpscnn_kernel;
   base::scoped_nsobject<MPSCNNBinaryKernel> mpscnn_binary_kernel;
@@ -55,29 +56,42 @@ struct OperationMac : public Operation {
 
 class CompilationImplMac : public mojom::Compilation {
  public:
-  CompilationImplMac(ModelImplMac*);
+  explicit CompilationImplMac(ModelImplMac*);
   ~CompilationImplMac() override;
 
   void Finish(int32_t preference, FinishCallback callback) override;
   void CreateExecution(CreateExecutionCallback callback) override;
 
  private:
-  bool ParameterExtracterForConv(const OperationMac& operation,
-      std::vector<uint32_t>& inputs, std::vector<uint32_t>& outputs,
-      int32_t& input_width, int32_t& input_height, int32_t& output_width,
-      int32_t& output_height, bool& implicit_padding, int32_t& padding_left,
-      int32_t& padding_right, int32_t& padding_top, int32_t& padding_bottom,
-      int32_t& stride_width, int32_t& stride_height, int32_t& padding_code,
-      int32_t& fuse_code, int32_t& depth_out, int32_t& filter_height,
-      int32_t& filter_width, int32_t& depth_in, int32_t& index,
-      int32_t& depthwise_multiplier, bool depthwise = false);
+  bool ParameterExtracterForConv(const OperationMac&,
+                                 const std::vector<uint32_t>&,
+                                 const std::vector<uint32_t>&,
+                                 int32_t&,
+                                 int32_t&,
+                                 int32_t&,
+                                 int32_t&,
+                                 bool&,
+                                 int32_t&,
+                                 int32_t&,
+                                 int32_t&,
+                                 int32_t&,
+                                 int32_t&,
+                                 int32_t&,
+                                 int32_t&,
+                                 int32_t&,
+                                 int32_t&,
+                                 int32_t&,
+                                 int32_t&,
+                                 int32_t&,
+                                 int32_t&,
+                                 int32_t&,
+                                 bool depthwise = false);
   bool CompileConv2DOrDepthwiseConv2D(OperationMac&);
   bool CompileAverageOrMaxPool2D(OperationMac&);
   bool CompileSoftmax(OperationMac&);
   bool CompileReshape(OperationMac&);
   bool CompileConcatenation(OperationMac&);
   bool CompileArithmetic(OperationMac&);
-
   bool CompileConv2DBNNS(OperationMac&);
   bool CompileAverageOrMaxPool2DBNNS(OperationMac&);
   bool CompileSoftmaxBNNS(OperationMac&);

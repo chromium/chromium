@@ -42,6 +42,6 @@ class ModelImplMac : public mojom::Model {
   DISALLOW_COPY_AND_ASSIGN(ModelImplMac);
 };
 
-}  // namespace  
+}  // namespace ml
 
 #endif  // SERVICES_ML_MODEL_IMPL_MAC_H_

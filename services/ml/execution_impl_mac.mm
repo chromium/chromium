@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "services/ml/execution_impl_mac.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
-#include "services/ml/mpscnn_context.h"
 
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
+
+#include "base/mac/scoped_nsautorelease_pool.h"
+#include "services/ml/mpscnn_context.h"
 
 namespace ml {
 
@@ -235,8 +236,7 @@ void ExecutionImplMac::PrepareBnnsOperandsMemory() {
       continue;
     }
     OperandMac& operand = compilation_->operands_[i];
-    int length = operand.requiredSize();
-    bnns_operands_memory_map_[i] = (float*)malloc(length);
+    bnns_operands_memory_map_[i] = (float*)malloc(operand.requiredSize());
   }
 }
 
@@ -292,20 +292,20 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
               }
               if (operation.local_operation == KBNNSFilter &&
                   operation_input.dimensions.size() == 4) {
-                int32_t input_batch = operation_input.dimensions[0];
-                int32_t ori_input_height = operation_input.dimensions[1];
-                int32_t input_height =
+                const int32_t input_batch = operation_input.dimensions[0];
+                const int32_t ori_input_height = operation_input.dimensions[1];
+                const int32_t input_height =
                     operation_input.dimensions[1] + operation.offset_y;
-                int32_t ori_input_width = operation_input.dimensions[2];
-                int32_t input_width =
+                const int32_t ori_input_width = operation_input.dimensions[2];
+                const int32_t input_width =
                     operation_input.dimensions[2] + operation.offset_x;
-                int32_t ori_input_depth = operation_input.dimensions[3];
-                int32_t input_depth = operation_input.dimensions[3];
-                int32_t ori_input_row_stride = ori_input_width;
-                int32_t input_row_stride = input_width;
-                int32_t ori_input_image_stride =
+                const int32_t ori_input_depth = operation_input.dimensions[3];
+                const int32_t input_depth = operation_input.dimensions[3];
+                const int32_t ori_input_row_stride = ori_input_width;
+                const int32_t input_row_stride = input_width;
+                const int32_t ori_input_image_stride =
                     ori_input_width * ori_input_height;
-                int32_t input_image_stride = input_width * input_height;
+                const int32_t input_image_stride = input_width * input_height;
 
                 float* bnns_input = (float*)malloc(sizeof(float) * input_batch *
                     input_image_stride * input_depth);
@@ -354,7 +354,7 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
             }
 
             if (operation.local_operation == KBNNSFilter) {
-              int32_t input_batch_size = operation_input.dimensions[0];
+              const int32_t input_batch_size = operation_input.dimensions[0];
               int result;
               if (input_batch_size == 1) {
                 result = BNNSFilterApply(operation.filter, src, des);
@@ -385,10 +385,10 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
                 uint32_t concat_input_idx = operation.inputs[i];
                 OperandMac& operand = compilation_->operands_[concat_input_idx];
                 float* src = bnns_operands_memory_map_[concat_input_idx];
-                int32_t width = operand.dimensions[1];
-                int32_t height = operand.dimensions[2];
-                int32_t channels = operand.dimensions[3];
-                int32_t channel_offset = width * height;
+                const int32_t width = operand.dimensions[1];
+                const int32_t height = operand.dimensions[2];
+                const int32_t channels = operand.dimensions[3];
+                const int32_t channel_offset = width * height;
                 for (int32_t c = 0; c < channels; c++) {
                   float* temp_des = des + c * channel_offset + i * channel_offset * channels;
                   float* temp_src = src + c * channel_offset;
@@ -540,13 +540,8 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
           for (size_t i = 0; i < compilation_->outputs_.size(); ++i) {
             std::unique_ptr<OperandInfo>& output_data = outputs_info_[i];
             id<MTLBuffer> output_buffer = output_mtlbuffers_[i];
-            // LOG(INFO) << "Copy memory back from output buffer with length "
-            // << output_buffer.length;
             memcpy(output_data->mapping.get(), [output_buffer contents],
                    output_data->length);
-            // OperandMac& operand =
-            // compilation_->operands_[compilation_->outputs_[i]];
-            // PrintOperand(operand, output_data);
           }
 
           tmp_mpsimage_cache_.clear();
