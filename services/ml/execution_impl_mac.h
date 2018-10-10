@@ -19,8 +19,10 @@
 #include <map>
 
 #import <Metal/MTLBuffer.h>
+#import <Metal/MTLCommandBuffer.h>
 
 @class MPSImage;
+@class MPSTemporaryImage;
 
 namespace ml {
 
@@ -39,6 +41,10 @@ class ExecutionImplMac : public mojom::Execution {
   }
 
  private:
+  MPSImage* API_AVAILABLE(macos(10_13)) FindInputMPSImageByIndex(uint32_t);
+  MPSImage* API_AVAILABLE(macos(10_13)) FindOutputMPSImageByIndex(uint32_t);
+  MPSTemporaryImage* API_AVAILABLE(macos(10_13)) FindOrCreateMPSTemporaryImageByIndex(uint32_t, id<MTLCommandBuffer>&);
+
   CompilationImplMac* compilation_;
 
   std::vector<std::unique_ptr<OperandInfo>> inputs_info_;
@@ -50,6 +56,7 @@ class ExecutionImplMac : public mojom::Execution {
   API_AVAILABLE(macos(10_13)) std::vector<id<MTLBuffer>> input_mtlbuffers_;
   API_AVAILABLE(macos(10_13)) std::vector<base::scoped_nsobject<MPSImage> > output_mpsimages_;
   API_AVAILABLE(macos(10_13)) std::vector<id<MTLBuffer>> output_mtlbuffers_;
+  API_AVAILABLE(macos(10_13)) std::map<uint32_t, MPSTemporaryImage*> tmp_mpsimage_cache_;
 
   DISALLOW_COPY_AND_ASSIGN(ExecutionImplMac);
 };

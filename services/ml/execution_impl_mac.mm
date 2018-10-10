@@ -426,7 +426,6 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
             [encoder endEncoding];
           }
 
-          std::map<uint32_t, MPSTemporaryImage*> tmp_mpsimage_cache;
           for (size_t i = 0; i < compilation_->operations_.size(); i++) {
             const OperationMac& operation = compilation_->operations_[i];
             MPSCNNKernel* kernel = operation.mpscnn_kernel.get();
@@ -438,60 +437,25 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
                         << operation.type;
               continue;
             }
-            MPSImage* src_img = nullptr;
-            MPSImage* dst_img = nullptr;
-            uint32_t operation_input_idx = operation.inputs[0];
-            const OperandMac& operation_input =
-                compilation_->operands_[operation_input_idx];
-            for (size_t i = 0; i < compilation_->inputs_.size(); ++i) {
-              const uint32_t input_idx = compilation_->inputs_[i];
-              if (operation_input_idx == input_idx) {
-                src_img = input_mpsimages_[i];
-                break;
-              }
-            }
-            uint32_t operation_output_idx = operation.outputs[0];
+            const uint32_t operation_input_idx = operation.inputs[0];
+            const uint32_t operation_output_idx = operation.outputs[0];
             const OperandMac& operation_output =
                 compilation_->operands_[operation_output_idx];
-            for (size_t j = 0; j < compilation_->outputs_.size(); ++j) {
-              if (operation_output_idx == compilation_->outputs_[j]) {
-                dst_img = output_mpsimages_[j];
+            MPSImage* src_img = FindInputMPSImageByIndex(operation_input_idx);
+            MPSImage* dst_img = FindOutputMPSImageByIndex(operation_output_idx);
+            if (!src_img) {
+              src_img = FindOrCreateMPSTemporaryImageByIndex(operation_input_idx, command_buffer);
+              if (!src_img) {
+                success = false;
                 break;
               }
             }
-            if (!src_img) {
-              if (tmp_mpsimage_cache.find(operation_input_idx) ==
-                  tmp_mpsimage_cache.end()) {
-                MPSImageDescriptor* descriptor = CreateMPSImageDescriptor(operation_input);
-                if (!descriptor) {
-                  success = false;
-                  break;
-                }
-                MPSTemporaryImage* temp_image = [MPSTemporaryImage
-                    temporaryImageWithCommandBuffer:command_buffer
-                                    imageDescriptor:descriptor];
-                LOG(INFO) << "Set readCount as " << operation_input.read_count;
-                temp_image.readCount = operation_input.read_count;
-                tmp_mpsimage_cache[operation_input_idx] = temp_image;
-              }
-              src_img = tmp_mpsimage_cache[operation_input_idx];
-            }
             if (!dst_img) {
-              if (tmp_mpsimage_cache.find(operation_output_idx) ==
-                  tmp_mpsimage_cache.end()) {
-                MPSImageDescriptor* descriptor = CreateMPSImageDescriptor(operation_output);
-                if (!descriptor) {
-                  success = false;
-                  break;
-                }
-                MPSTemporaryImage* temp_image = [MPSTemporaryImage
-                    temporaryImageWithCommandBuffer:command_buffer
-                                    imageDescriptor:descriptor];
-                LOG(INFO) << "Set readCount as " << operation_output.read_count;
-                temp_image.readCount = operation_output.read_count;
-                tmp_mpsimage_cache[operation_output_idx] = temp_image;
+              dst_img = FindOrCreateMPSTemporaryImageByIndex(operation_output_idx, command_buffer);
+              if (!dst_img) {
+                success = false;
+                break;
               }
-              dst_img = tmp_mpsimage_cache[operation_output_idx];
             }
             if (fuse_relu) {
               // Insert relu layer
@@ -584,6 +548,8 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
             // compilation_->operands_[compilation_->outputs_[i]];
             // PrintOperand(operand, output_data);
           }
+
+          tmp_mpsimage_cache_.clear();
         }
       }  // @autoreleasepool
     } while (0);
@@ -594,6 +560,49 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
   } else {
     std::move(callback).Run(mojom::BAD_DATA);
   }
+}
+
+MPSImage* API_AVAILABLE(macosx(10.13)) FindMPSImageByIndex(uint32_t index, std::vector<uint32_t>& index_array, std::vector<base::scoped_nsobject<MPSImage> >& image_array) {
+  MPSImage* image = nullptr;
+  if (@available(macOS 10.13, *)) {
+    for (size_t i = 0; i < index_array.size(); ++i) {
+      const uint32_t index_in_array = index_array[i];
+      if (index == index_in_array) {
+        image = image_array[i];
+        break;
+      }
+    }
+  }
+  return image;
+}
+
+MPSImage* ExecutionImplMac::FindInputMPSImageByIndex(uint32_t index) {
+  return FindMPSImageByIndex(index, compilation_->inputs_, input_mpsimages_);
+}
+
+MPSImage* ExecutionImplMac::FindOutputMPSImageByIndex(uint32_t index) {
+  return FindMPSImageByIndex(index, compilation_->outputs_, output_mpsimages_);
+}
+
+MPSTemporaryImage* ExecutionImplMac::FindOrCreateMPSTemporaryImageByIndex(uint32_t index, id<MTLCommandBuffer>& command_buffer) {
+  MPSTemporaryImage* temp_image = nullptr;
+  if (@available(macOS 10.13, *)) {
+    const OperandMac& operand = compilation_->operands_[index];
+    if (tmp_mpsimage_cache_.find(index) == tmp_mpsimage_cache_.end()) {
+      MPSImageDescriptor* descriptor = CreateMPSImageDescriptor(operand);
+      if (!descriptor) {
+        return nullptr;
+      }
+      temp_image = [MPSTemporaryImage
+          temporaryImageWithCommandBuffer:command_buffer
+                          imageDescriptor:descriptor];
+      LOG(INFO) << "Set readCount as " << operand.read_count;
+      temp_image.readCount = operand.read_count;
+      tmp_mpsimage_cache_[index] = temp_image;
+    }
+    temp_image = tmp_mpsimage_cache_[index];
+  }
+  return temp_image;
 }
 
 }  // namespace ml
