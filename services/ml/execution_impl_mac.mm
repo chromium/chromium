@@ -437,19 +437,32 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
                         << operation.type;
               continue;
             }
-            const uint32_t operation_input_idx = operation.inputs[0];
-            const uint32_t operation_output_idx = operation.outputs[0];
-            const OperandMac& operation_output =
-                compilation_->operands_[operation_output_idx];
-            MPSImage* src_img = FindInputMPSImageByIndex(operation_input_idx);
-            MPSImage* dst_img = FindOutputMPSImageByIndex(operation_output_idx);
+
+            MPSImage* src_img = FindInputMPSImageByIndex(operation.inputs[0]);
             if (!src_img) {
-              src_img = FindOrCreateMPSTemporaryImageByIndex(operation_input_idx, command_buffer);
+              src_img = FindOrCreateMPSTemporaryImageByIndex(operation.inputs[0], command_buffer);
               if (!src_img) {
                 success = false;
                 break;
               }
             }
+
+            MPSImage* secondary_src_img = nullptr;
+            if (binary_kernel) {
+              secondary_src_img = FindInputMPSImageByIndex(operation.inputs[1]);
+              if (!secondary_src_img) {
+                secondary_src_img = FindOrCreateMPSTemporaryImageByIndex(operation.inputs[1], command_buffer);
+                if (!secondary_src_img) {
+                  success = false;
+                  break;
+                }
+              }
+            }
+
+            const uint32_t operation_output_idx = operation.outputs[0];
+            const OperandMac& operation_output =
+                compilation_->operands_[operation_output_idx];
+            MPSImage* dst_img = FindOutputMPSImageByIndex(operation_output_idx);
             if (!dst_img) {
               dst_img = FindOrCreateMPSTemporaryImageByIndex(operation_output_idx, command_buffer);
               if (!dst_img) {
@@ -490,9 +503,10 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
               }
             } else if (binary_kernel) {
               [binary_kernel encodeToCommandBuffer:command_buffer
-                             primaryImage:src_img
-                             secondaryImage:dst_img];
-            } else {
+                                      primaryImage:src_img
+                                    secondaryImage:secondary_src_img
+                                  destinationImage:dst_img];
+            } else if (kernel) {
               if (src_img.featureChannels == 3 && dst_img.featureChannels == 4) {
                 DLOG(ERROR) << @"Number of source feature channels needed by "
                                 "convolution 4 are not available in image with"
