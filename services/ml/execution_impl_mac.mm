@@ -400,12 +400,11 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
         } else {
           id<MTLCommandBuffer> command_buffer =
               [GetMPSCNNContext().command_queue commandBuffer];
-          const uint32_t input_idx = compilation_->inputs_[0];
-          std::unique_ptr<OperandInfo>& input_data = inputs_info_[0];
-          MPSImage* input_img = input_mpsimages_[0].get();
-          id<MTLBuffer> input_buffer = input_mtlbuffers_[0];
 
-          {
+          for (size_t i = 0; i < compilation_->inputs_.size(); ++i) {
+            std::unique_ptr<OperandInfo>& input_data = inputs_info_[i];
+            MPSImage* input_img = input_mpsimages_[i].get();
+            id<MTLBuffer> input_buffer = input_mtlbuffers_[i];
             memcpy([input_buffer contents], input_data->mapping.get(),
                    input_data->length);
             id<MTLComputeCommandEncoder> encoder =
@@ -434,7 +433,7 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
             MPSCNNBinaryKernel* binary_kernel = operation.mpscnn_binary_kernel.get();
             bool fuse_relu = operation.fuse_code == mojom::FUSED_RELU1
                 || operation.fuse_code == mojom::FUSED_RELU6;
-            if (!kernel && (fuse_relu || !binary_kernel)) {
+            if (!kernel && !binary_kernel) {
               DLOG(INFO) << "No kernel compiled for operation " << i << " type "
                         << operation.type;
               continue;
@@ -444,8 +443,12 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
             uint32_t operation_input_idx = operation.inputs[0];
             const OperandMac& operation_input =
                 compilation_->operands_[operation_input_idx];
-            if (operation_input_idx == input_idx) {
-              src_img = input_img;
+            for (size_t i = 0; i < compilation_->inputs_.size(); ++i) {
+              const uint32_t input_idx = compilation_->inputs_[i];
+              if (operation_input_idx == input_idx) {
+                src_img = input_mpsimages_[i];
+                break;
+              }
             }
             uint32_t operation_output_idx = operation.outputs[0];
             const OperandMac& operation_output =
@@ -453,6 +456,7 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
             for (size_t j = 0; j < compilation_->outputs_.size(); ++j) {
               if (operation_output_idx == compilation_->outputs_[j]) {
                 dst_img = output_mpsimages_[j];
+                break;
               }
             }
             if (!src_img) {
