@@ -66,10 +66,16 @@ bool GetMPSImageInfo(const OperandMac& operand,
     channels = dimensions[2];
     return true;
   } else if (dimensions.size() == 2) {
-    n = dimensions[0];
+    n = 1;
+    height = 1;
+    width = dimensions[0];
     channels = dimensions[1];
+    return true;
+  } else if (dimensions.size() == 1) {
+    n = 1;
     height = 1;
     width = 1;
+    channels = dimensions[0];
     return true;
   } else {
     DLOG(ERROR) << "dimension " << dimensions.size() << " is not supported";
