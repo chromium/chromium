@@ -1079,6 +1079,13 @@ namespace ml {
         return false;
       }
       operation.mpscnn_binary_kernel.reset(arithmetic);
+
+      // Check constants for input 0 and 1
+      for (size_t i = 0; i < operation.inputs.size() - 1; ++i) {
+        if (values_.find(operation.inputs[i]) != values_.end()) {
+          constants_.push_back(operation.inputs[i]);
+        }
+      }
     }
 
     return true;

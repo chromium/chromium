@@ -91,6 +91,7 @@ class CompilationImplMac : public mojom::Compilation {
   std::map<uint32_t, ValueInfo> values_;
   std::vector<uint32_t> inputs_;
   std::vector<uint32_t> outputs_;
+  std::vector<uint32_t> constants_;
   std::unique_ptr<int8_t[]> memory_;
   uint32_t memory_size_;
   bool is_bnns_;

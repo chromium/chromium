@@ -32,7 +32,6 @@ class ExecutionImplMac : public mojom::Execution {
   ~ExecutionImplMac() override;
 
   void StartCompute(StartComputeCallback callback) override;
-  void PrepareBnnsOperandsMemory();
 
   bool IsValid() const {
     return compilation_ != nil &&
@@ -41,14 +40,19 @@ class ExecutionImplMac : public mojom::Execution {
   }
 
  private:
-  MPSImage* API_AVAILABLE(macos(10_13)) FindInputMPSImageByIndex(uint32_t);
+  void PrepareMPSOperandsMemory();
+  void PrepareBnnsOperandsMemory();
+
+  MPSImage* API_AVAILABLE(macos(10_13)) FindInputOrConstantMPSImageByIndex(uint32_t);
   MPSImage* API_AVAILABLE(macos(10_13)) FindOutputMPSImageByIndex(uint32_t);
-  MPSTemporaryImage* API_AVAILABLE(macos(10_13)) FindOrCreateMPSTemporaryImageByIndex(uint32_t, id<MTLCommandBuffer>&);
+  MPSTemporaryImage* API_AVAILABLE(macos(10_13)) FindOrCreateMPSTemporaryImageByIndex(uint32_t, const id<MTLCommandBuffer>&);
+  void API_AVAILABLE(macos(10_13)) UploadToMPSImage(const MPSImage*, const id<MTLBuffer>&, const id<MTLCommandBuffer>&, const void*, size_t);
 
   CompilationImplMac* compilation_;
 
   std::vector<std::unique_ptr<OperandInfo>> inputs_info_;
   std::vector<std::unique_ptr<OperandInfo>> outputs_info_;
+  std::vector<std::unique_ptr<OperandInfo>> constants_info_;
   std::map<size_t, float*> bnns_operands_memory_map_;
   mojo::ScopedSharedBufferHandle memory_;
 
@@ -56,6 +60,8 @@ class ExecutionImplMac : public mojom::Execution {
   API_AVAILABLE(macos(10_13)) std::vector<id<MTLBuffer>> input_mtlbuffers_;
   API_AVAILABLE(macos(10_13)) std::vector<base::scoped_nsobject<MPSImage> > output_mpsimages_;
   API_AVAILABLE(macos(10_13)) std::vector<id<MTLBuffer>> output_mtlbuffers_;
+  API_AVAILABLE(macos(10_13)) std::vector<base::scoped_nsobject<MPSImage> > constant_mpsimages_;
+  API_AVAILABLE(macos(10_13)) std::vector<id<MTLBuffer>> constant_mtlbuffers_;
   API_AVAILABLE(macos(10_13)) std::map<uint32_t, MPSTemporaryImage*> tmp_mpsimage_cache_;
 
   DISALLOW_COPY_AND_ASSIGN(ExecutionImplMac);
