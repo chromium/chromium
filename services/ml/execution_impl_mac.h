@@ -43,10 +43,17 @@ class ExecutionImplMac : public mojom::Execution {
   void PrepareMPSOperandsMemory();
   void PrepareBnnsOperandsMemory();
 
-  MPSImage* API_AVAILABLE(macos(10_13)) FindInputOrConstantMPSImageByIndex(uint32_t);
+  MPSImage* API_AVAILABLE(macos(10_13))
+      FindInputOrConstantMPSImageByIndex(uint32_t);
   MPSImage* API_AVAILABLE(macos(10_13)) FindOutputMPSImageByIndex(uint32_t);
-  MPSTemporaryImage* API_AVAILABLE(macos(10_13)) FindOrCreateMPSTemporaryImageByIndex(uint32_t, const id<MTLCommandBuffer>&);
-  void API_AVAILABLE(macos(10_13)) UploadToMPSImage(const MPSImage*, const id<MTLBuffer>&, const id<MTLCommandBuffer>&, const void*, size_t);
+  MPSTemporaryImage* API_AVAILABLE(macos(10_13))
+      FindOrCreateMPSTemporaryImageByIndex(uint32_t,
+                                           const id<MTLCommandBuffer>&);
+  void API_AVAILABLE(macos(10_13)) UploadToMPSImage(const MPSImage*,
+                                                    const id<MTLBuffer>&,
+                                                    const id<MTLCommandBuffer>&,
+                                                    const void*,
+                                                    size_t);
 
   CompilationImplMac* compilation_;
 
@@ -56,13 +63,17 @@ class ExecutionImplMac : public mojom::Execution {
   std::map<size_t, float*> bnns_operands_memory_map_;
   mojo::ScopedSharedBufferHandle memory_;
 
-  API_AVAILABLE(macos(10_13)) std::vector<base::scoped_nsobject<MPSImage> > input_mpsimages_;
+  API_AVAILABLE(macos(10_13))
+  std::vector<base::scoped_nsobject<MPSImage>> input_mpsimages_;
   API_AVAILABLE(macos(10_13)) std::vector<id<MTLBuffer>> input_mtlbuffers_;
-  API_AVAILABLE(macos(10_13)) std::vector<base::scoped_nsobject<MPSImage> > output_mpsimages_;
+  API_AVAILABLE(macos(10_13))
+  std::vector<base::scoped_nsobject<MPSImage>> output_mpsimages_;
   API_AVAILABLE(macos(10_13)) std::vector<id<MTLBuffer>> output_mtlbuffers_;
-  API_AVAILABLE(macos(10_13)) std::vector<base::scoped_nsobject<MPSImage> > constant_mpsimages_;
+  API_AVAILABLE(macos(10_13))
+  std::vector<base::scoped_nsobject<MPSImage>> constant_mpsimages_;
   API_AVAILABLE(macos(10_13)) std::vector<id<MTLBuffer>> constant_mtlbuffers_;
-  API_AVAILABLE(macos(10_13)) std::map<uint32_t, MPSTemporaryImage*> tmp_mpsimage_cache_;
+  API_AVAILABLE(macos(10_13))
+  std::map<uint32_t, MPSTemporaryImage*> tmp_mpsimage_cache_;
 
   DISALLOW_COPY_AND_ASSIGN(ExecutionImplMac);
 };
@@ -70,4 +81,3 @@ class ExecutionImplMac : public mojom::Execution {
 }  // namespace ml
 
 #endif  // SERVICES_ML_EXECUTION_IMPL_MAC_H_
-

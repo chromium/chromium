@@ -1075,9 +1075,8 @@ namespace ml {
         arithmetic = [[MPSCNNMultiply alloc] initWithDevice:GetMPSCNNContext().device];
       }
 
-      if (!arithmetic) {
-        return false;
-      }
+      if (!arithmetic) return false;
+
       operation.mpscnn_binary_kernel.reset(arithmetic);
 
       // Check constants for input 0 and 1
