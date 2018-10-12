@@ -332,12 +332,12 @@ namespace ml {
         } else {
           success = CompileConcatenation(operation);
         }
-      } else if (type == mojom::ADD) {
+      } else if (type == mojom::ADD || type == mojom::MUL) {
         if (is_bnns_) {
           DLOG(ERROR) << "Operation is not supported";
           success = false;
         } else {
-          success = CompileAdd(operation);
+          success = CompileArithmetic(operation);
         }
       } else {
         DLOG(ERROR) << "Operation is not supported";
@@ -1063,13 +1063,22 @@ namespace ml {
     return true;
   }
 
-  bool CompilationImplMac::CompileAdd(OperationMac& operation) {
-    DLOG(INFO) << "CompilationImplMac::CompileAdd";
-    DLOG_IF(FATAL, operation.type != mojom::ADD);
+  bool CompilationImplMac::CompileArithmetic(OperationMac& operation) {
+    DLOG(INFO) << "CompilationImplMac::CompileArithmetic";
+    DLOG_IF(FATAL, operation.type != mojom::ADD && operation.type != mojom::MUL);
 
     if (@available(macOS 10.13.4, *)) {
-      MPSCNNAdd* add = [[MPSCNNAdd alloc] initWithDevice:GetMPSCNNContext().device];
-      operation.mpscnn_binary_kernel.reset(add);
+      MPSCNNArithmetic* arithmetic = nullptr;
+      if (operation.type == mojom::ADD) {
+        arithmetic = [[MPSCNNAdd alloc] initWithDevice:GetMPSCNNContext().device];
+      } else if (operation.type == mojom::MUL) {
+        arithmetic = [[MPSCNNMultiply alloc] initWithDevice:GetMPSCNNContext().device];
+      }
+
+      if (!arithmetic) {
+        return false;
+      }
+      operation.mpscnn_binary_kernel.reset(arithmetic);
     }
 
     return true;

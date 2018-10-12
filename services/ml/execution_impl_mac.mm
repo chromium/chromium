@@ -237,11 +237,6 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
   if (@available(macOS 10.13, *)) {
     do {
       @autoreleasepool {
-        if (compilation_->inputs_.size() > 1) {
-          success = false;
-          break;
-        }
-
         if (compilation_->is_bnns_) {
           for (size_t i = 0; i < compilation_->operations_.size(); i++) {
             float* src = nullptr;
@@ -443,6 +438,7 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
               src_img = FindOrCreateMPSTemporaryImageByIndex(operation.inputs[0], command_buffer);
               if (!src_img) {
                 success = false;
+                DLOG(ERROR) << "Can't find or create mps image for operation " << operation.type << " input " << operation.inputs[0];
                 break;
               }
             }
@@ -454,6 +450,7 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
                 secondary_src_img = FindOrCreateMPSTemporaryImageByIndex(operation.inputs[1], command_buffer);
                 if (!secondary_src_img) {
                   success = false;
+                  DLOG(ERROR) << "Can't find or create mps image for operation " << operation.type << " input " << operation.inputs[1];
                   break;
                 }
               }
@@ -467,6 +464,7 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
               dst_img = FindOrCreateMPSTemporaryImageByIndex(operation_output_idx, command_buffer);
               if (!dst_img) {
                 success = false;
+                DLOG(ERROR) << "Can't find or create mps image for operation " << operation.type << " output " << operation.outputs[0];
                 break;
               }
             }
