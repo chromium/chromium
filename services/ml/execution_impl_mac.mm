@@ -95,10 +95,6 @@ MPSImageDescriptor* API_AVAILABLE(macosx(10.13))
   if (!GetMPSImageInfo(operand, n, width, height, channels)) {
     return mpsimage_desc;
   }
-  if (n != 1) {
-    LOG(ERROR) << "number of images " << n << " is not supported";
-    return mpsimage_desc;
-  }
   mpsimage_desc = [MPSImageDescriptor
       imageDescriptorWithChannelFormat:MPSImageFeatureChannelFormatFloat16
                                  width:width
