@@ -687,6 +687,11 @@ int32_t ModelImplClDnn::CldnnAddElementwise(
   // Setup output quanitization factors
   std::string empty;
   eltwise_desc.output_calibration_factors = empty.c_str();
+  eltwise_desc.output_quantization_factor = 1.0f;
+
+  // Setup coefficient for SUM operation
+  eltwise_desc.coefficients.data = nullptr;
+  eltwise_desc.coefficients.size = 0;
 
   // Add primitive into topology.
   eltwise_desc.id = id_str.c_str();
