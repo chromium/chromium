@@ -474,8 +474,6 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
             MPSCNNKernel* kernel = operation.mpscnn_kernel.get();
             MPSCNNBinaryKernel* binary_kernel =
                 operation.mpscnn_binary_kernel.get();
-            bool fuse_relu = operation.fuse_code == mojom::FUSED_RELU1 ||
-                             operation.fuse_code == mojom::FUSED_RELU6;
             if (!kernel && !binary_kernel) {
               DLOG(INFO) << "No kernel compiled for operation " << i << " type "
                          << operation.type;
@@ -514,8 +512,6 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
             }
 
             const uint32_t operation_output_idx = operation.outputs[0];
-            const OperandMac& operation_output =
-                compilation_->operands_[operation_output_idx];
             MPSImage* dst_img = FindOutputMPSImageByIndex(operation_output_idx);
             if (!dst_img) {
               dst_img = FindOrCreateMPSTemporaryImageByIndex(
@@ -528,38 +524,7 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
                 break;
               }
             }
-            if (fuse_relu) {
-              // Insert relu layer
-              MPSTemporaryImage* relu_input = [MPSTemporaryImage
-                  temporaryImageWithCommandBuffer:command_buffer
-                                  imageDescriptor:CreateMPSImageDescriptor(
-                                                      operation_output)];
-              [kernel encodeToCommandBuffer:command_buffer
-                                sourceImage:src_img
-                           destinationImage:relu_input];
-              short threshold = 6;
-              if (operation.fuse_code == mojom::FUSED_RELU1) {
-                threshold = 1;
-              }
-              {
-                id<MTLComputeCommandEncoder> encoder =
-                    [command_buffer computeCommandEncoder];
-                id<MTLComputePipelineState> state =
-                    GetMPSCNNContext().GetSpecializedPipelineState(
-                        KernelFor(dst_img, @"relu", @"relu_nonarray"),
-                        {ushort(threshold)});
-                [encoder setComputePipelineState:state];
-                [encoder setTexture:[relu_input texture] atIndex:0];
-                [encoder setTexture:[dst_img texture] atIndex:1];
-                const auto& inputLaunchParams =
-                    SpatialPointwiseKernelLaunchParams(state, relu_input);
-                [encoder
-                     dispatchThreadgroups:inputLaunchParams.threadgroupsPerGrid
-                    threadsPerThreadgroup:inputLaunchParams
-                                              .threadsPerThreadgroup];
-                [encoder endEncoding];
-              }
-            } else if (binary_kernel) {
+            if (binary_kernel) {
               [binary_kernel encodeToCommandBuffer:command_buffer
                                       primaryImage:src_img
                                     secondaryImage:secondary_src_img

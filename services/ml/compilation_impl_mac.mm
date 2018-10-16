@@ -87,7 +87,15 @@ namespace ml {
     } else if (fuse_code == mojom::FUSED_RELU) {
       relu = [[MPSCNNNeuronReLU alloc] initWithDevice:GetMPSCNNContext().device
                                                     a:0];
-    } else {
+    } else if (fuse_code == mojom::FUSED_RELU1) {
+      relu = [[MPSCNNNeuronReLUN alloc] initWithDevice:GetMPSCNNContext().device
+                                                     a:0
+                                                     b:1];
+    } else if (fuse_code == mojom::FUSED_RELU6) {
+      relu = [[MPSCNNNeuronReLUN alloc] initWithDevice:GetMPSCNNContext().device
+                                                     a:0
+                                                     b:6];
+    }else {
       DLOG(INFO) << "Fuse code " << fuse_code
                  << " is not supported by MPSCNNNeuron";
     }
