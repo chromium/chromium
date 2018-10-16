@@ -1021,6 +1021,7 @@ namespace ml {
       uint32_t channelOffset = 0;
       for (size_t i = 0; i < inputs.size() - 1; ++i) {
         uint32_t concat_input_idx = inputs[i];
+        OperandMac& operand = operands_[concat_input_idx];
         for (size_t j = 0; j < operations_.size(); ++j) {
           OperationMac& operation = operations_[j];
           if (operation.outputs[0] == concat_input_idx) {
@@ -1030,19 +1031,21 @@ namespace ml {
             operation.outputs[0] = concat_output_idx;
             MPSCNNKernel* kernel = operation.mpscnn_kernel.get();
             if (!kernel) {
-              DLOG(ERROR) << "MPSKernel of operation " << j << " type "
-                          << operation.type << " is not found";
-              return false;
+              DLOG(INFO) << "MPSKernel of operation " << j << " type "
+                         << operation.type << " is not found";
+              // Concatenation op has no kernel, continue to search
+              continue;
             }
             if (channelOffset % 4 != 0) {
               DLOG(ERROR) << "Invalid channelOffset " << channelOffset
                           << ". It must be multiple of 4";
               return false;
             }
+            // Accumulate the previous offset
+            const uint32_t offset = [kernel destinationFeatureChannelOffset] + channelOffset;
             DLOG(INFO) << "  Set destinationFeatureChannelOffset to "
-                       << channelOffset;
-            [kernel setDestinationFeatureChannelOffset:channelOffset];
-            OperandMac& operand = operands_[concat_input_idx];
+                       << offset;
+            [kernel setDestinationFeatureChannelOffset: offset];
             DLOG(INFO) << "OPERATION.DIMENSIONS.SIZE: "
                        << operand.dimensions.size();
             for (size_t i = 0; i < operand.dimensions.size(); ++i ) {
@@ -1054,9 +1057,9 @@ namespace ml {
                           << operand.dimensions.size();
               return false;
             }
-            channelOffset += operand.dimensions[axis];
           }
         }
+        channelOffset += operand.dimensions[axis];
       }
     }
 
