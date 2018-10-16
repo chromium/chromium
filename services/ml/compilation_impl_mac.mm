@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "services/ml/compilation_impl_mac.h"
-#include "services/ml/mpscnn_context.h"
-#include "services/ml/execution_impl_mac.h"
 
 #import <Accelerate/Accelerate.h>
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
+
+#include "base/mac/sdk_forward_declarations.h"
+#include "services/ml/mpscnn_context.h"
+#include "services/ml/execution_impl_mac.h"
 
 API_AVAILABLE(macosx(10.13))
 @interface ConvDataSource : NSObject<MPSCNNConvolutionDataSource> {}
@@ -1073,9 +1075,19 @@ namespace ml {
     if (@available(macOS 10.13.4, *)) {
       MPSCNNArithmetic* arithmetic = nullptr;
       if (operation.type == mojom::ADD) {
-        arithmetic = [[MPSCNNAdd alloc] initWithDevice:GetMPSCNNContext().device];
+        Class mpscnn_add_class = NSClassFromString(@"MPSCNNAdd");
+        if (!mpscnn_add_class) {
+          DLOG(ERROR) << "Failed to load MPSCNNAdd class";
+          return false;
+        }
+        arithmetic = [[mpscnn_add_class alloc] initWithDevice:GetMPSCNNContext().device];
       } else if (operation.type == mojom::MUL) {
-        arithmetic = [[MPSCNNMultiply alloc] initWithDevice:GetMPSCNNContext().device];
+        Class mpscnn_multiply_class = NSClassFromString(@"MPSCNNMultiply");
+        if (!mpscnn_multiply_class) {
+          DLOG(ERROR) << "Failed to load MPSCNNMultiply class";
+          return false;
+        }
+        arithmetic = [[mpscnn_multiply_class alloc] initWithDevice:GetMPSCNNContext().device];
       }
 
       if (!arithmetic) return false;
