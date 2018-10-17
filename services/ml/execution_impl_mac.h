@@ -33,14 +33,16 @@ class ExecutionImplMac : public mojom::Execution {
 
   void StartCompute(StartComputeCallback callback) override;
 
-  bool IsValid() const {
-    return compilation_ != nil &&
-           inputs_info_.size() == compilation_->inputs_.size() &&
-           outputs_info_.size() == compilation_->outputs_.size();
-  }
+  bool IsValid() const;
 
  private:
-  void PrepareMPSOperandsMemory();
+  void SetupOperandInfoForOperands(
+    std::vector<std::unique_ptr<OperandInfo>>&,
+    const std::vector<uint32_t>&);
+  void API_AVAILABLE(macos(10_13)) SetupMPSImageForOperands(
+    std::vector<base::scoped_nsobject<MPSImage>>&,
+    std::vector<id<MTLBuffer>>&,
+    const std::vector<uint32_t>&);
   void PrepareBnnsOperandsMemory();
 
   MPSImage* API_AVAILABLE(macos(10_13))
@@ -59,9 +61,9 @@ class ExecutionImplMac : public mojom::Execution {
 
   std::vector<std::unique_ptr<OperandInfo>> inputs_info_;
   std::vector<std::unique_ptr<OperandInfo>> outputs_info_;
-  std::vector<std::unique_ptr<OperandInfo>> constants_info_;
   std::map<size_t, float*> bnns_operands_memory_map_;
   mojo::ScopedSharedBufferHandle memory_;
+  uint32_t mapped_length_;
 
   API_AVAILABLE(macos(10_13))
   std::vector<base::scoped_nsobject<MPSImage>> input_mpsimages_;

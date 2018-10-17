@@ -133,10 +133,17 @@ ExecutionImplMac::ExecutionImplMac(CompilationImplMac* compilation,
                                    mojo::ScopedSharedBufferHandle memory) {
   compilation_ = compilation;
   memory_ = std::move(memory);
+  mapped_length_ = 0;
+  SetupOperandInfoForOperands(inputs_info_, compilation_->inputs_);
+  SetupOperandInfoForOperands(outputs_info_, compilation_->outputs_);
   if (compilation_->is_bnns_) {
     PrepareBnnsOperandsMemory();
   } else {
-    PrepareMPSOperandsMemory();
+    if (@available(macOS 10.13, *)) {
+      SetupMPSImageForOperands(input_mpsimages_, input_mtlbuffers_, compilation_->inputs_);
+      SetupMPSImageForOperands(output_mpsimages_, output_mtlbuffers_, compilation_->outputs_);
+      SetupMPSImageForOperands(constant_mpsimages_, constant_mtlbuffers_, compilation_->constants_);
+    }
   }
 }
 
@@ -160,96 +167,51 @@ ExecutionImplMac::~ExecutionImplMac() {
   }
 }
 
-void ExecutionImplMac::PrepareMPSOperandsMemory() {
-  uint32_t total_length = 0;
-  uint32_t inputs_size = compilation_->inputs_.size();
-  if (@available(macOS 10.13, *)) {
-    input_mpsimages_.resize(inputs_size);
-    input_mtlbuffers_.resize(inputs_size);
-  }
-  for (size_t i = 0; i < inputs_size; ++i) {
-    OperandMac& operand = compilation_->operands_[compilation_->inputs_[i]];
-    uint32_t length = operand.requiredSize();
+bool ExecutionImplMac::IsValid() const {
+  bool valid = compilation_ != nil &&
+      inputs_info_.size() == compilation_->inputs_.size() &&
+      outputs_info_.size() == compilation_->outputs_.size();
+  if (compilation_ && !compilation_->is_bnns_) {
     if (@available(macOS 10.13, *)) {
-      if (compilation_->is_bnns_ == false) {
-        MPSImageDescriptor* descriptor = CreateMPSImageDescriptor(operand);
-        if (!descriptor) {
-          return;
-        }
-        MPSImage* mps_img =
-            [[MPSImage alloc] initWithDevice:GetMPSCNNContext().device
-                             imageDescriptor:descriptor];
-        input_mpsimages_[i].reset(mps_img);
-        input_mtlbuffers_[i] = [GetMPSCNNContext().device
-            newBufferWithLength:length
-                        options:MTLResourceOptionCPUCacheModeWriteCombined];
-      }
+      valid &= compilation_->inputs_.size() == input_mpsimages_.size() &&
+          compilation_->outputs_.size() == output_mpsimages_.size() &&
+          compilation_->constants_.size() == constant_mpsimages_.size();
     }
-    uint32_t offset = total_length;
+  }
+  return valid;
+}
+
+void ExecutionImplMac::SetupOperandInfoForOperands(
+    std::vector<std::unique_ptr<OperandInfo>>& opearnd_info_array,
+    const std::vector<uint32_t>& operands_index_array) {
+  for (size_t i = 0; i < operands_index_array.size(); ++i) {
+    const uint32_t length =
+        compilation_->operands_[operands_index_array[i]].requiredSize();
     mojo::ScopedSharedBufferMapping mapping =
-        memory_->MapAtOffset(length, offset);
+        memory_->MapAtOffset(length, mapped_length_);
     std::unique_ptr<OperandInfo> info(
-        new OperandInfo(offset, length, std::move(mapping)));
-    inputs_info_.push_back(std::move(info));
-    total_length += length;
+        new OperandInfo(mapped_length_, length, std::move(mapping)));
+    opearnd_info_array.push_back(std::move(info));
+    mapped_length_ += length;
   }
-  uint32_t outputs_size = compilation_->outputs_.size();
-  if (@available(macOS 10.13, *)) {
-    if (compilation_->is_bnns_ == false) {
-      output_mpsimages_.resize(outputs_size);
-      output_mtlbuffers_.resize(outputs_size);
-    }
-  }
-  for (size_t i = 0; i < outputs_size; ++i) {
-    OperandMac& operand = compilation_->operands_[compilation_->outputs_[i]];
-    uint32_t length = operand.requiredSize();
+}
+
+void API_AVAILABLE(macosx(10.13)) ExecutionImplMac::SetupMPSImageForOperands(
+    std::vector<base::scoped_nsobject<MPSImage>>& mps_image_array,
+    std::vector<id<MTLBuffer>>& mtl_buffer_array,
+    const std::vector<uint32_t>& operands_index_array) {
+  for (size_t i = 0; i < operands_index_array.size(); ++i) {
+    const OperandMac& operand = compilation_->operands_[operands_index_array[i]];
     if (@available(macOS 10.13, *)) {
-      if (compilation_->is_bnns_ == false) {
-        MPSImageDescriptor* descriptor = CreateMPSImageDescriptor(operand);
-        if (!descriptor) {
-          return;
-        }
-        MPSImage* mps_img =
-            [[MPSImage alloc] initWithDevice:GetMPSCNNContext().device
-                             imageDescriptor:descriptor];
-        output_mpsimages_[i].reset(mps_img);
-        output_mtlbuffers_[i] = [GetMPSCNNContext().device
-            newBufferWithLength:length
-                        options:MTLResourceOptionCPUCacheModeWriteCombined];
-      }
-    }
-    uint32_t offset = total_length;
-    mojo::ScopedSharedBufferMapping mapping =
-        memory_->MapAtOffset(length, offset);
-    std::unique_ptr<OperandInfo> info(
-        new OperandInfo(offset, length, std::move(mapping)));
-    outputs_info_.push_back(std::move(info));
-    total_length += length;
-  }
-  uint32_t constants_size = compilation_->constants_.size();
-  if (@available(macOS 10.13, *)) {
-    if (compilation_->is_bnns_ == false) {
-      constant_mpsimages_.resize(constants_size);
-      constant_mtlbuffers_.resize(constants_size);
-    }
-  }
-  for (size_t i = 0; i < constants_size; ++i) {
-    OperandMac& operand = compilation_->operands_[compilation_->constants_[i]];
-    uint32_t length = operand.requiredSize();
-    if (@available(macOS 10.13, *)) {
-      if (compilation_->is_bnns_ == false) {
-        MPSImageDescriptor* descriptor = CreateMPSImageDescriptor(operand);
-        if (!descriptor) {
-          return;
-        }
-        MPSImage* mps_img =
-            [[MPSImage alloc] initWithDevice:GetMPSCNNContext().device
-                             imageDescriptor:descriptor];
-        constant_mpsimages_[i].reset(mps_img);
-        constant_mtlbuffers_[i] = [GetMPSCNNContext().device
-            newBufferWithLength:length
-                        options:MTLResourceOptionCPUCacheModeWriteCombined];
-      }
+      MPSImageDescriptor* descriptor = CreateMPSImageDescriptor(operand);
+      if (!descriptor) return;
+      base::scoped_nsobject<MPSImage> mps_img([[MPSImage alloc]
+          initWithDevice:GetMPSCNNContext().device
+         imageDescriptor:descriptor]);
+      mps_image_array.push_back(std::move(mps_img));
+      mtl_buffer_array.push_back([GetMPSCNNContext().device
+          newBufferWithLength:operand.requiredSize()
+                      options:MTLResourceOptionCPUCacheModeWriteCombined]);
     }
   }
 }
