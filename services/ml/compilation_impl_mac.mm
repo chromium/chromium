@@ -1081,7 +1081,7 @@ namespace ml {
     DLOG_IF(FATAL, operation.type != mojom::ADD && operation.type != mojom::MUL);
 
     if (@available(macOS 10.13.4, *)) {
-      MPSCNNArithmetic* arithmetic = nullptr;
+      MPSCNNBinaryKernel* arithmetic = nullptr;
       if (operation.type == mojom::ADD) {
         Class mpscnn_add_class = NSClassFromString(@"MPSCNNAdd");
         if (!mpscnn_add_class) {
