@@ -212,6 +212,17 @@ int NotificationView::GetHeightForWidth(int width) const {
   int top_height = top_view_->GetHeightForWidth(content_width);
   int bottom_height = bottom_view_->GetHeightForWidth(content_width);
 
+  // if notificationView have ChildView, fix the width for ChildView.
+  // chrome says:
+  //   Reduce width of the topmost label not to be covered by the control buttons
+  //   only on non Chrome OS platform.
+#if !defined(OS_CHROMEOS)
+  if (top_view_->child_count() > 0) {
+    int buttons_width = control_buttons_view_->GetPreferredSize().width();
+    content_width = content_width - buttons_width;
+  }
+#endif			
+    
   // <http://crbug.com/230448> Fix: Adjust the height when the message_view's
   // line limit would be different for the specified width than it currently is.
   // TODO(dharcourt): Avoid BoxLayout and directly compute the correct height.
@@ -257,7 +268,18 @@ void NotificationView::Layout() {
   if (message_view_)
     message_view_->SetLineLimit(GetMessageLineLimit(title_lines, width()));
 
+  int buttons_width = control_buttons_view_->GetPreferredSize().width();
   // Top views.
+  // if notificationView have ChildView, fix the width for ChildView.
+  // chrome says:
+  //   Reduce width of the topmost label not to be covered by the control
+  //   buttons only on non Chrome OS platform.
+#if !defined(OS_CHROMEOS)
+  if (top_view_->child_count() > 0) {
+    content_width = content_width - buttons_width;
+  }
+#endif
+    
   int top_height = top_view_->GetHeightForWidth(content_width);
   top_view_->SetBounds(insets.left(), insets.top(), content_width, top_height);
   ShrinkTopmostLabel();
@@ -268,7 +290,7 @@ void NotificationView::Layout() {
 
   // Control buttons (close and settings buttons).
   gfx::Rect control_buttons_bounds(content_bounds);
-  int buttons_width = control_buttons_view_->GetPreferredSize().width();
+  // int buttons_width = control_buttons_view_->GetPreferredSize().width();
   int buttons_height = control_buttons_view_->GetPreferredSize().height();
   control_buttons_bounds.set_x(control_buttons_bounds.right() - buttons_width -
                                kControlButtonPadding);
