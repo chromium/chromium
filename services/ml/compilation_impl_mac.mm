@@ -272,7 +272,8 @@ namespace ml {
     return true;
   }
 
-  CompilationImplMac::CompilationImplMac(ModelImplMac * model) {
+  CompilationImplMac::CompilationImplMac(ModelImplMac* model)
+      : compilation_factory_(this) {
     operands_.reserve(model->operands_.size());
     for (uint32_t i = 0; i < model->operands_.size(); ++i) {
       OperandMac operand(model->operands_[i]);
@@ -281,6 +282,7 @@ namespace ml {
     operations_.reserve(model->operations_.size());
     for (uint32_t i = 0; i < model->operations_.size(); ++i) {
       OperationMac operation(model->operations_[i]);
+      operation.filter = nullptr;
       operations_.push_back(operation);
     }
     values_ = model->values_;
@@ -294,9 +296,10 @@ namespace ml {
 
   CompilationImplMac::~CompilationImplMac() {
     if (is_bnns_) {
-      for (size_t i = 0; i < operations_.size(); i++) {
-        const OperationMac& operation = operations_[i];
-        if (operation.local_operation == KBNNSFilter) {
+      for (size_t i = 0; i < this->operations_.size(); i++) {
+        const OperationMac& operation = this->operations_[i];
+        if (operation.local_operation == KBNNSFilter &&
+            operation.filter != nullptr) {
           if (@available(macOS 10.12, *)) {
             BNNSFilterDestroy(operation.filter);
           }
@@ -1179,8 +1182,8 @@ namespace ml {
     init_params->memory =
         memory_handle->Clone(mojo::SharedBufferHandle::AccessMode::READ_WRITE);
 
-    auto impl =
-        std::make_unique<ExecutionImplMac>(this, std::move(memory_handle));
+    auto impl = std::make_unique<ExecutionImplMac>(
+        compilation_factory_.GetWeakPtr(), std::move(memory_handle));
     if (!impl->IsValid()) {
       std::move(callback).Run(mojom::BAD_DATA, nullptr);
       return;
@@ -1191,6 +1194,5 @@ namespace ml {
 
     std::move(callback).Run(mojom::NOT_ERROR, std::move(init_params));
   }
-
 }  // namespace ml
 

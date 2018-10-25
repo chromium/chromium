@@ -181,17 +181,17 @@ MPSImage* API_AVAILABLE(macosx(10.13)) FindMPSImageByIndex(
 
 }  // namespace {
 
-ExecutionImplMac::ExecutionImplMac(CompilationImplMac* compilation,
-                                   mojo::ScopedSharedBufferHandle memory) {
+ExecutionImplMac::ExecutionImplMac(
+    base::WeakPtr<CompilationImplMac> compilation,
+    mojo::ScopedSharedBufferHandle memory)
+    : is_bnns_(compilation->is_bnns_) {
   compilation_ = compilation;
   memory_ = std::move(memory);
   mapped_length_ = 0;
-  is_set_bnns_memory_ = false;
   SetupOperandInfoForOperands(inputs_info_, compilation_->inputs_);
   SetupOperandInfoForOperands(outputs_info_, compilation_->outputs_);
-  if (compilation_->is_bnns_) {
+  if (is_bnns_) {
     PrepareBnnsOperandsMemory();
-    is_set_bnns_memory_ = true;
   } else {
     if (@available(macOS 10.13, *)) {
       SetupMPSImageForOperands(input_mpsimages_, input_mtlbuffers_, compilation_->inputs_);
@@ -202,7 +202,7 @@ ExecutionImplMac::ExecutionImplMac(CompilationImplMac* compilation,
 }
 
 ExecutionImplMac::~ExecutionImplMac() {
-  if (is_set_bnns_memory_ == true && bnns_operands_memory_map_.size() > 0) {
+  if (is_bnns_) {
     for (auto iter = bnns_operands_memory_map_.begin();
          iter != bnns_operands_memory_map_.end(); iter++) {
       float* ptr = iter->second;
@@ -291,7 +291,7 @@ void ExecutionImplMac::StartCompute(StartComputeCallback callback) {
   if (@available(macOS 10.13, *)) {
     do {
       @autoreleasepool {
-        if (compilation_->is_bnns_) {
+        if (is_bnns_ && compilation_ != nullptr) {
           for (size_t i = 0; i < compilation_->operations_.size(); i++) {
             float* src = nullptr;
             float* des = nullptr;

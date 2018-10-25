@@ -111,6 +111,7 @@ class CompilationImplMac : public mojom::Compilation {
   std::unique_ptr<int8_t[]> memory_;
   uint32_t memory_size_;
   bool is_bnns_;
+  base::WeakPtrFactory<CompilationImplMac> compilation_factory_;
   DISALLOW_COPY_AND_ASSIGN(CompilationImplMac);
 };
 

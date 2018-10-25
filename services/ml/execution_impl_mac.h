@@ -26,7 +26,8 @@ namespace ml {
 
 class ExecutionImplMac : public mojom::Execution {
  public:
-  ExecutionImplMac(CompilationImplMac*, mojo::ScopedSharedBufferHandle);
+  ExecutionImplMac(base::WeakPtr<CompilationImplMac>,
+                   mojo::ScopedSharedBufferHandle);
   ~ExecutionImplMac() override;
 
   void PrepareBnnsOperandsMemory();
@@ -55,14 +56,14 @@ class ExecutionImplMac : public mojom::Execution {
                                                     const void*,
                                                     size_t);
 
-  CompilationImplMac* compilation_;
+  base::WeakPtr<CompilationImplMac> compilation_;
 
   std::vector<std::unique_ptr<OperandInfo>> inputs_info_;
   std::vector<std::unique_ptr<OperandInfo>> outputs_info_;
   std::map<size_t, float*> bnns_operands_memory_map_;
   mojo::ScopedSharedBufferHandle memory_;
   uint32_t mapped_length_;
-  uint32_t is_set_bnns_memory_;
+  uint32_t is_bnns_;
 
   API_AVAILABLE(macos(10_13))
   std::vector<base::scoped_nsobject<MPSImage>> input_mpsimages_;
