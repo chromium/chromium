@@ -135,10 +135,12 @@ ExecutionImplMac::ExecutionImplMac(CompilationImplMac* compilation,
   compilation_ = compilation;
   memory_ = std::move(memory);
   mapped_length_ = 0;
+  is_set_bnns_memory_ = false;
   SetupOperandInfoForOperands(inputs_info_, compilation_->inputs_);
   SetupOperandInfoForOperands(outputs_info_, compilation_->outputs_);
   if (compilation_->is_bnns_) {
     PrepareBnnsOperandsMemory();
+    is_set_bnns_memory_ = true;
   } else {
     if (@available(macOS 10.13, *)) {
       SetupMPSImageForOperands(input_mpsimages_, input_mtlbuffers_, compilation_->inputs_);
@@ -149,20 +151,12 @@ ExecutionImplMac::ExecutionImplMac(CompilationImplMac* compilation,
 }
 
 ExecutionImplMac::~ExecutionImplMac() {
-  if (compilation_->is_bnns_) {
+  if (is_set_bnns_memory_ == true && bnns_operands_memory_map_.size() > 0) {
     for (auto iter = bnns_operands_memory_map_.begin();
          iter != bnns_operands_memory_map_.end(); iter++) {
       float* ptr = iter->second;
       if (ptr != nullptr) {
         free(iter->second);
-      }
-    }
-    for (size_t i = 0; i < compilation_->operations_.size(); i++) {
-      const OperationMac& operation = compilation_->operations_[i];
-      if (operation.local_operation == KBNNSFilter) {
-        if (@available(macOS 10.12, *)) {
-          BNNSFilterDestroy(operation.filter);
-        }
       }
     }
   }

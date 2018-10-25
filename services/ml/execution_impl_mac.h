@@ -62,6 +62,7 @@ class ExecutionImplMac : public mojom::Execution {
   std::map<size_t, float*> bnns_operands_memory_map_;
   mojo::ScopedSharedBufferHandle memory_;
   uint32_t mapped_length_;
+  uint32_t is_set_bnns_memory_;
 
   API_AVAILABLE(macos(10_13))
   std::vector<base::scoped_nsobject<MPSImage>> input_mpsimages_;

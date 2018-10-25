@@ -292,7 +292,18 @@ namespace ml {
     is_bnns_ = true;
   }
 
-  CompilationImplMac::~CompilationImplMac() {}
+  CompilationImplMac::~CompilationImplMac() {
+    if (is_bnns_) {
+      for (size_t i = 0; i < operations_.size(); i++) {
+        const OperationMac& operation = operations_[i];
+        if (operation.local_operation == KBNNSFilter) {
+          if (@available(macOS 10.12, *)) {
+            BNNSFilterDestroy(operation.filter);
+          }
+        }
+      }
+    }
+  }
 
   void CompilationImplMac::Finish(int32_t preference, FinishCallback callback) {
     DLOG(INFO) << "CompilationImplMac::Finish";
